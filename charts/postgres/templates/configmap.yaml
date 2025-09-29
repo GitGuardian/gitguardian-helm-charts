@@ -17,8 +17,9 @@ data:
   {{- end }}
   postgresql.conf: |
     # PostgreSQL configuration file
-    
+
     # Connection Settings
+    listen_addresses = '*'
     {{- if .Values.config.postgresqlMaxConnections }}
     max_connections = {{ .Values.config.postgresqlMaxConnections }}
     {{- else }}
