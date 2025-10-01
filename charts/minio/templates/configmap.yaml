@@ -5,6 +5,7 @@ metadata:
   name: {{ include "minio.fullname" . }}
   namespace: {{ .Release.Namespace }}
   labels:
+    app: test
     {{- include "minio.labels" . | nindent 4 }}
   {{- if .Values.commonAnnotations }}
   annotations:
