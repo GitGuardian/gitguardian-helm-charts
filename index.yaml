@@ -1029,6 +1029,33 @@ entries:
   minio:
   - apiVersion: v2
     appVersion: 2025.09.07
+    created: "2025-10-01T11:40:19.04347845Z"
+    dependencies:
+    - name: common
+      repository: oci://registry-1.docker.io/cloudpirates
+      version: 1.x.x
+    description: High Performance Object Storage compatible with Amazon S3 APIs
+    digest: 5e77cfd962afe21d326c9d1154dc00f8fcaea8f4d61352b1dd5444f12f170211
+    home: https://www.cloudpirates.io
+    icon: https://a.storyblok.com/f/143071/512x512/5d3310f00d/minio-logo.svg
+    keywords:
+    - minio
+    - object-storage
+    - s3
+    - storage
+    - cloud-native
+    maintainers:
+    - name: CloudPirates GmbH & Co. KG
+      url: https://www.cloudpirates.io
+    name: minio
+    sources:
+    - https://github.com/CloudPirates-io/helm-charts/tree/main/charts/minio
+    type: application
+    urls:
+    - https://github.com/GitGuardian/gitguardian-helm/releases/download/minio-0.2.5/minio-0.2.5.tgz
+    version: 0.2.5
+  - apiVersion: v2
+    appVersion: 2025.09.07
     created: "2025-09-30T15:14:30.552449039Z"
     dependencies:
     - name: common
@@ -3798,6 +3825,40 @@ entries:
       license: Apache-2.0
     apiVersion: v2
     appVersion: 3.9.3
+    created: "2025-10-01T11:40:19.443276992Z"
+    dependencies:
+    - name: common
+      repository: oci://registry-1.docker.io/cloudpirates
+      version: 1.x.x
+    description: Apache ZooKeeper is a centralized service for maintaining configuration
+      information, naming, providing distributed synchronization, and providing group
+      services.
+    digest: a6265d9272f22174e0e7409036d9694386545f2cc176ba03fa4d1e6d139e6bc4
+    home: https://zookeeper.apache.org/
+    icon: https://a.storyblok.com/f/143071/512x512/07b0f90b58/apache-zookeeper-logo.svg
+    keywords:
+    - zookeeper
+    - distributed
+    - coordination
+    - apache
+    maintainers:
+    - name: CloudPirates GmbH & Co. KG
+      url: https://www.cloudpirates.io
+    - email: gianni.carafa@srf.ch
+      name: Gianni Carafa
+      url: https://www.srf.ch
+    name: zookeeper
+    sources:
+    - https://github.com/apache/zookeeper
+    type: application
+    urls:
+    - https://github.com/GitGuardian/gitguardian-helm/releases/download/zookeeper-0.1.5/zookeeper-0.1.5.tgz
+    version: 0.1.5
+  - annotations:
+      category: Database
+      license: Apache-2.0
+    apiVersion: v2
+    appVersion: 3.9.3
     created: "2025-09-30T07:56:09.000534737Z"
     dependencies:
     - name: common
@@ -3963,4 +4024,4 @@ entries:
     urls:
     - https://github.com/CloudPirates-io/helm-charts/releases/download/zookeeper-0.1.0/zookeeper-0.1.0.tgz
     version: 0.1.0
-generated: "2025-10-01T05:25:17.084432929Z"
+generated: "2025-10-01T11:40:19.443600877Z"
