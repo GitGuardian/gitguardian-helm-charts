@@ -151,8 +151,15 @@ jobs:
     steps:
       - uses: azure/setup-helm@v4.3.1
 
-      - name: Checkout
-        uses: actions/checkout@v5
+      - name: Checkout pull request branch
+        uses: actions/checkout@v5.0.0
+        with:
+          ref: ${{ github.head_ref }}
+          repository: ${{github.event.pull_request.head.repo.full_name}}
+          fetch-depth: 0
+
+      - name: Set up chart-testing-action
+        uses: helm/chart-testing-action@v2.7.0
 
       - name: Get changed charts
         id: list-changed
