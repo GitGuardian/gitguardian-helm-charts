@@ -188,12 +188,13 @@ jobs:
             CHART_VERSION='0.1.0-${{ github.run_number }}'
             APP_VERSION='unstable-${GITHUB_SHA::7}'
 
-            helm lint --strict $chart_directory
-            helm package $chart_directory --app-version=${APP_VERSION} --version=${CHART_VERSION}
+            helm dep update .
+            helm lint --strict .
+            helm package . --app-version=${APP_VERSION} --version=${CHART_VERSION}
 
             # Push to GHCR
             echo "Pushing Helm chart $CHART_NAME-$CHART_VERSION.tgz to oci://ttl.sh/${{ github.repository }}"
-            if helm push ${{ github.workspace }}/$CHART_NAME-$CHART_VERSION.tgz oci://ttl.sh/${{ github.repository }} 2>&1 | tee ${CHART_NAME}-ghcr-output.log; then
+            if helm push ./$CHART_NAME-$CHART_VERSION.tgz oci://ttl.sh/${{ github.repository }} 2>&1 | tee ${CHART_NAME}-ghcr-output.log; then
               echo "Successfully released $CHART_NAME-$CHART_VERSION to GHCR"
             else
               echo "Failed to push $CHART_NAME-$CHART_VERSION to GHCR"
