@@ -61,8 +61,6 @@ jobs:
             CHART_VERSION=$(yq eval '.version' "Chart.yaml")
             APP_VERSION=$(yq eval '.appVersion' "Chart.yaml")
 
-            helm package . --app-version=${APP_VERSION} --version=${CHART_VERSION}
-
             # Push to GHCR
             echo "Pushing Helm chart $CHART_NAME-$CHART_VERSION.tgz to oci://ghcr.io/${REPO_LOWER}"
             if helm push ${{ github.workspace }}/.cr-release-packages/${CHART_NAME}-${CHART_VERSION}.tgz oci://ghcr.io/${REPO_LOWER}; then
