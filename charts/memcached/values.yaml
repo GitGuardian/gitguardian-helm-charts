@@ -22,7 +22,7 @@ image:
   ## @param image.repository Memcached image repository
   repository: memcached
   ## @param image.tag Memcached image tag
-  tag: "1.6.39@sha256:68c1185d50600b472705b5a700037f4b8bab28f04a188bdf3a79d38e24dbfb95"
+  tag: "1.6.39@sha256:1d21225e718231ce785656df8da44b33d4237c0d10cfeac174c81f687925afbe"
   ## @param image.pullPolicy Memcached image pull policy
   pullPolicy: Always
 
