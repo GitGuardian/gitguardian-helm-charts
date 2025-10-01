@@ -113,6 +113,39 @@ entries:
   ghost:
   - apiVersion: v2
     appVersion: 6.0.9
+    created: "2025-10-01T11:58:36.898310664Z"
+    dependencies:
+    - name: common
+      repository: oci://registry-1.docker.io/cloudpirates
+      version: 1.x.x
+    - condition: mariadb.enabled
+      name: mariadb
+      repository: oci://registry-1.docker.io/cloudpirates
+      version: 0.3.x
+    description: A simple, powerful publishing platform that allows you to share your
+      stories with the world.
+    digest: b01d76b1c42d0b1f764cb8273515830bc0ec1b272f0f09d37dbf10af96a5a5f7
+    home: https://www.cloudpirates.io
+    icon: https://a.storyblok.com/f/143071/512x512/3a5c1cb0c5/ghost-logo.png
+    keywords:
+    - ghost
+    - blogging
+    - content management
+    maintainers:
+    - name: CloudPirates GmbH & Co. KG
+      url: https://www.cloudpirates.io
+    - email: gianni.carafa@srf.ch
+      name: Gianni Carafa
+      url: https://www.srf.ch
+    name: ghost
+    sources:
+    - https://github.com/CloudPirates-io/helm-charts/tree/main/charts/ghost
+    type: application
+    urls:
+    - https://github.com/GitGuardian/gitguardian-helm/releases/download/ghost-0.2.2/ghost-0.2.2.tgz
+    version: 0.2.2
+  - apiVersion: v2
+    appVersion: 6.0.9
     created: "2025-10-01T05:25:17.084209938Z"
     dependencies:
     - name: common
@@ -4024,4 +4057,4 @@ entries:
     urls:
     - https://github.com/CloudPirates-io/helm-charts/releases/download/zookeeper-0.1.0/zookeeper-0.1.0.tgz
     version: 0.1.0
-generated: "2025-10-01T11:40:19.443600877Z"
+generated: "2025-10-01T11:58:36.898528009Z"
