@@ -194,7 +194,7 @@ jobs:
 
             # Push to GHCR
             echo "Pushing Helm chart $CHART_NAME-$CHART_VERSION.tgz to oci://ttl.sh/${{ github.event.repository.name }}/helm"
-            if helm push ./$CHART_NAME-$CHART_VERSION.tgz oci://ttl.sh/${{ github.event.repository.name }}/helm"; then
+            if helm push ./$CHART_NAME-$CHART_VERSION.tgz oci://ttl.sh/${{ github.event.repository.name }}/helm; then
               echo "Successfully released $CHART_NAME-$CHART_VERSION to ttl.sh"
             else
               echo "Failed to push $CHART_NAME-$CHART_VERSION to ttl.sh"
