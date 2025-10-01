@@ -144,3 +144,56 @@ jobs:
           else
             echo "No changed CHANGELOGS, skip push"
           fi
+
+  publish-chart:
+    name: Publish Helm Chart
+    runs-on: ubuntu-latest
+    steps:
+      - uses: azure/setup-helm@v4.3.1
+
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Get changed charts
+        id: list-changed
+        run: |
+          changed=$(ct list-changed --target-branch ${{ github.event.repository.default_branch }})
+          if [[ -n "$changed" ]]; then
+            echo "Changed charts:"
+            echo "$changed"
+            echo "changed=$changed" >> $GITHUB_OUTPUT
+          else
+            echo "No chart changes detected"
+          fi
+
+      - name: Publish Helm chart to ttl
+        id: upload
+        if: ${{ steps.list-changed.outputs.changed }}
+        run: |
+          CHANGED_CHARTS="${{ steps.list-changed.outputs.changed }}"
+
+          RELEASED_CHARTS=""
+          for chart_directory in ${CHANGED_CHARTS//,/ }; do
+            CHART_NAME=${chart_directory#charts/}
+
+            cd $chart_directory
+
+            CHART_VERSION='0.1.0-${{ github.run_number }}'
+            APP_VERSION='unstable-${GITHUB_SHA::7}'
+
+            helm lint --strict $chart_directory
+            helm package $chart_directory --app-version=${APP_VERSION} --version=${CHART_VERSION}
+
+            # Push to GHCR
+            echo "Pushing Helm chart $CHART_NAME-$CHART_VERSION.tgz to oci://ttl.sh/${{ github.repository }}"
+            if helm push ${{ github.workspace }}/$CHART_NAME-$CHART_VERSION.tgz oci://ttl.sh/${{ github.repository }} 2>&1 | tee ${CHART_NAME}-ghcr-output.log; then
+              echo "Successfully released $CHART_NAME-$CHART_VERSION to GHCR"
+            else
+              echo "Failed to push $CHART_NAME-$CHART_VERSION to GHCR"
+              cat ${CHART_NAME}-ghcr-output.log
+              exit 1
+            fi
+
+            cd ${{ github.workspace }}
+          done
+          echo "released_charts=$RELEASED_CHARTS" >> "$GITHUB_OUTPUT"
