@@ -213,6 +213,44 @@ entries:
   keycloak:
   - apiVersion: v2
     appVersion: 26.3.4
+    created: "2025-10-02T15:50:51.667989472Z"
+    dependencies:
+    - name: common
+      repository: oci://registry-1.docker.io/cloudpirates
+      version: 1.x.x
+    - condition: postgres.enabled
+      name: postgres
+      repository: oci://registry-1.docker.io/cloudpirates
+      version: 0.x.x
+    - condition: mariadb.enabled
+      name: mariadb
+      repository: oci://registry-1.docker.io/cloudpirates
+      version: 0.x.x
+    description: Open Source Identity and Access Management Solution
+    digest: b9417dd3a99b5bf4214ebf30e1bae823839fe2e4c731885efdb5414bbaceaf87
+    home: https://www.cloudpirates.io
+    icon: https://a.storyblok.com/f/143071/512x512/6a85e594b2/keycloak-logo.svg
+    keywords:
+    - keycloak
+    - identity
+    - access-management
+    - authentication
+    - authorization
+    - oauth
+    - openid-connect
+    - saml
+    maintainers:
+    - name: CloudPirates GmbH & Co. KG
+      url: https://www.cloudpirates.io
+    name: keycloak
+    sources:
+    - https://github.com/CloudPirates-io/helm-charts/tree/main/charts/keycloak
+    type: application
+    urls:
+    - https://github.com/GitGuardian/gitguardian-helm/releases/download/keycloak-0.1.9/keycloak-0.1.9.tgz
+    version: 0.1.9
+  - apiVersion: v2
+    appVersion: 26.3.4
     created: "2025-09-30T13:17:08.847822874Z"
     dependencies:
     - name: common
@@ -1062,6 +1100,33 @@ entries:
   minio:
   - apiVersion: v2
     appVersion: 2025.09.07
+    created: "2025-10-02T15:50:51.867186188Z"
+    dependencies:
+    - name: common
+      repository: oci://registry-1.docker.io/cloudpirates
+      version: 1.x.x
+    description: High Performance Object Storage compatible with Amazon S3 APIs
+    digest: b8a26a45fd3d6c9add4c041a282842ae9f0be582b7006f486816dd7ad5cd2154
+    home: https://www.cloudpirates.io
+    icon: https://a.storyblok.com/f/143071/512x512/5d3310f00d/minio-logo.svg
+    keywords:
+    - minio
+    - object-storage
+    - s3
+    - storage
+    - cloud-native
+    maintainers:
+    - name: CloudPirates GmbH & Co. KG
+      url: https://www.cloudpirates.io
+    name: minio
+    sources:
+    - https://github.com/CloudPirates-io/helm-charts/tree/main/charts/minio
+    type: application
+    urls:
+    - https://github.com/GitGuardian/gitguardian-helm/releases/download/minio-0.3.0/minio-0.3.0.tgz
+    version: 0.3.0
+  - apiVersion: v2
+    appVersion: 2025.09.07
     created: "2025-10-01T11:40:19.04347845Z"
     dependencies:
     - name: common
@@ -1277,6 +1342,31 @@ entries:
     - https://github.com/CloudPirates-io/helm-charts/releases/download/minio-0.1.7/minio-0.1.7.tgz
     version: 0.1.7
   mongodb:
+  - apiVersion: v2
+    appVersion: 8.0.13
+    created: "2025-10-02T15:50:52.029787613Z"
+    dependencies:
+    - name: common
+      repository: oci://registry-1.docker.io/cloudpirates
+      version: 1.x.x
+    description: MongoDB a flexible NoSQL database for scalable, real-time data management
+    digest: 71c32ce182c0e83a8b1cb33d56740d1d9828204f6b9157e66a186ac7ce076d85
+    home: https://www.cloudpirates.io
+    icon: https://a.storyblok.com/f/143071/512x512/5d228988dc/mongodb-logo.svg
+    keywords:
+    - mongodb
+    - database
+    - nosql
+    maintainers:
+    - name: CloudPirates GmbH & Co. KG
+      url: https://www.cloudpirates.io
+    name: mongodb
+    sources:
+    - https://github.com/CloudPirates-io/helm-charts/tree/main/charts/mongodb
+    type: application
+    urls:
+    - https://github.com/GitGuardian/gitguardian-helm/releases/download/mongodb-0.3.0/mongodb-0.3.0.tgz
+    version: 0.3.0
   - apiVersion: v2
     appVersion: 8.0.13
     created: "2025-09-25T09:22:54.167533111Z"
@@ -1765,6 +1855,33 @@ entries:
     - https://github.com/CloudPirates-io/helm-charts/releases/download/nginx-0.1.0/nginx-0.1.0.tgz
     version: 0.1.0
   postgres:
+  - apiVersion: v2
+    appVersion: "18.0"
+    created: "2025-10-02T15:50:52.206149969Z"
+    dependencies:
+    - name: common
+      repository: oci://registry-1.docker.io/cloudpirates
+      version: 1.x.x
+    description: The World's Most Advanced Open Source Relational Database
+    digest: 742ec9e137f7a943658d9bfb5697c7ba22c1b498ff1d01e44f7d753b09d0eff7
+    home: https://www.cloudpirates.io
+    icon: https://a.storyblok.com/f/143071/512x512/95e7f13e62/postgres-logo.svg
+    keywords:
+    - postgres
+    - postgresql
+    - database
+    - sql
+    - relational
+    maintainers:
+    - name: CloudPirates GmbH & Co. KG
+      url: https://www.cloudpirates.io
+    name: postgres
+    sources:
+    - https://github.com/CloudPirates-io/helm-charts/tree/main/charts/postgres
+    type: application
+    urls:
+    - https://github.com/GitGuardian/gitguardian-helm/releases/download/postgres-0.7.2/postgres-0.7.2.tgz
+    version: 0.7.2
   - apiVersion: v2
     appVersion: "18.0"
     created: "2025-09-30T07:50:51.316635412Z"
@@ -2306,6 +2423,37 @@ entries:
     - https://github.com/CloudPirates-io/helm-charts/releases/download/postgres-0.2.0/postgres-0.2.0.tgz
     version: 0.2.0
   rabbitmq:
+  - annotations:
+      category: Message Broker
+      license: Apache-2.0
+    apiVersion: v2
+    appVersion: 4.1.4
+    created: "2025-10-02T15:50:52.463700408Z"
+    dependencies:
+    - name: common
+      repository: oci://registry-1.docker.io/cloudpirates
+      version: 1.x.x
+    description: A messaging broker that implements the Advanced Message Queuing Protocol
+      (AMQP)
+    digest: bd6d3f77b75a69f783e3e5e0cfc6800fba9cb583fe9cddc7dc79c78355586c3d
+    home: https://www.cloudpirates.io
+    icon: https://a.storyblok.com/f/143071/512x512/aa1bd68288/rabbitmq-logo.svg
+    keywords:
+    - rabbitmq
+    - message broker
+    - amqp
+    - messaging
+    - queue
+    maintainers:
+    - name: CloudPirates GmbH & Co. KG
+      url: https://www.cloudpirates.io
+    name: rabbitmq
+    sources:
+    - https://github.com/CloudPirates-io/helm-charts/tree/main/charts/rabbitmq
+    type: application
+    urls:
+    - https://github.com/GitGuardian/gitguardian-helm/releases/download/rabbitmq-0.2.13/rabbitmq-0.2.13.tgz
+    version: 0.2.13
   - annotations:
       category: Message Broker
       license: Apache-2.0
@@ -3537,6 +3685,34 @@ entries:
   timescaledb:
   - apiVersion: v2
     appVersion: 2.22.0-pg17
+    created: "2025-10-02T15:50:52.613850771Z"
+    dependencies:
+    - name: common
+      repository: oci://registry-1.docker.io/cloudpirates
+      version: 1.x.x
+    description: TimescaleDB - The Open Source Time-Series Database for PostgreSQL
+    digest: 32c6d69eb1424b00b14db3b53745e1ed7b621574b12d3829f443c1d6c8ae1b40
+    home: https://www.cloudpirates.io
+    icon: https://a.storyblok.com/f/143071/512x512/b2e01452ce/timescaledb-logo.svg
+    keywords:
+    - timescaledb
+    - timeseries
+    - postgresql
+    - database
+    - sql
+    - analytics
+    maintainers:
+    - name: CloudPirates GmbH & Co. KG
+      url: https://www.cloudpirates.io
+    name: timescaledb
+    sources:
+    - https://github.com/CloudPirates-io/helm-charts/tree/main/charts/timescaledb
+    type: application
+    urls:
+    - https://github.com/GitGuardian/gitguardian-helm/releases/download/timescaledb-0.3.0/timescaledb-0.3.0.tgz
+    version: 0.3.0
+  - apiVersion: v2
+    appVersion: 2.22.0-pg17
     created: "2025-09-26T09:55:57.351967583Z"
     dependencies:
     - name: common
@@ -4085,4 +4261,4 @@ entries:
     urls:
     - https://github.com/CloudPirates-io/helm-charts/releases/download/zookeeper-0.1.0/zookeeper-0.1.0.tgz
     version: 0.1.0
-generated: "2025-10-01T15:55:01.755585262Z"
+generated: "2025-10-02T15:50:52.614248824Z"
