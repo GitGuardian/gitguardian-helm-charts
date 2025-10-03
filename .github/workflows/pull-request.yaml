@@ -186,8 +186,9 @@ jobs:
 
             cd $chart_directory
 
-            CHART_VERSION='0.1.0-${{ github.run_number }}'
-            APP_VERSION='unstable-${GITHUB_SHA::7}'
+            SHORT_SHA=$(echo "${{ github.sha }}" | cut -c1-7)
+            CHART_VERSION="0.1.0-${{ github.run_number }}"
+            APP_VERSION="unstable-${SHORT_SHA}"
 
             helm dep update .
             helm lint --strict .
