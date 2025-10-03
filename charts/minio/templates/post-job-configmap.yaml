@@ -1,0 +1,70 @@
+{{- if .Values.defaultBuckets }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "minio.fullname" . }}-post-job
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "minio.labels" . | nindent 4 }}
+  {{- if .Values.commonAnnotations }}
+  annotations:
+    {{- include "minio.annotations" . | nindent 4 }}
+  {{- end }}
+data:
+  provision-buckets.sh: |
+    #!/bin/sh
+    set -e
+
+    echo "Configuring MinIO client..."
+    mc alias set local http://{{ include "minio.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.service.port }} "${MINIO_ROOT_USER}" "${MINIO_ROOT_PASSWORD}"
+
+    echo "Waiting for MinIO to be ready..."
+    until mc ready local; do
+      echo "MinIO is not ready yet. Retrying in 5 seconds..."
+      sleep 5
+    done
+
+    echo "MinIO is ready. Starting bucket provisioning..."
+
+    # Parse bucket list (support comma, semicolon, or space separation)
+    BUCKETS="{{ .Values.defaultBuckets }}"
+    BUCKETS=$(echo "$BUCKETS" | tr ',;' ' ')
+
+    for BUCKET_SPEC in $BUCKETS; do
+      # Trim whitespace
+      BUCKET_SPEC=$(echo "$BUCKET_SPEC" | xargs)
+
+      # Skip empty entries
+      if [ -z "$BUCKET_SPEC" ]; then
+        continue
+      fi
+
+      # Parse bucket name and optional policy (format: bucket-name or bucket-name:policy)
+      BUCKET_NAME=$(echo "$BUCKET_SPEC" | cut -d':' -f1)
+      BUCKET_POLICY=$(echo "$BUCKET_SPEC" | cut -s -d':' -f2)
+
+      echo "Processing bucket: $BUCKET_NAME"
+
+      # Check if bucket exists
+      if mc ls "local/$BUCKET_NAME" > /dev/null 2>&1; then
+        echo "Bucket 'local/$BUCKET_NAME' already exists, skipping creation."
+      else
+        echo "Creating bucket: local/$BUCKET_NAME"
+        {{- if .Values.config.region }}
+        mc mb --region "{{ .Values.config.region }}" "local/$BUCKET_NAME"
+        {{- else }}
+        mc mb "local/$BUCKET_NAME"
+        {{- end }}
+        echo "Bucket 'local/$BUCKET_NAME' created successfully."
+      fi
+
+      # Apply policy if specified
+      if [ -n "$BUCKET_POLICY" ]; then
+        echo "Setting policy '$BUCKET_POLICY' for bucket 'local/$BUCKET_NAME'"
+        mc anonymous set "$BUCKET_POLICY" "local/$BUCKET_NAME"
+        echo "Policy applied successfully."
+      fi
+    done
+
+    echo "Bucket provisioning completed successfully."
+{{- end }}

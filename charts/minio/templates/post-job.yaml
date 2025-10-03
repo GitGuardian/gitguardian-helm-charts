@@ -1,0 +1,55 @@
+{{- if .Values.defaultBuckets }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "minio.fullname" . }}-post-job
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "minio.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-weight": "10"
+    "helm.sh/hook-delete-policy": hook-succeeded,before-hook-creation
+    {{- if .Values.commonAnnotations }}
+    {{- include "minio.annotations" . | nindent 4 }}
+    {{- end }}
+spec:
+  ttlSecondsAfterFinished: 600
+  activeDeadlineSeconds: 180
+  template:
+    metadata:
+      labels:
+        {{- include "minio.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: post-job
+    spec:
+{{- with (include "minio.imagePullSecrets" .) }}
+{{ . | nindent 6 }}
+{{- end }}
+      restartPolicy: OnFailure
+      securityContext: {{ include "common.renderPodSecurityContext" . | nindent 8 }}
+      containers:
+        - name: post-job
+          image: {{ include "minio.image" . }}
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/sh", "/scripts/provision-buckets.sh"]
+          env:
+            - name: MINIO_ROOT_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "minio.secretName" . }}
+                  key: {{ include "minio.rootUser" . }}
+            - name: MINIO_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "minio.secretName" . }}
+                  key: {{ include "minio.rootPasswordKey" . }}
+          volumeMounts:
+            - name: scripts
+              mountPath: /scripts
+          securityContext: {{ include "common.renderContainerSecurityContext" . | nindent 12 }}
+      volumes:
+        - name: scripts
+          configMap:
+            name: {{ include "minio.fullname" . }}-post-job
+            defaultMode: 0755
+{{- end }}
