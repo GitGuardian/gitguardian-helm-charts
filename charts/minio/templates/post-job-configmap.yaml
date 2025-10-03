@@ -15,56 +15,105 @@ data:
     #!/bin/sh
     set -e
 
-    echo "Configuring MinIO client..."
-    mc alias set local http://{{ include "minio.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.service.port }} "${MINIO_ROOT_USER}" "${MINIO_ROOT_PASSWORD}"
+    MINIO_URL="http://{{ include "minio.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.service.port }}"
+    MINIO_STARTUP_TIMEOUT="${MINIO_STARTUP_TIMEOUT:-300}"
 
-    echo "Waiting for MinIO to be ready..."
-    until mc ready local; do
-      echo "MinIO is not ready yet. Retrying in 5 seconds..."
-      sleep 5
-    done
+    echo "=== MinIO Bucket Provisioning ==="
+    echo "Target: $MINIO_URL"
 
-    echo "MinIO is ready. Starting bucket provisioning..."
+    ########################
+    # Check if MinIO is live
+    ########################
+    is_minio_live() {
+        local status_code
+        status_code=$(curl --write-out '%{http_code}' --silent --output /dev/null "${MINIO_URL}/minio/health/live")
+        if [ "$status_code" = "200" ]; then
+            return 0
+        else
+            return 1
+        fi
+    }
 
-    # Parse bucket list (support comma, semicolon, or space separation)
-    BUCKETS="{{ .Values.defaultBuckets }}"
-    BUCKETS=$(echo "$BUCKETS" | tr ',;' ' ')
+    ########################
+    # Wait for MinIO start
+    ########################
+    wait_for_minio() {
+        local waited_time
+        waited_time=0
+        echo "Waiting for MinIO to be ready..."
+        while ! is_minio_live && [ "$waited_time" -lt "$MINIO_STARTUP_TIMEOUT" ]; do
+            echo "MinIO not ready yet, waiting... (${waited_time}s/${MINIO_STARTUP_TIMEOUT}s)"
+            sleep 5
+            waited_time=$((waited_time + 5))
+        done
+        
+        if [ "$waited_time" -ge "$MINIO_STARTUP_TIMEOUT" ]; then
+            echo "Timeout: MinIO not ready after ${MINIO_STARTUP_TIMEOUT}s"
+            return 1
+        fi
+        echo "MinIO is ready!"
+    }
 
-    for BUCKET_SPEC in $BUCKETS; do
-      # Trim whitespace
-      BUCKET_SPEC=$(echo "$BUCKET_SPEC" | xargs)
+    ########################
+    # MinIO client configuration
+    ########################
+    configure_minio_client() {
+        echo "Configuring MinIO client..."
+        mc alias set local "$MINIO_URL" "${MINIO_ROOT_USER}" "${MINIO_ROOT_PASSWORD}"
+        
+        echo "Testing MinIO client connection..."
+        mc ready local
+    }
 
-      # Skip empty entries
-      if [ -z "$BUCKET_SPEC" ]; then
-        continue
-      fi
+    ########################
+    # Create default buckets
+    ########################
+    minio_create_default_buckets() {
+        if [ -n "{{ .Values.defaultBuckets }}" ]; then
+            buckets=$(echo "{{ .Values.defaultBuckets }}" | tr ',;' ' ')
+            echo "Creating default buckets..."
+            
+            for b in $buckets; do
+                bucket_name=$(echo "$b" | cut -d':' -f1)
+                bucket_policy=$(echo "$b" | cut -s -d':' -f2)
+                
+                bucket_name=$(echo "$bucket_name" | xargs)
+                
+                if [ -z "$bucket_name" ]; then
+                    continue
+                fi
+                
+                echo "Processing bucket: $bucket_name"
+                
+                if mc ls "local/$bucket_name" >/dev/null 2>&1; then
+                    echo "Bucket local/$bucket_name already exists, skipping creation."
+                else
+                    echo "Creating bucket: local/$bucket_name"
+                    {{- if .Values.config.region }}
+                    mc mb --region "{{ .Values.config.region }}" "local/$bucket_name"
+                    {{- else }}
+                    mc mb "local/$bucket_name"
+                    {{- end }}
+                    echo "Bucket local/$bucket_name created successfully."
+                fi
+                
+                if [ -n "$bucket_policy" ]; then
+                    echo "Setting policy $bucket_policy for local bucket $bucket_name"
+                    mc anonymous set "$bucket_policy" "local/$bucket_name"
+                fi
+            done
+        fi
+    }
 
-      # Parse bucket name and optional policy (format: bucket-name or bucket-name:policy)
-      BUCKET_NAME=$(echo "$BUCKET_SPEC" | cut -d':' -f1)
-      BUCKET_POLICY=$(echo "$BUCKET_SPEC" | cut -s -d':' -f2)
-
-      echo "Processing bucket: $BUCKET_NAME"
-
-      # Check if bucket exists
-      if mc ls "local/$BUCKET_NAME" > /dev/null 2>&1; then
-        echo "Bucket 'local/$BUCKET_NAME' already exists, skipping creation."
-      else
-        echo "Creating bucket: local/$BUCKET_NAME"
-        {{- if .Values.config.region }}
-        mc mb --region "{{ .Values.config.region }}" "local/$BUCKET_NAME"
-        {{- else }}
-        mc mb "local/$BUCKET_NAME"
-        {{- end }}
-        echo "Bucket 'local/$BUCKET_NAME' created successfully."
-      fi
-
-      # Apply policy if specified
-      if [ -n "$BUCKET_POLICY" ]; then
-        echo "Setting policy '$BUCKET_POLICY' for bucket 'local/$BUCKET_NAME'"
-        mc anonymous set "$BUCKET_POLICY" "local/$BUCKET_NAME"
-        echo "Policy applied successfully."
-      fi
-    done
-
+    ########################
+    # Main execution
+    ########################
+    
+    wait_for_minio
+    
+    configure_minio_client
+    
+    minio_create_default_buckets
+    
     echo "Bucket provisioning completed successfully."
 {{- end }}

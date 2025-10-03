@@ -7,8 +7,6 @@ metadata:
   labels:
     {{- include "minio.labels" . | nindent 4 }}
   annotations:
-    "helm.sh/hook": post-install,post-upgrade
-    "helm.sh/hook-weight": "10"
     "helm.sh/hook-delete-policy": hook-succeeded,before-hook-creation
     {{- if .Values.commonAnnotations }}
     {{- include "minio.annotations" . | nindent 4 }}
@@ -46,7 +44,10 @@ spec:
           volumeMounts:
             - name: scripts
               mountPath: /scripts
-          securityContext: {{ include "common.renderContainerSecurityContext" . | nindent 12 }}
+          securityContext:
+            {{- $securityContext := include "common.renderContainerSecurityContext" . | fromYaml }}
+            {{- $_ := set $securityContext "readOnlyRootFilesystem" false }}
+            {{- toYaml $securityContext | nindent 12 }}
       volumes:
         - name: scripts
           configMap:
