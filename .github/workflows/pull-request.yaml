@@ -195,8 +195,8 @@ jobs:
             helm package . --app-version=${APP_VERSION} --version=${CHART_VERSION}
 
             # Push to GHCR
-            echo "Pushing Helm chart $CHART_NAME-$CHART_VERSION.tgz to oci://ttl.sh/${{ github.event.repository.name }}/helm"
-            if helm push ./$CHART_NAME-$CHART_VERSION.tgz oci://ttl.sh/${{ github.event.repository.name }}/helm; then
+            echo "Pushing Helm chart $CHART_NAME-$CHART_VERSION.tgz to oci://ttl.sh/${{ github.event.repository.name }}"
+            if helm push ./$CHART_NAME-$CHART_VERSION.tgz oci://ttl.sh/${{ github.event.repository.name }}; then
               echo "Successfully released $CHART_NAME-$CHART_VERSION to ttl.sh"
             else
               echo "Failed to push $CHART_NAME-$CHART_VERSION to ttl.sh"
