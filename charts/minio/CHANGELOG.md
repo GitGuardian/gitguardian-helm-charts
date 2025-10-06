@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.4.0 (2025-10-03)
+## 0.4.0 (2025-10-06)
 
 * [minio] add post job to auto create default buckets ([#9](https://github.com/GitGuardian/gitguardian-helm/pull/9))
 
