@@ -1,6 +1,5 @@
 # Changelog
 
-<<<<<<< HEAD
 ## 0.4.0 (2025-10-06)
 
 * [minio] add post job to auto create default buckets ([#9](https://github.com/GitGuardian/gitguardian-helm-charts/pull/9))
@@ -66,4 +65,3 @@
 ## 0.3.0 (2025-10-05)
 
 * [mariadb] use tpl to return existingConfigMap ([#217](https://github.com/CloudPirates-io/helm-charts/pull/217))
->>>>>>> c7c2f4c ([mariadb] use tpl to return existingConfigMap (#217))
