@@ -1,5 +1,6 @@
 # Changelog
 
+<<<<<<< HEAD
 ## 0.4.0 (2025-10-06)
 
 * [minio] add post job to auto create default buckets ([#9](https://github.com/GitGuardian/gitguardian-helm-charts/pull/9))
@@ -61,3 +62,8 @@
 * remove serviceaccounts from all charts ([be8f43a](https://github.com/GitGuardian/gitguardian-helm-charts/commit/be8f43a))
 * update readme, chart.yaml texts and descriptions ([0179046](https://github.com/GitGuardian/gitguardian-helm-charts/commit/0179046))
 * Use lookup function for password where applicable ([dfb9a0e](https://github.com/GitGuardian/gitguardian-helm-charts/commit/dfb9a0e))
+=======
+## 0.3.0 (2025-10-05)
+
+* [mariadb] use tpl to return existingConfigMap ([#217](https://github.com/CloudPirates-io/helm-charts/pull/217))
+>>>>>>> c7c2f4c ([mariadb] use tpl to return existingConfigMap (#217))
