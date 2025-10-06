@@ -38,6 +38,22 @@ podAnnotations: {}
 ## @param podLabels Map of labels to add to the pods
 podLabels: {}
 
+## @section extra volumes and volumes mount
+## @param extraVolumes Optionally specify extra list of additional volumes for Keycloak pod
+extraVolumes: []
+## @param extraVolumeMounts Optionally specify extra list of additional volumeMounts for Keycloak container
+extraVolumeMounts: []
+
+## @section Extra init containers for Keycloak pod
+## @param Optionnaly specify an extra list of initContainer for the Keycloak pod
+## Example:
+## initContainers:
+##   - name: <container-name>
+##     image: <your-image>
+##     imagePullPolicy: Always
+##
+extraInitContainers: []
+
 ## @section Security Context
 podSecurityContext:
   ## @param podSecurityContext.fsGroup Group ID for the volumes of the pod
@@ -92,6 +108,8 @@ keycloak:
   proxyTrustedAddresses: ""
   ## @param keycloak.production Enable production mode
   production: false
+  ## @param keycloak.httpRelativePath Set relative path for serving resources; must start with a /
+  httpRelativePath: ""
 
 ## @section Database Configuration
 database:
@@ -290,7 +308,7 @@ initContainers:
     image: "postgres:17.6@sha256:e6a4209d1a4893f2df3bdcde58f8926c3c929c4d51df90990ed1b36d83c1382a"
   ## @param initContainers.waitForMariadb.image MariaDB init container image for waiting
   waitForMariadb:
-    image: "mariadb:12.0.2@sha256:8a061ef9813cf960f94a262930a32b190c3fbe5c8d3ab58456ef1df4b90fd5dc"
+    image: "mariadb:12.0.2@sha256:03a03a6817bb9eaa21e5aed1b734d432ec3f80021f5a2de1795475f158217545"
 
 ## @section PostgreSQL Configuration (when postgres.enabled=true)
 ## @descriptionStart
