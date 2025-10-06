@@ -183,6 +183,11 @@
         }
       }
     },
+    "defaultBuckets": {
+      "type": "string",
+      "title": "Default Buckets",
+      "description": "Comma, semi-colon or space separated list of buckets to create at initialization"
+    },
     "replicaCount": {
       "type": "integer",
       "title": "Replica Count",
