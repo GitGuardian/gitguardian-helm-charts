@@ -110,7 +110,7 @@ data:
     
     # Shared Libraries
     {{- if .Values.config.postgresqlSharedPreloadLibraries }}
-    shared_preload_libraries = {{ .Values.config.postgresqlSharedPreloadLibraries | quote }}
+    shared_preload_libraries = {{ .Values.config.postgresqlSharedPreloadLibraries | squote }}
     {{- end }}
     
     # Locale and Formatting
