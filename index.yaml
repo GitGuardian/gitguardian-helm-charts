@@ -246,6 +246,44 @@ entries:
   keycloak:
   - apiVersion: v2
     appVersion: 26.3.4
+    created: "2025-10-08T08:10:51.300317575Z"
+    dependencies:
+    - name: common
+      repository: oci://registry-1.docker.io/cloudpirates
+      version: 1.x.x
+    - condition: postgres.enabled
+      name: postgres
+      repository: oci://registry-1.docker.io/cloudpirates
+      version: 0.x.x
+    - condition: mariadb.enabled
+      name: mariadb
+      repository: oci://registry-1.docker.io/cloudpirates
+      version: 0.x.x
+    description: Open Source Identity and Access Management Solution
+    digest: 901f9260f08fe04548d496d1e925d711fe8d6d96b19dd778ae704800f7446f83
+    home: https://www.cloudpirates.io
+    icon: https://a.storyblok.com/f/143071/512x512/6a85e594b2/keycloak-logo.svg
+    keywords:
+    - keycloak
+    - identity
+    - access-management
+    - authentication
+    - authorization
+    - oauth
+    - openid-connect
+    - saml
+    maintainers:
+    - name: CloudPirates GmbH & Co. KG
+      url: https://www.cloudpirates.io
+    name: keycloak
+    sources:
+    - https://github.com/CloudPirates-io/helm-charts/tree/main/charts/keycloak
+    type: application
+    urls:
+    - https://github.com/GitGuardian/gitguardian-helm-charts/releases/download/keycloak-0.3.0/keycloak-0.3.0.tgz
+    version: 0.3.0
+  - apiVersion: v2
+    appVersion: 26.3.4
     created: "2025-10-07T10:59:46.290525268Z"
     dependencies:
     - name: common
@@ -1748,6 +1786,34 @@ entries:
     - https://github.com/CloudPirates-io/helm-charts/releases/download/mongodb-0.1.5/mongodb-0.1.5.tgz
     version: 0.1.5
   nginx:
+  - apiVersion: v2
+    appVersion: 1.29.1
+    created: "2025-10-08T08:10:51.524959018Z"
+    dependencies:
+    - name: common
+      repository: oci://registry-1.docker.io/cloudpirates
+      version: 1.x.x
+    description: Nginx is a high-performance HTTP server and reverse proxy.
+    digest: ad8edbc95ecbd3ead5a1b63dad6ec986638f4e18d1af9c45f3a33a5293352365
+    home: https://www.cloudpirates.io
+    icon: https://a.storyblok.com/f/143071/512x512/9fcd98c061/nginx-logo.svg
+    keywords:
+    - nginx
+    - web server
+    - http
+    - reverse proxy
+    - load balancer
+    - proxy
+    maintainers:
+    - name: CloudPirates GmbH & Co. KG
+      url: https://www.cloudpirates.io
+    name: nginx
+    sources:
+    - https://github.com/CloudPirates-io/helm-charts/tree/main/charts/nginx
+    type: application
+    urls:
+    - https://github.com/GitGuardian/gitguardian-helm-charts/releases/download/nginx-0.1.12/nginx-0.1.12.tgz
+    version: 0.1.12
   - apiVersion: v2
     appVersion: 1.29.1
     created: "2025-10-01T15:55:01.598879285Z"
@@ -3399,6 +3465,38 @@ entries:
       license: Apache-2.0
     apiVersion: v2
     appVersion: 8.2.1
+    created: "2025-10-08T08:10:51.817175876Z"
+    dependencies:
+    - name: common
+      repository: oci://registry-1.docker.io/cloudpirates
+      version: 1.x.x
+    description: An open source, in-memory data structure store used as a database,
+      cache, and message broker.
+    digest: d35540733e3d214f5ace9306889926abeb1c4e29bfba1c8d23ecf4c0b97b0e0d
+    home: https://www.cloudpirates.io
+    icon: https://a.storyblok.com/f/143071/512x512/32c74816d1/redis-logo.svg
+    keywords:
+    - redis
+    - database
+    - cache
+    - in-memory
+    - key-value
+    - nosql
+    maintainers:
+    - name: CloudPirates GmbH & Co. KG
+      url: https://www.cloudpirates.io
+    name: redis
+    sources:
+    - https://github.com/CloudPirates-io/helm-charts/tree/main/charts/redis
+    type: application
+    urls:
+    - https://github.com/GitGuardian/gitguardian-helm-charts/releases/download/redis-0.5.4/redis-0.5.4.tgz
+    version: 0.5.4
+  - annotations:
+      category: Database
+      license: Apache-2.0
+    apiVersion: v2
+    appVersion: 8.2.1
     created: "2025-10-07T07:43:08.992906228Z"
     dependencies:
     - name: common
@@ -4647,4 +4745,4 @@ entries:
     urls:
     - https://github.com/CloudPirates-io/helm-charts/releases/download/zookeeper-0.1.0/zookeeper-0.1.0.tgz
     version: 0.1.0
-generated: "2025-10-07T13:12:35.706570916Z"
+generated: "2025-10-08T08:10:51.81782983Z"
