@@ -1,3 +1,12 @@
+# GitGuardian Helm charts forked repository
+## Contribute
+
+When improving our charts, it is necessary to contribute upstream on `Cloudpirates.io`.
+
+1. Execute `./contrib.sh <new-branch>` script to start new contribution
+2. Cherry-pick your changes
+3. Create a new PR on upstream main branch
+
 <p align="center">
     <a href="https://artifacthub.io/packages/search?org=cloudpirates">
       <img src="https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/cloudpirates" />
