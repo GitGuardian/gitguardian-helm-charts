@@ -779,6 +779,34 @@ entries:
   mariadb:
   - apiVersion: v2
     appVersion: 12.0.2
+    created: "2025-10-09T09:23:08.156119126Z"
+    dependencies:
+    - name: common
+      repository: oci://registry-1.docker.io/cloudpirates
+      version: 1.x.x
+    description: MariaDB is a high-performance, open-source relational database server
+      that is a drop-in replacement for MySQL
+    digest: 3014ade13c3c239749d60a80dfcf3bba434bcd6a5b14280aaca1e9d029e37324
+    home: https://www.cloudpirates.io
+    icon: https://a.storyblok.com/f/143071/512x512/6512dd22ee/mariadb-logo.svg
+    keywords:
+    - mariadb
+    - mysql
+    - database
+    - sql
+    - relational
+    maintainers:
+    - name: CloudPirates GmbH & Co. KG
+      url: https://www.cloudpirates.io
+    name: mariadb
+    sources:
+    - https://github.com/CloudPirates-io/helm-charts/tree/main/charts/mariadb
+    type: application
+    urls:
+    - https://github.com/GitGuardian/gitguardian-helm-charts/releases/download/mariadb-0.3.4/mariadb-0.3.4.tgz
+    version: 0.3.4
+  - apiVersion: v2
+    appVersion: 12.0.2
     created: "2025-10-08T15:53:12.945901982Z"
     dependencies:
     - name: common
@@ -2261,6 +2289,33 @@ entries:
   postgres:
   - apiVersion: v2
     appVersion: "18.0"
+    created: "2025-10-09T09:23:08.361159176Z"
+    dependencies:
+    - name: common
+      repository: oci://registry-1.docker.io/cloudpirates
+      version: 1.x.x
+    description: The World's Most Advanced Open Source Relational Database
+    digest: 221098dafbdbb7a7dd4c2d5d45747dbb2e10ed98bdc84f57ff2bac616a6d2179
+    home: https://www.cloudpirates.io
+    icon: https://a.storyblok.com/f/143071/512x512/95e7f13e62/postgres-logo.svg
+    keywords:
+    - postgres
+    - postgresql
+    - database
+    - sql
+    - relational
+    maintainers:
+    - name: CloudPirates GmbH & Co. KG
+      url: https://www.cloudpirates.io
+    name: postgres
+    sources:
+    - https://github.com/CloudPirates-io/helm-charts/tree/main/charts/postgres
+    type: application
+    urls:
+    - https://github.com/GitGuardian/gitguardian-helm-charts/releases/download/postgres-0.8.1/postgres-0.8.1.tgz
+    version: 0.8.1
+  - apiVersion: v2
+    appVersion: "18.0"
     created: "2025-10-07T13:12:35.706300347Z"
     dependencies:
     - name: common
@@ -2854,6 +2909,37 @@ entries:
     - https://github.com/CloudPirates-io/helm-charts/releases/download/postgres-0.2.0/postgres-0.2.0.tgz
     version: 0.2.0
   rabbitmq:
+  - annotations:
+      category: Message Broker
+      license: Apache-2.0
+    apiVersion: v2
+    appVersion: 4.1.4
+    created: "2025-10-09T09:23:08.546521886Z"
+    dependencies:
+    - name: common
+      repository: oci://registry-1.docker.io/cloudpirates
+      version: 1.x.x
+    description: A messaging broker that implements the Advanced Message Queuing Protocol
+      (AMQP)
+    digest: c4ff64fe439a609adb5271d4dea143b221140ecf2ac53faab279e36d538bab7a
+    home: https://www.cloudpirates.io
+    icon: https://a.storyblok.com/f/143071/512x512/aa1bd68288/rabbitmq-logo.svg
+    keywords:
+    - rabbitmq
+    - message broker
+    - amqp
+    - messaging
+    - queue
+    maintainers:
+    - name: CloudPirates GmbH & Co. KG
+      url: https://www.cloudpirates.io
+    name: rabbitmq
+    sources:
+    - https://github.com/CloudPirates-io/helm-charts/tree/main/charts/rabbitmq
+    type: application
+    urls:
+    - https://github.com/GitGuardian/gitguardian-helm-charts/releases/download/rabbitmq-0.3.2/rabbitmq-0.3.2.tgz
+    version: 0.3.2
   - annotations:
       category: Message Broker
       license: Apache-2.0
@@ -4885,4 +4971,4 @@ entries:
     urls:
     - https://github.com/CloudPirates-io/helm-charts/releases/download/zookeeper-0.1.0/zookeeper-0.1.0.tgz
     version: 0.1.0
-generated: "2025-10-08T16:16:19.101335208Z"
+generated: "2025-10-09T09:23:08.547029106Z"
