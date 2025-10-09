@@ -1,8 +1,16 @@
 # Changelog
 
+## 0.8.1 (2025-10-09)
+
+* Sync upstream 09 oct ([#17](https://github.com/GitGuardian/gitguardian-helm-charts/pull/17))
+
 ## 0.8.0 (2025-10-07)
 
-* feat(pgsql): merged initscript to avoid mount error, fixed quote from… ([#13](https://github.com/GitGuardian/gitguardian-helm-charts/pull/13))
+* feat(pgsql): merged initscript to avoid mount error, fixed quote from… (#13) ([d1f2cc6](https://github.com/GitGuardian/gitguardian-helm-charts/commit/d1f2cc6)), closes [#13](https://github.com/GitGuardian/gitguardian-helm-charts/issues/13)
+*  [minio, mongodb, postgres, timescaledb] Update securityContext to containerSecurityContext in the v ([45499b9](https://github.com/GitGuardian/gitguardian-helm-charts/commit/45499b9)), closes [#213](https://github.com/GitGuardian/gitguardian-helm-charts/issues/213)
+* [mariadb] use tpl to return existingConfigMap (#217) ([175e223](https://github.com/GitGuardian/gitguardian-helm-charts/commit/175e223)), closes [#217](https://github.com/GitGuardian/gitguardian-helm-charts/issues/217)
+* chore(deps): update docker.io/postgres:18.0 Docker digest to 073e7c8 (#172) ([f4b12f4](https://github.com/GitGuardian/gitguardian-helm-charts/commit/f4b12f4)), closes [#172](https://github.com/GitGuardian/gitguardian-helm-charts/issues/172)
+* implement support for existingClaim (#212) ([805d3f8](https://github.com/GitGuardian/gitguardian-helm-charts/commit/805d3f8)), closes [#212](https://github.com/GitGuardian/gitguardian-helm-charts/issues/212)
 
 ## 0.7.0 (2025-09-30)
 
