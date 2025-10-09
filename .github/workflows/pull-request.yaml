@@ -169,9 +169,11 @@ jobs:
           if [[ -n "$changed" ]]; then
             echo "Changed charts:"
             echo "$changed"
-            echo "changed=$changed" >> $GITHUB_OUTPUT
+            changed_comma=$(echo "$changed" | tr '\n' ',' | sed 's/,$//')
+            echo "changed=$changed_comma" >> $GITHUB_OUTPUT
           else
             echo "No chart changes detected"
+            echo "changed=" >> $GITHUB_OUTPUT
           fi
 
       - name: Publish Helm chart to ttl
@@ -179,30 +181,33 @@ jobs:
         if: ${{ steps.list-changed.outputs.changed }}
         run: |
           CHANGED_CHARTS="${{ steps.list-changed.outputs.changed }}"
-
+          
           RELEASED_CHARTS=""
           for chart_directory in ${CHANGED_CHARTS//,/ }; do
             CHART_NAME=${chart_directory#charts/}
-
+            
             cd $chart_directory
-
+            
             SHORT_SHA=$(echo "${{ github.sha }}" | cut -c1-7)
             CHART_VERSION="0.1.0-${{ github.run_number }}"
             APP_VERSION="unstable-${SHORT_SHA}"
-
+            
             helm dep update .
             helm lint --strict .
             helm package . --app-version=${APP_VERSION} --version=${CHART_VERSION}
-
+            
             # Push to GHCR
             echo "Pushing Helm chart $CHART_NAME-$CHART_VERSION.tgz to oci://ttl.sh/${{ github.event.repository.name }}"
             if helm push ./$CHART_NAME-$CHART_VERSION.tgz oci://ttl.sh/${{ github.event.repository.name }}; then
               echo "Successfully released $CHART_NAME-$CHART_VERSION to ttl.sh"
+              RELEASED_CHARTS="$RELEASED_CHARTS,$CHART_NAME-$CHART_VERSION"
             else
               echo "Failed to push $CHART_NAME-$CHART_VERSION to ttl.sh"
               exit 1
             fi
-
+            
             cd ${{ github.workspace }}
           done
+          
+          RELEASED_CHARTS=${RELEASED_CHARTS#,}
           echo "released_charts=$RELEASED_CHARTS" >> "$GITHUB_OUTPUT"
