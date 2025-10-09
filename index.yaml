@@ -3126,6 +3126,37 @@ entries:
       license: Apache-2.0
     apiVersion: v2
     appVersion: 4.1.4
+    created: "2025-10-09T16:03:46.316563006Z"
+    dependencies:
+    - name: common
+      repository: oci://registry-1.docker.io/cloudpirates
+      version: 1.x.x
+    description: A messaging broker that implements the Advanced Message Queuing Protocol
+      (AMQP)
+    digest: 2d8baf5d544bb8b6626f0ec495558d5a75ba6a297640f67c7703b70cdf42d25b
+    home: https://www.cloudpirates.io
+    icon: https://a.storyblok.com/f/143071/512x512/aa1bd68288/rabbitmq-logo.svg
+    keywords:
+    - rabbitmq
+    - message broker
+    - amqp
+    - messaging
+    - queue
+    maintainers:
+    - name: CloudPirates GmbH & Co. KG
+      url: https://www.cloudpirates.io
+    name: rabbitmq
+    sources:
+    - https://github.com/CloudPirates-io/helm-charts/tree/main/charts/rabbitmq
+    type: application
+    urls:
+    - https://github.com/GitGuardian/gitguardian-helm-charts/releases/download/rabbitmq-0.3.4/rabbitmq-0.3.4.tgz
+    version: 0.3.4
+  - annotations:
+      category: Message Broker
+      license: Apache-2.0
+    apiVersion: v2
+    appVersion: 4.1.4
     created: "2025-10-09T14:05:10.21226352Z"
     dependencies:
     - name: common
@@ -3897,6 +3928,38 @@ entries:
     - https://github.com/CloudPirates-io/helm-charts/releases/download/rabbitmq-0.0.2/rabbitmq-0.0.2.tgz
     version: 0.0.2
   redis:
+  - annotations:
+      category: Database
+      license: Apache-2.0
+    apiVersion: v2
+    appVersion: 8.2.1
+    created: "2025-10-09T16:03:46.629795463Z"
+    dependencies:
+    - name: common
+      repository: oci://registry-1.docker.io/cloudpirates
+      version: 1.x.x
+    description: An open source, in-memory data structure store used as a database,
+      cache, and message broker.
+    digest: 304dc26011ed1c86093d9641cfeb36433120d0e2ef2037e2fa2d62280ba97893
+    home: https://www.cloudpirates.io
+    icon: https://a.storyblok.com/f/143071/512x512/32c74816d1/redis-logo.svg
+    keywords:
+    - redis
+    - database
+    - cache
+    - in-memory
+    - key-value
+    - nosql
+    maintainers:
+    - name: CloudPirates GmbH & Co. KG
+      url: https://www.cloudpirates.io
+    name: redis
+    sources:
+    - https://github.com/CloudPirates-io/helm-charts/tree/main/charts/redis
+    type: application
+    urls:
+    - https://github.com/GitGuardian/gitguardian-helm-charts/releases/download/redis-0.6.1/redis-0.6.1.tgz
+    version: 0.6.1
   - annotations:
       category: Database
       license: Apache-2.0
@@ -5374,4 +5437,4 @@ entries:
     urls:
     - https://github.com/CloudPirates-io/helm-charts/releases/download/zookeeper-0.1.0/zookeeper-0.1.0.tgz
     version: 0.1.0
-generated: "2025-10-09T14:05:11.277386555Z"
+generated: "2025-10-09T16:03:46.630248085Z"
