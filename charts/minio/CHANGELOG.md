@@ -1,5 +1,6 @@
 # Changelog
 
+<<<<<<< HEAD
 ## 0.5.0 (2025-10-08)
 
 * feat(minio): add serviceAccount to MinIO deployment ([#14](https://github.com/GitGuardian/gitguardian-helm-charts/pull/14))
@@ -61,3 +62,8 @@
 * remove serviceaccounts from all charts ([be8f43a](https://github.com/GitGuardian/gitguardian-helm-charts/commit/be8f43a))
 * update readme, chart.yaml texts and descriptions ([0179046](https://github.com/GitGuardian/gitguardian-helm-charts/commit/0179046))
 * Use lookup function for password where applicable ([dfb9a0e](https://github.com/GitGuardian/gitguardian-helm-charts/commit/dfb9a0e))
+=======
+## 0.4.0 (2025-10-09)
+
+* [mongodb] fix: newline between mongo labels and additional labels ([#301](https://github.com/CloudPirates-io/helm-charts/pull/301))
+>>>>>>> 36ca7c7

@@ -1,5 +1,6 @@
 # Changelog
 
+<<<<<<< HEAD
 ## 0.8.0 (2025-10-07)
 
 * feat(pgsql): merged initscript to avoid mount error, fixed quote from… ([#13](https://github.com/GitGuardian/gitguardian-helm-charts/pull/13))
@@ -88,3 +89,8 @@
 * update readme, chart.yaml texts and descriptions ([0179046](https://github.com/GitGuardian/gitguardian-helm-charts/commit/0179046))
 * Use existing secret ([024bd0f](https://github.com/GitGuardian/gitguardian-helm-charts/commit/024bd0f))
 * fix: chart icon urls ([cc38c0d](https://github.com/GitGuardian/gitguardian-helm-charts/commit/cc38c0d))
+=======
+## 0.8.0 (2025-10-09)
+
+* [mongodb] fix: newline between mongo labels and additional labels ([#301](https://github.com/CloudPirates-io/helm-charts/pull/301))
+>>>>>>> 36ca7c7
