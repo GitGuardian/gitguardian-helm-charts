@@ -42,8 +42,8 @@ annotations:
     - name: Maintainer CloudPirates
       url: https://www.cloudpirates.io
   artifacthub.io/changes: |2
-        - kind: changed
-          description: "Update charts/postgres/values.yaml postgres (#541)"
+        - kind: added
+          description: "[postgres] Fix logic in init-scripts ConfigMap"
           links:
-            - name: "Commit a94dd22"
-              url: "https://github.com/CloudPirates-io/helm-charts/commit/a94dd22"
+            - name: "PR #551"
+              url: "https://github.com/CloudPirates-io/helm-charts/pull/551"
