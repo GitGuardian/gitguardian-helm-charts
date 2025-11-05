@@ -41,8 +41,8 @@ annotations:
     - name: Maintainer CloudPirates
       url: https://www.cloudpirates.io
   artifacthub.io/changes: |2
-        - kind: added
-          description: "chore: auto-generate values.schema.json"
+        - kind: changed
+          description: "extraInitContainers (#548)"
           links:
-            - name: "PR #549"
-              url: "https://github.com/CloudPirates-io/helm-charts/pull/549"
+            - name: "Commit 686e3e0"
+              url: "https://github.com/CloudPirates-io/helm-charts/commit/686e3e0"
