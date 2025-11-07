@@ -42,8 +42,8 @@ annotations:
     - name: Maintainer CloudPirates
       url: https://www.cloudpirates.io
   artifacthub.io/changes: |2
-        - kind: added
-          description: "chore: auto-generate values.schema.json"
+        - kind: changed
+          description: "Config for NodePort port (#561)"
           links:
-            - name: "PR #562"
-              url: "https://github.com/CloudPirates-io/helm-charts/pull/562"
+            - name: "Commit bae2da0"
+              url: "https://github.com/CloudPirates-io/helm-charts/commit/bae2da0"
