@@ -41,8 +41,8 @@ annotations:
     - name: Maintainer CloudPirates
       url: https://www.cloudpirates.io
   artifacthub.io/changes: |2
-        - kind: added
-          description: "chore: auto-generate values.schema.json"
+        - kind: changed
+          description: "[redis]: Headless Service annotations"
           links:
-            - name: "PR #570"
-              url: "https://github.com/CloudPirates-io/helm-charts/pull/570"
+            - name: "Commit 10daf47"
+              url: "https://github.com/CloudPirates-io/helm-charts/commit/10daf47"
