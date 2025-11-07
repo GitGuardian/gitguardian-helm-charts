@@ -42,8 +42,8 @@ annotations:
     - name: Maintainer CloudPirates
       url: https://www.cloudpirates.io
   artifacthub.io/changes: |2
-        - kind: changed
-          description: "[valkey]: Support TLS"
+        - kind: added
+          description: "chore: auto-generate values.schema.json"
           links:
-            - name: "Commit 3b0b609"
-              url: "https://github.com/CloudPirates-io/helm-charts/commit/3b0b609"
+            - name: "PR #567"
+              url: "https://github.com/CloudPirates-io/helm-charts/pull/567"
