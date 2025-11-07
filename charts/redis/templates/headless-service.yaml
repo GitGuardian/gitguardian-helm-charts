@@ -5,9 +5,14 @@ metadata:
   namespace: {{ include "cloudpirates.namespace" . }}
   labels:
     {{- include "redis.labels" . | nindent 4 }}
-  {{- with (include "redis.annotations" .) }}
-  annotations: 
-{{- . | indent 4 }}
+  {{- if or (include "redis.annotations" .) .Values.service.headless.annotations }}
+  annotations:
+    {{- with (include "redis.annotations" .) }}
+    {{- . | nindent 4 }}
+    {{- end }}
+    {{- with .Values.service.headless.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
   {{- end }}
 spec:
   type: ClusterIP

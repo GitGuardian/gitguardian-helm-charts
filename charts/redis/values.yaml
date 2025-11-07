@@ -72,6 +72,9 @@ service:
   port: 6379
   ## @param service.clusterPort Redis cluster port. Applicable only if architecture=cluster
   clusterPort: 16379
+  headless:
+    ## @param service.headless.annotations Additional custom annotations for Redis headless service
+    annotations: {}
 
 auth:
   ## @param auth.enabled Enable Redis authentication
