@@ -43,7 +43,7 @@ annotations:
       url: https://www.cloudpirates.io
   artifacthub.io/changes: |2
         - kind: changed
-          description: "[oliver006/redis_exporter] Update charts/valkey/values.yaml oliver006/redis_exporter to v1.80.0 (minor) (#531)"
+          description: "[valkey]: fix broken statement"
           links:
-            - name: "Commit 57d1caf"
-              url: "https://github.com/CloudPirates-io/helm-charts/commit/57d1caf"
+            - name: "Commit 49a9fe9"
+              url: "https://github.com/CloudPirates-io/helm-charts/commit/49a9fe9"
