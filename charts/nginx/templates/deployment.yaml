@@ -20,6 +20,9 @@ spec:
     metadata:
       labels:
         {{- include "nginx.selectorLabels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
       {{- if or .Values.serverConfig .Values.streamServerConfig (include "nginx.annotations" .) }}
       annotations:
         {{- with (include "nginx.annotations" .) }}
