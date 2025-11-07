@@ -41,8 +41,8 @@ annotations:
     - name: Maintainer CloudPirates
       url: https://www.cloudpirates.io
   artifacthub.io/changes: |2
-        - kind: changed
-          description: "Update charts/redis/values.yaml redis (#547)"
+        - kind: added
+          description: "chore: auto-generate values.schema.json"
           links:
-            - name: "Commit f0ba3c6"
-              url: "https://github.com/CloudPirates-io/helm-charts/commit/f0ba3c6"
+            - name: "PR #570"
+              url: "https://github.com/CloudPirates-io/helm-charts/pull/570"
