@@ -57,6 +57,27 @@ $ helm uninstall my-rabbitmq
 
 The command removes all the Kubernetes components associated with the chart and deletes the release.
 
+> **Important:** By default, PersistentVolumeClaims (PVCs) are **NOT** deleted when you uninstall the chart. This is intentional to prevent accidental data loss. If you reinstall the chart with different passwords or Erlang cookies, you may encounter authentication issues because the old data persists.
+
+### Cleaning up PersistentVolumeClaims
+
+To manually delete the PVCs after uninstalling:
+
+```bash
+$ kubectl delete pvc -l app.kubernetes.io/instance=my-rabbitmq
+```
+
+Alternatively, you can enable automatic PVC deletion by configuring the `persistentVolumeClaimRetentionPolicy` before installation:
+
+```yaml
+persistentVolumeClaimRetentionPolicy:
+  enabled: true
+  whenDeleted: Delete  # Automatically delete PVCs when StatefulSet is deleted
+  whenScaled: Delete   # Automatically delete PVCs when scaling down
+```
+
+See the [Persistent Volume Claim Retention Policy](#persistent-volume-claim-retention-policy) section for more details.
+
 ## Security & Signature Verification
 
 This Helm chart is cryptographically signed with Cosign to ensure authenticity and prevent tampering.
@@ -169,13 +190,13 @@ The following table lists the configurable parameters of the RabbitMQ chart and 
 
 ### RabbitMQ configuration
 
-| Parameter                            | Description                                                 | Default      |
-| ------------------------------------ | ----------------------------------------------------------- | ------------ |
-| `config.memoryHighWatermark.enabled` | Enable configuring Memory high watermark on RabbitMQ        | `false`      |
-| `config.memoryHighWatermark.type`    | Memory high watermark type. Either `absolute` or `relative` | `"relative"` |
-| `config.memoryHighWatermark.value`   | Memory high watermark value                                 | `0.4`        |
-| `config.extraConfiguration`          | Additional RabbitMQ configuration                           | `""`         |
-| `config.advancedConfiguration`       | Advanced RabbitMQ configuration                             | `""`         |
+| Parameter                            | Description                                                                                                                                                          | Default      |
+| ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| `config.memoryHighWatermark.enabled` | Enable configuring Memory high watermark on RabbitMQ                                                                                                                 | `false`      |
+| `config.memoryHighWatermark.type`    | Memory high watermark type. Either `absolute` or `relative`                                                                                                          | `"relative"` |
+| `config.memoryHighWatermark.value`   | Memory high watermark value. For relative: use number (e.g., `0.4` for 40%). For absolute: use string to avoid scientific notation (e.g., `"8GB"`, `"8590000000"`) | `0.4`        |
+| `config.extraConfiguration`          | Additional RabbitMQ configuration                                                                                                                                    | `""`         |
+| `config.advancedConfiguration`       | Advanced RabbitMQ configuration                                                                                                                                      | `""`         |
 
 ### PeerDiscoveryK8sPlugin configuration
 

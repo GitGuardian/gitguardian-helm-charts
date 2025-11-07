@@ -87,7 +87,14 @@ config:
     ## @param memoryHighWatermark.value Memory high watermark value
     ## The default value of 0.4 stands for 40% of available RAM
     ## Note: the memory relative limit is applied to the resourcesPreset memory limit or the resource.limits.memory to calculate the memory threshold
-    ## You can also use an absolute value, e.g.: 256Mi
+    ## For absolute values, you can use:
+    ##   - Human-readable units as strings: "8GB", "256MiB", "1024MB" (recommended)
+    ##   - Large numbers as strings: "8590000000" (to avoid YAML scientific notation like 8e+9)
+    ##   - Small numbers as integers: 256000000 (only if < 1 million to avoid scientific notation)
+    ## Examples:
+    ##   value: 0.4              # relative: 40% of available RAM
+    ##   value: "8GB"            # absolute: 8 gigabytes
+    ##   value: "8590000000"     # absolute: 8590000000 bytes (use string for large numbers)
     ##
     value: 0.4
   ## Logging configuration
