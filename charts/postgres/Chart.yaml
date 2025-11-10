@@ -42,8 +42,8 @@ annotations:
     - name: Maintainer CloudPirates
       url: https://www.cloudpirates.io
   artifacthub.io/changes: |2
-        - kind: changed
-          description: "Config for NodePort port (#561)"
+        - kind: added
+          description: "[postgres] fix: allow not to mount config"
           links:
-            - name: "Commit bae2da0"
-              url: "https://github.com/CloudPirates-io/helm-charts/commit/bae2da0"
+            - name: "PR #573"
+              url: "https://github.com/CloudPirates-io/helm-charts/pull/573"
