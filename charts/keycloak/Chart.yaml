@@ -3,7 +3,7 @@ name: keycloak
 description: Open Source Identity and Access Management Solution
 type: application
 version: 0.8.4
-appVersion: "26.4.2"
+appVersion: "26.4.4"
 keywords:
   - keycloak
   - identity
@@ -51,8 +51,8 @@ annotations:
     - name: Maintainer CloudPirates
       url: https://www.cloudpirates.io
   artifacthub.io/changes: |2
-        - kind: changed
-          description: "add truststoreExistingSecretKey, add truststorePassword to env-Vars (#574)"
+        - kind: added
+          description: "[keycloak/keycloak] Update charts/keycloak/values.yaml keycloak/keycloak to v26.4.4 (patch)"
           links:
-            - name: "Commit 9c97080"
-              url: "https://github.com/CloudPirates-io/helm-charts/commit/9c97080"
+            - name: "PR #563"
+              url: "https://github.com/CloudPirates-io/helm-charts/pull/563"
