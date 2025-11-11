@@ -42,8 +42,8 @@ annotations:
     - name: Maintainer CloudPirates
       url: https://www.cloudpirates.io
   artifacthub.io/changes: |2
-        - kind: changed
-          description: "fix: allow not to mount config (#573)"
+        - kind: added
+          description: "chore: auto-generate values.schema.json"
           links:
-            - name: "Commit 5dac551"
-              url: "https://github.com/CloudPirates-io/helm-charts/commit/5dac551"
+            - name: "PR #575"
+              url: "https://github.com/CloudPirates-io/helm-charts/pull/575"
