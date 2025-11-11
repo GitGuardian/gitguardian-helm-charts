@@ -87,6 +87,7 @@ jobs:
             CHANGED_CHARTS="${{ steps.chart-releaser.outputs.changed_charts }}"
           fi
 
+
           if [ -z "$CHANGED_CHARTS" ]; then
             echo "No charts to release."
             exit 0
