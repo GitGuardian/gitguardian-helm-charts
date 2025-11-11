@@ -60,6 +60,24 @@ jobs:
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
 
+      - name: Package manually specified chart
+        if: ${{ github.event.inputs.chart != '' }}
+        run: |
+          set -euo pipefail
+          CHART_DIR="${{ github.event.inputs.chart }}"
+
+          if [ ! -d "$CHART_DIR" ]; then
+            echo "ERROR: Chart directory $CHART_DIR does not exist"
+            exit 1
+          fi
+
+          echo "Packaging chart from $CHART_DIR..."
+          mkdir -p .cr-release-packages
+          helm package "$CHART_DIR" --destination .cr-release-packages
+
+          echo "Packaged charts:"
+          ls -lh .cr-release-packages/
+
       - name: Install cosign
         uses: sigstore/cosign-installer@v3.10.0
         if: ${{ steps.chart-releaser.outputs.changed_charts || github.event.inputs.chart != '' }}
