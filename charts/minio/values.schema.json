@@ -188,6 +188,121 @@
       "title": "Default Buckets",
       "description": "Comma, semi-colon or space separated list of buckets to create at initialization"
     },
+    "bucketInitJob": {
+      "type": "object",
+      "title": "Bucket Initialization Job Configuration",
+      "description": "Configuration for the bucket initialization job",
+      "properties": {
+        "ttlSecondsAfterFinished": {
+          "type": "integer",
+          "title": "TTL Seconds After Finished",
+          "description": "Seconds after which the job is automatically deleted after completion (success or failure)",
+          "minimum": 0,
+          "default": 300
+        },
+        "activeDeadlineSeconds": {
+          "type": "integer",
+          "title": "Active Deadline Seconds",
+          "description": "Maximum duration in seconds for the job execution before it is terminated",
+          "minimum": 1,
+          "default": 300
+        },
+        "completions": {
+          "type": "integer",
+          "title": "Completions",
+          "description": "Number of successful completions required for the job",
+          "minimum": 1,
+          "default": 1
+        },
+        "parallelism": {
+          "type": "integer",
+          "title": "Parallelism",
+          "description": "Number of pods running in parallel",
+          "minimum": 1,
+          "default": 1
+        },
+        "backoffLimit": {
+          "type": "integer",
+          "title": "Backoff Limit",
+          "description": "Number of retries before considering the job as failed",
+          "minimum": 0,
+          "default": 3
+        },
+        "restartPolicy": {
+          "type": "string",
+          "title": "Restart Policy",
+          "description": "Restart policy for the job pods",
+          "enum": ["OnFailure", "Never"],
+          "default": "OnFailure"
+        },
+        "annotations": {
+          "type": "object",
+          "title": "Job Annotations",
+          "description": "Additional annotations for the bucket initialization job",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "default": {}
+        },
+        "podAnnotations": {
+          "type": "object",
+          "title": "Pod Annotations",
+          "description": "Additional annotations for the bucket initialization job pods",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "default": {}
+        },
+        "resources": {
+          "type": "object",
+          "title": "Resource Configuration",
+          "description": "Resource requests and limits for the bucket initialization job",
+          "properties": {
+            "limits": {
+              "type": "object",
+              "title": "Resource Limits",
+              "description": "Resource limits for the container",
+              "properties": {
+                "cpu": {
+                  "oneOf": [
+                    {"type": "string"},
+                    {"type": "number"}
+                  ],
+                  "title": "CPU Limit",
+                  "description": "CPU resource limit"
+                },
+                "memory": {
+                  "type": "string",
+                  "title": "Memory Limit",
+                  "description": "Memory resource limit"
+                }
+              }
+            },
+            "requests": {
+              "type": "object",
+              "title": "Resource Requests",
+              "description": "Resource requests for the container",
+              "properties": {
+                "cpu": {
+                  "oneOf": [
+                    {"type": "string"},
+                    {"type": "number"}
+                  ],
+                  "title": "CPU Request",
+                  "description": "CPU resource request"
+                },
+                "memory": {
+                  "type": "string",
+                  "title": "Memory Request",
+                  "description": "Memory resource request"
+                }
+              }
+            }
+          },
+          "default": {}
+        }
+      }
+    },
     "replicaCount": {
       "type": "integer",
       "title": "Replica Count",
