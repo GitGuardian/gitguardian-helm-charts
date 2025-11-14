@@ -6,15 +6,12 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "minio.labels" . | nindent 4 }}
-  annotations:
-    "helm.sh/hook": post-install,post-upgrade
-    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
-    "helm.sh/hook-weight": "0"
   {{- if .Values.commonAnnotations }}
+  annotations:
     {{- include "minio.annotations" . | nindent 4 }}
   {{- end }}
 spec:
-  ttlSecondsAfterFinished: 600
+  ttlSecondsAfterFinished: 20
   activeDeadlineSeconds: 300
   completions: 1
   parallelism: 1
