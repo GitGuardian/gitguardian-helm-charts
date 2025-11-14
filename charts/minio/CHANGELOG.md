@@ -1,8 +1,22 @@
 # Changelog
 
+## 0.5.1 (2025-11-14)
+
+* fix(minio): hook deletion on job ([#22](https://github.com/GitGuardian/gitguardian-helm-charts/pull/22))
+
 ## 0.5.0 (2025-10-08)
 
-* feat(minio): add serviceAccount to MinIO deployment ([#14](https://github.com/GitGuardian/gitguardian-helm-charts/pull/14))
+* feat(ci): implement ci for for workflow ([46ee227](https://github.com/GitGuardian/gitguardian-helm-charts/commit/46ee227))
+* feat(minio): add serviceAccount to MinIO deployment (#14) ([264d4ea](https://github.com/GitGuardian/gitguardian-helm-charts/commit/264d4ea)), closes [#14](https://github.com/GitGuardian/gitguardian-helm-charts/issues/14)
+*  [minio, mongodb, postgres, timescaledb] Update securityContext to containerSecurityContext in the v ([45499b9](https://github.com/GitGuardian/gitguardian-helm-charts/commit/45499b9)), closes [#213](https://github.com/GitGuardian/gitguardian-helm-charts/issues/213)
+*  [minio, mongodb, postgres, timescaledb] Update securityContext to containerSecurityContext in the v ([8a4003f](https://github.com/GitGuardian/gitguardian-helm-charts/commit/8a4003f)), closes [#213](https://github.com/GitGuardian/gitguardian-helm-charts/issues/213)
+* [keycloak] Add support for extra volumes, volumeMounts and initContainers (#215) ([5466858](https://github.com/GitGuardian/gitguardian-helm-charts/commit/5466858)), closes [#215](https://github.com/GitGuardian/gitguardian-helm-charts/issues/215)
+* [mariadb] use tpl to return existingConfigMap (#217) ([175e223](https://github.com/GitGuardian/gitguardian-helm-charts/commit/175e223)), closes [#217](https://github.com/GitGuardian/gitguardian-helm-charts/issues/217)
+* [mariadb] use tpl to return existingConfigMap (#217) ([c7c2f4c](https://github.com/GitGuardian/gitguardian-helm-charts/commit/c7c2f4c)), closes [#217](https://github.com/GitGuardian/gitguardian-helm-charts/issues/217)
+* [memcached] chore(deps): update docker.io/memcached:1.6.39 Docker digest to 157c563 (#185) ([27d0ff5](https://github.com/GitGuardian/gitguardian-helm-charts/commit/27d0ff5)), closes [#185](https://github.com/GitGuardian/gitguardian-helm-charts/issues/185)
+* add post job to auto create default buckets (#9) ([493263e](https://github.com/GitGuardian/gitguardian-helm-charts/commit/493263e)), closes [#9](https://github.com/GitGuardian/gitguardian-helm-charts/issues/9)
+* make minio run on openshift (#203) ([18c7be5](https://github.com/GitGuardian/gitguardian-helm-charts/commit/18c7be5)), closes [#203](https://github.com/GitGuardian/gitguardian-helm-charts/issues/203)
+* fix(minio): revert to 0.2.4 ([b660d6f](https://github.com/GitGuardian/gitguardian-helm-charts/commit/b660d6f))
 
 ## <small>0.2.4 (2025-09-30)</small>
 
