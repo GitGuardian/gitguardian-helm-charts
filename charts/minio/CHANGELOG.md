@@ -1,8 +1,19 @@
 # Changelog
 
-## 0.5.1 (2025-11-14)
+## 0.5.2 (2025-11-14)
 
-* fix(minio): reduce ttlSecondsAfterFinished to 20sec ([#22](https://github.com/GitGuardian/gitguardian-helm-charts/pull/22))
+* feat(minio): rename post job and add variables to configure it ([#24](https://github.com/GitGuardian/gitguardian-helm-charts/pull/24))
+
+## <small>0.5.1 (2025-11-14)</small>
+
+* fix(minio): hook deletion on job ([d2d52c7](https://github.com/GitGuardian/gitguardian-helm-charts/commit/d2d52c7))
+* fix(minio): reduce ttlSecondsAfterFinished to 20sec ([9be7d34](https://github.com/GitGuardian/gitguardian-helm-charts/commit/9be7d34))
+* fix(minio): reduce ttlSecondsAfterFinished to 20sec ([40741dd](https://github.com/GitGuardian/gitguardian-helm-charts/commit/40741dd))
+* fix(minio): values schema update ([16d9950](https://github.com/GitGuardian/gitguardian-helm-charts/commit/16d9950))
+* [all] add tests for openshift (#226) ([c80c98a](https://github.com/GitGuardian/gitguardian-helm-charts/commit/c80c98a)), closes [#226](https://github.com/GitGuardian/gitguardian-helm-charts/issues/226)
+* [mongodb] feat: add metrics exporter (#243) ([c931978](https://github.com/GitGuardian/gitguardian-helm-charts/commit/c931978)), closes [#243](https://github.com/GitGuardian/gitguardian-helm-charts/issues/243)
+* Update CHANGELOG.md ([fdffec9](https://github.com/GitGuardian/gitguardian-helm-charts/commit/fdffec9))
+* Update CHANGELOG.md ([4e93e9d](https://github.com/GitGuardian/gitguardian-helm-charts/commit/4e93e9d))
 
 ## 0.5.0 (2025-10-08)
 
