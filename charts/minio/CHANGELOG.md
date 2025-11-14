@@ -2,7 +2,7 @@
 
 ## 0.5.1 (2025-11-14)
 
-* fix(minio): hook deletion on job ([#22](https://github.com/GitGuardian/gitguardian-helm-charts/pull/22))
+* fix(minio): reduce ttlSecondsAfterFinished to 20sec ([#22](https://github.com/GitGuardian/gitguardian-helm-charts/pull/22))
 
 ## 0.5.0 (2025-10-08)
 
