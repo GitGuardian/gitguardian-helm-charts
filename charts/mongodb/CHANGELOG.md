@@ -1,66 +1,47 @@
 # Changelog
 
+## 0.5.0 (2025-12-04)
 
-## 0.5.0 (2025-10-14)
-
-* Update chart.yaml dependencies for indepentent charts (#382) ([87acfb1](https://github.com/CloudPirates-io/helm-charts/commit/87acfb1))
-* chore: update CHANGELOG.md for merged changes ([84cf67b](https://github.com/CloudPirates-io/helm-charts/commit/84cf67b))
-* chore: update CHANGELOG.md for all charts via manual trigger ([6974964](https://github.com/CloudPirates-io/helm-charts/commit/6974964))
-
-## 0.4.2 (2025-10-10)
-
-
-## 0.4.1 (2025-10-09)
-
-* fix: newline between mongo labels and additional labels (#301) ([ea7937f](https://github.com/CloudPirates-io/helm-charts/commit/ea7937f))
-* add tests for openshift (#226) ([c80c98a](https://github.com/CloudPirates-io/helm-charts/commit/c80c98a))
-
-## 0.4.0 (2025-10-09)
-
-* feat: add metrics exporter (#243) ([c931978](https://github.com/CloudPirates-io/helm-charts/commit/c931978))
-
-## 0.3.3 (2025-10-09)
-
-* makes configmap name dynamic (#279) ([6dd10a9](https://github.com/CloudPirates-io/helm-charts/commit/6dd10a9))
-
-## 0.3.2 (2025-10-09)
-
-
-## 0.3.1 (2025-10-08)
-
-* update values.schema.json (#242) ([f973e47](https://github.com/CloudPirates-io/helm-charts/commit/f973e47))
-*  [minio, mongodb, postgres, timescaledb] Update securityContext to containerSecurityContext in the values schema (#213) ([8a4003f](https://github.com/CloudPirates-io/helm-charts/commit/8a4003f))
-
-## 0.3.0 (2025-10-02)
-
-* make mongodb run on openshift (#202) ([b654629](https://github.com/CloudPirates-io/helm-charts/commit/b654629))
+* Fspiers/ent 3334/incremental sync 1 ([#30](https://github.com/GitGuardian/gitguardian-helm-charts/pull/30))
 
 ## 0.2.0 (2025-09-25)
 
-* add custom user creation at initialization (#153) ([772d18f](https://github.com/CloudPirates-io/helm-charts/commit/772d18f))
-
-## 0.1.9 (2025-09-16)
-
-* Update CHANGELOG.md ([72601e5](https://github.com/CloudPirates-io/helm-charts/commit/72601e5))
-* Bump chart version ([77f76af](https://github.com/CloudPirates-io/helm-charts/commit/77f76af))
-
-## 0.1.8 (2025-09-11)
-
-* Update CHANGELOG.md ([5c9f4d0](https://github.com/CloudPirates-io/helm-charts/commit/5c9f4d0))
-* Bump chart version ([159ba82](https://github.com/CloudPirates-io/helm-charts/commit/159ba82))
-
-## 0.1.7 (2025-09-09)
-
-* Update CHANGELOG.md ([3174cb2](https://github.com/CloudPirates-io/helm-charts/commit/3174cb2))
-* Bump chart version ([98d3ee6](https://github.com/CloudPirates-io/helm-charts/commit/98d3ee6))
-* Update docker.io/mongo:8.0.13 Docker digest to c750922 ([cbd41d9](https://github.com/CloudPirates-io/helm-charts/commit/cbd41d9))
-* add extraObject array to all charts ([34772b7](https://github.com/CloudPirates-io/helm-charts/commit/34772b7))
-
-## 0.1.6 (2025-08-27)
-
-* Fix values.yaml / Chart.yaml linting issues ([043c7e0](https://github.com/CloudPirates-io/helm-charts/commit/043c7e0))
-* Add initial Changelogs to all Charts ([68f10ca](https://github.com/CloudPirates-io/helm-charts/commit/68f10ca))
-
-## 0.1.5 (2025-08-26)
-
-* Initial tagged release
+* [documentation] update readme files ([16944cd](https://github.com/GitGuardian/gitguardian-helm-charts/commit/16944cd))
+* [mongo] chore(deps): update docker.io/mongo:8.0.13 Docker digest to 7acbcf3 ([37cb0a1](https://github.com/GitGuardian/gitguardian-helm-charts/commit/37cb0a1))
+* [mongo] chore(deps): update docker.io/mongo:8.0.13 Docker digest to cf340b1 ([3fe0172](https://github.com/GitGuardian/gitguardian-helm-charts/commit/3fe0172))
+* add custom user creation at initialization (#153) ([772d18f](https://github.com/GitGuardian/gitguardian-helm-charts/commit/772d18f)), closes [#153](https://github.com/GitGuardian/gitguardian-helm-charts/issues/153)
+* add imagepullsecret support ([2768b4e](https://github.com/GitGuardian/gitguardian-helm-charts/commit/2768b4e))
+* fix test ([cfac15f](https://github.com/GitGuardian/gitguardian-helm-charts/commit/cfac15f))
+* Realese appVersion 8.0.13 ([4710010](https://github.com/GitGuardian/gitguardian-helm-charts/commit/4710010))
+* replace deployment with statefulset, fix config, securityContext ([9ac37ad](https://github.com/GitGuardian/gitguardian-helm-charts/commit/9ac37ad))
+* update chart to 0.1.4 ([a6d86b7](https://github.com/GitGuardian/gitguardian-helm-charts/commit/a6d86b7))
+* Add ArtifactHub Badges to all Charts ([08b855b](https://github.com/GitGuardian/gitguardian-helm-charts/commit/08b855b))
+* Add ArtifactHub repo config ([15180a8](https://github.com/GitGuardian/gitguardian-helm-charts/commit/15180a8))
+* Add cosign signature READMEs ([5f82e7f](https://github.com/GitGuardian/gitguardian-helm-charts/commit/5f82e7f))
+* Add extensive chart testing ([a46efac](https://github.com/GitGuardian/gitguardian-helm-charts/commit/a46efac))
+* add extraObject array to all charts ([34772b7](https://github.com/GitGuardian/gitguardian-helm-charts/commit/34772b7))
+* Add generated values.schema.json files from values.yaml ([aa79ac3](https://github.com/GitGuardian/gitguardian-helm-charts/commit/aa79ac3))
+* Add initial Changelogs to all Charts ([68f10ca](https://github.com/GitGuardian/gitguardian-helm-charts/commit/68f10ca))
+* Add LICENSE ([fdbf1ab](https://github.com/GitGuardian/gitguardian-helm-charts/commit/fdbf1ab))
+* add logos to helm-charts ([fc70cdc](https://github.com/GitGuardian/gitguardian-helm-charts/commit/fc70cdc))
+* Bump chart version ([77f76af](https://github.com/GitGuardian/gitguardian-helm-charts/commit/77f76af))
+* Bump chart version ([159ba82](https://github.com/GitGuardian/gitguardian-helm-charts/commit/159ba82))
+* Bump chart version ([98d3ee6](https://github.com/GitGuardian/gitguardian-helm-charts/commit/98d3ee6))
+* Fix image tag/digest handling ([a5c982b](https://github.com/GitGuardian/gitguardian-helm-charts/commit/a5c982b))
+* Fix imagePullSecrets format and pull always ([ce0d301](https://github.com/GitGuardian/gitguardian-helm-charts/commit/ce0d301))
+* fix readme.md install text, update chart.yaml home-website ([3511582](https://github.com/GitGuardian/gitguardian-helm-charts/commit/3511582))
+* Fix values.yaml / Chart.yaml linting issues ([043c7e0](https://github.com/GitGuardian/gitguardian-helm-charts/commit/043c7e0))
+* Format README files ([04aacab](https://github.com/GitGuardian/gitguardian-helm-charts/commit/04aacab))
+* init, add mariadb, mongodb and redis chart ([8e44c83](https://github.com/GitGuardian/gitguardian-helm-charts/commit/8e44c83))
+* Release new chart versions / update sources ([dbb0e45](https://github.com/GitGuardian/gitguardian-helm-charts/commit/dbb0e45))
+* Remove leading $ from code blocks ([836b2e3](https://github.com/GitGuardian/gitguardian-helm-charts/commit/836b2e3))
+* remove serviceaccounts from all charts ([be8f43a](https://github.com/GitGuardian/gitguardian-helm-charts/commit/be8f43a))
+* Update CHANGELOG.md ([72601e5](https://github.com/GitGuardian/gitguardian-helm-charts/commit/72601e5))
+* Update CHANGELOG.md ([5c9f4d0](https://github.com/GitGuardian/gitguardian-helm-charts/commit/5c9f4d0))
+* Update CHANGELOG.md ([3174cb2](https://github.com/GitGuardian/gitguardian-helm-charts/commit/3174cb2))
+* Update docker.io/mongo Docker tag to v8.0.13 ([2a585ff](https://github.com/GitGuardian/gitguardian-helm-charts/commit/2a585ff))
+* Update docker.io/mongo:8.0.13 Docker digest to c750922 ([cbd41d9](https://github.com/GitGuardian/gitguardian-helm-charts/commit/cbd41d9))
+* Update mongodb readme ([52b9620](https://github.com/GitGuardian/gitguardian-helm-charts/commit/52b9620))
+* update readme, chart.yaml texts and descriptions ([0179046](https://github.com/GitGuardian/gitguardian-helm-charts/commit/0179046))
+* Use lookup function for password where applicable ([dfb9a0e](https://github.com/GitGuardian/gitguardian-helm-charts/commit/dfb9a0e))
+* fix: chart icon urls ([cc38c0d](https://github.com/GitGuardian/gitguardian-helm-charts/commit/cc38c0d))
