@@ -22,7 +22,7 @@ jobs:
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.CHANGELOG_PAT || secrets.GITHUB_TOKEN }}
 
       - name: Configure Git
         run: |
@@ -40,34 +40,28 @@ jobs:
           sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
           sudo chmod +x /usr/local/bin/yq
 
-      - name: Setup Helm
-        uses: Azure/setup-helm@1a275c3b69536ee54be43f2070a358922e12c8d4 # v4.3.1
-
-      # Python is required because `ct` uses Python-based tools
-      - name: Set up Python
-        uses: actions/setup-python@8d9ed9ac5c53483de85588cdf95a591a75ab9f55 # v5.5.0
-        with:
-          python-version: 3.x
-
-      - name: Set up chart-testing-action
-        uses: helm/chart-testing-action@0d28d3144d3a25ea2cc349d6e59901c4ff469b3b # v2.7.0
-
       - name: Get changed charts from last commit
         id: list-changed
         run: |
           # Get the commit SHA before the merge
           BEFORE_SHA="${{ github.event.before }}"
 
-          # Use chart-testing to find changed charts
-          changed=$(ct list-changed --target-branch main --since "${BEFORE_SHA}")
+          # Find changed charts directories using git diff
+          changed_files=$(git diff --name-only "${BEFORE_SHA}" HEAD -- 'charts/**')
 
-          if [[ -n "$changed" ]]; then
-            echo "Changed charts:"
-            echo "$changed"
-            echo "changed=true" >> $GITHUB_OUTPUT
-            echo 'changedCharts<<EOF' >> $GITHUB_OUTPUT
-            echo $changed >> $GITHUB_OUTPUT
-            echo 'EOF' >> $GITHUB_OUTPUT
+          if [[ -n "$changed_files" ]]; then
+            # Extract unique chart directories
+            changed_charts=$(echo "$changed_files" | grep '^charts/' | cut -d/ -f1-2 | sort -u | tr '\n' ' ')
+
+            if [[ -n "$changed_charts" ]]; then
+              echo "Changed charts:"
+              echo "$changed_charts"
+              echo "changed=true" >> $GITHUB_OUTPUT
+              echo "changedCharts=${changed_charts}" >> $GITHUB_OUTPUT
+            else
+              echo "No chart changes detected"
+              echo "changed=false" >> $GITHUB_OUTPUT
+            fi
           else
             echo "No chart changes detected"
             echo "changed=false" >> $GITHUB_OUTPUT
@@ -76,7 +70,7 @@ jobs:
       - name: Get PR information
         id: pr-info
         if: steps.list-changed.outputs.changed == 'true'
-        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -158,4 +152,9 @@ jobs:
           git add charts/*/CHANGELOG.md
           git commit -m "chore: update CHANGELOG.md for merged changes" \
             -m "Signed-off-by: github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
+
+          # Pull latest changes and rebase our commit on top
+          git pull --rebase origin main
+
+          # Push the changes
           git push origin main

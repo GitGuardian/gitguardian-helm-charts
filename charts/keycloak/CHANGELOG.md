@@ -1,6 +1,10 @@
 # Changelog
 
 
+## 0.5.0 (2025-10-13)
+
+* feat: add metrics (#368) ([cf5aba0](https://github.com/CloudPirates-io/helm-charts/commit/cf5aba0))
+
 ## 0.4.0 (2025-10-10)
 
 * Import realm (#219) ([f7ff0cf](https://github.com/CloudPirates-io/helm-charts/commit/f7ff0cf))
