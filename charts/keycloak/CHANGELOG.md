@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.6.0 (2025-10-14)
+
+* [universal] All charts use cloudpirates prefix ([#378](https://github.com/CloudPirates-io/helm-charts/pull/378))
+
+## 0.5.1 (2025-10-13)
+
+* chore: update CHANGELOG.md for merged changes ([a67d12a](https://github.com/CloudPirates-io/helm-charts/commit/a67d12a))
+* chore: update CHANGELOG.md for merged changes ([a4bd5ac](https://github.com/CloudPirates-io/helm-charts/commit/a4bd5ac))
 
 ## 0.5.0 (2025-10-13)
 
