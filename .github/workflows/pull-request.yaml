@@ -1,6 +1,6 @@
 name: "Pull Request"
 on:
-  pull_request:
+  pull_request_target:
     types:
       - opened
       - reopened
@@ -17,8 +17,6 @@ jobs:
     steps:
       - name: Setup Helm
         uses: Azure/setup-helm@v4.3.1
-        with:
-          version: 'v3.19.2'
 
       - name: Checkout pull request branch
         uses: actions/checkout@v5.0.0
@@ -32,10 +30,10 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@65d7f2d534ac1bc67fcd62888c5f4f3d2cb2b236 # v4.7.1
         with:
-          python-version: 3.13
+          python-version: 3.x
 
       - name: Set up chart-testing-action
-        uses: helm/chart-testing-action@v2.8.0
+        uses: helm/chart-testing-action@v2.7.0
 
       - name: Get changed charts
         id: list-changed
@@ -146,69 +144,3 @@ jobs:
           else
             echo "No changed CHANGELOGS, skip push"
           fi
-
-  publish-chart:
-    name: Publish Helm Chart
-    needs: [lint-test]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: azure/setup-helm@v4.3.1
-        with:
-          version: 'v3.19.2'
-
-      - name: Checkout pull request branch
-        uses: actions/checkout@v5.0.0
-        with:
-          ref: ${{ github.head_ref }}
-          repository: ${{github.event.pull_request.head.repo.full_name}}
-          fetch-depth: 0
-
-      - name: Set up chart-testing-action
-        uses: helm/chart-testing-action@v2.8.0
-
-      - name: Get changed charts
-        id: list-changed
-        run: |
-          changed=$(ct list-changed --target-branch ${{ github.event.repository.default_branch }})
-          if [[ -n "$changed" ]]; then
-            echo "Changed charts:"
-            echo "$changed"
-            
-            changed_list=$(echo "$changed" | tr '\n' ',' | sed 's/,$//')
-            echo "changed=$changed_list" >> $GITHUB_OUTPUT
-          else
-            echo "No chart changes detected"
-          fi
-
-      - name: Publish Helm chart to ttl
-        id: upload
-        if: ${{ steps.list-changed.outputs.changed }}
-        run: |
-          CHANGED_CHARTS="${{ steps.list-changed.outputs.changed }}"
-
-          RELEASED_CHARTS=""
-          for chart_directory in ${CHANGED_CHARTS//,/ }; do
-            CHART_NAME=${chart_directory#charts/}
-
-            cd $chart_directory
-
-            SHORT_SHA=$(echo "${{ github.sha }}" | cut -c1-7)
-            CHART_VERSION="0.1.0-${{ github.run_number }}"
-            APP_VERSION="unstable-${SHORT_SHA}"
-
-            helm dep update .
-            helm lint --strict .
-            helm package . --app-version=${APP_VERSION} --version=${CHART_VERSION}
-
-            # Push to GHCR
-            echo "Pushing Helm chart $CHART_NAME-$CHART_VERSION.tgz to oci://ttl.sh/${{ github.event.repository.name }}"
-            if helm push ./$CHART_NAME-$CHART_VERSION.tgz oci://ttl.sh/${{ github.event.repository.name }}; then
-              echo "Successfully released $CHART_NAME-$CHART_VERSION to ttl.sh"
-            else
-              echo "Failed to push $CHART_NAME-$CHART_VERSION to ttl.sh"
-              exit 1
-            fi
-
-            cd ${{ github.workspace }}
-          done
-          echo "released_charts=$RELEASED_CHARTS" >> "$GITHUB_OUTPUT"
