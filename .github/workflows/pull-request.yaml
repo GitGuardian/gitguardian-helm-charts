@@ -1,6 +1,6 @@
 name: "Pull Request"
 on:
-  pull_request_target:
+  pull_request:
     types:
       - opened
       - reopened
@@ -173,7 +173,9 @@ jobs:
           if [[ -n "$changed" ]]; then
             echo "Changed charts:"
             echo "$changed"
-            echo "changed=$changed" >> $GITHUB_OUTPUT
+            
+            changed_list=$(echo "$changed" | tr '\n' ',' | sed 's/,$//')
+            echo "changed=$changed_list" >> $GITHUB_OUTPUT
           else
             echo "No chart changes detected"
           fi
