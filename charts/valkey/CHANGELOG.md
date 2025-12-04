@@ -1,56 +1,48 @@
 # Changelog
 
+## 0.6.0 (2025-12-04)
 
-## 0.6.0 (2025-10-14)
-
-* Update chart.yaml dependencies for indepentent charts (#382) ([87acfb1](https://github.com/CloudPirates-io/helm-charts/commit/87acfb1))
-* chore: update CHANGELOG.md for merged changes ([84cf67b](https://github.com/CloudPirates-io/helm-charts/commit/84cf67b))
-* chore: update CHANGELOG.md for all charts via manual trigger ([6974964](https://github.com/CloudPirates-io/helm-charts/commit/6974964))
-* chore: update CHANGELOG.md for merged changes ([63b7bfa](https://github.com/CloudPirates-io/helm-charts/commit/63b7bfa))
-* chore: update CHANGELOG.md for merged changes ([da69e0e](https://github.com/CloudPirates-io/helm-charts/commit/da69e0e))
-* chore: update CHANGELOG.md for merged changes ([5da1b15](https://github.com/CloudPirates-io/helm-charts/commit/5da1b15))
-
-## 0.5.1 (2025-10-13)
-
-
-## 0.5.0 (2025-10-10)
-
-* feat: add metrics exporter (#342) ([e6b474b](https://github.com/CloudPirates-io/helm-charts/commit/e6b474b))
-* add tests for openshift (#226) ([c80c98a](https://github.com/CloudPirates-io/helm-charts/commit/c80c98a))
-
-## 0.4.1 (2025-10-09)
-
-* [valkey/valkey] Update charts/valkey/values.yaml valkey/valkey to v8.1.4 (patch) (#266) ([b52fedf](https://github.com/CloudPirates-io/helm-charts/commit/b52fedf))
-
-## 0.4.0 (2025-10-06)
-
-* make valkey run on openshift (#206) ([b1f530c](https://github.com/CloudPirates-io/helm-charts/commit/b1f530c))
-
-## 0.3.2 (2025-09-16)
-
-* Update CHANGELOG.md ([3005f2f](https://github.com/CloudPirates-io/helm-charts/commit/3005f2f))
-* Oops, wrong bump ([1d2fefa](https://github.com/CloudPirates-io/helm-charts/commit/1d2fefa))
-* Fix scheduling directives with disabled persistance ([7485b37](https://github.com/CloudPirates-io/helm-charts/commit/7485b37))
-
-## 0.3.1 (2025-09-12)
-
-* Update CHANGELOG.md ([36da816](https://github.com/CloudPirates-io/helm-charts/commit/36da816))
-* fix templating of `affinity`, `nodeSelector` and `tolerations` values ([e98c8ea](https://github.com/CloudPirates-io/helm-charts/commit/e98c8ea))
+* Fspiers/ent 3334/incremental sync 1 ([#30](https://github.com/GitGuardian/gitguardian-helm-charts/pull/30))
 
 ## 0.3.0 (2025-09-02)
 
-* bump all chart versions for new extraObjects feature ([aaa57f9](https://github.com/CloudPirates-io/helm-charts/commit/aaa57f9))
-* add extraObject array to all charts ([34772b7](https://github.com/CloudPirates-io/helm-charts/commit/34772b7))
+* add extraObject array to all charts ([34772b7](https://github.com/GitGuardian/gitguardian-helm-charts/commit/34772b7))
+* bump all chart versions for new extraObjects feature ([aaa57f9](https://github.com/GitGuardian/gitguardian-helm-charts/commit/aaa57f9))
 
 ## 0.2.0 (2025-09-02)
 
-* Update serviceaccount config to disable automatic creation, add missing ns ([77281c6](https://github.com/CloudPirates-io/helm-charts/commit/77281c6))
-* Add support for serviceAccount ([16ac6b3](https://github.com/CloudPirates-io/helm-charts/commit/16ac6b3))
-
-## 0.1.7 (2025-08-27)
-
-* Add initial Changelogs to all Charts ([68f10ca](https://github.com/CloudPirates-io/helm-charts/commit/68f10ca))
-
-## 0.1.6 (2025-08-26)
-
-* Initial tagged release
+* [documentation] update readme files ([16944cd](https://github.com/GitGuardian/gitguardian-helm-charts/commit/16944cd))
+* Add support for serviceAccount ([16ac6b3](https://github.com/GitGuardian/gitguardian-helm-charts/commit/16ac6b3))
+* add values.schema.json ([aa8830b](https://github.com/GitGuardian/gitguardian-helm-charts/commit/aa8830b))
+* change deployment to statefulset ([e15da88](https://github.com/GitGuardian/gitguardian-helm-charts/commit/e15da88))
+* fix statefulset command ([845d4a3](https://github.com/GitGuardian/gitguardian-helm-charts/commit/845d4a3))
+* fix valkey command to use requirepass ([0f677fb](https://github.com/GitGuardian/gitguardian-helm-charts/commit/0f677fb))
+* release 0.1.4 ([bc44c09](https://github.com/GitGuardian/gitguardian-helm-charts/commit/bc44c09))
+* Remove ServiceAccount ([a90b88f](https://github.com/GitGuardian/gitguardian-helm-charts/commit/a90b88f))
+* Set correct image tag / fix testing ([b895de1](https://github.com/GitGuardian/gitguardian-helm-charts/commit/b895de1))
+* update chart to 0.1.1 ([4c02dae](https://github.com/GitGuardian/gitguardian-helm-charts/commit/4c02dae))
+* update chart.yaml ([8922160](https://github.com/GitGuardian/gitguardian-helm-charts/commit/8922160))
+* update configmap to use requirepass ([c5aeb15](https://github.com/GitGuardian/gitguardian-helm-charts/commit/c5aeb15))
+* update default values with default resources ([afede6b](https://github.com/GitGuardian/gitguardian-helm-charts/commit/afede6b))
+* update descriptions ([b01ad43](https://github.com/GitGuardian/gitguardian-helm-charts/commit/b01ad43))
+* Add ArtifactHub Badges to all Charts ([08b855b](https://github.com/GitGuardian/gitguardian-helm-charts/commit/08b855b))
+* Add ArtifactHub repo config ([15180a8](https://github.com/GitGuardian/gitguardian-helm-charts/commit/15180a8))
+* Add cosign signature READMEs ([5f82e7f](https://github.com/GitGuardian/gitguardian-helm-charts/commit/5f82e7f))
+* Add extensive chart testing ([a46efac](https://github.com/GitGuardian/gitguardian-helm-charts/commit/a46efac))
+* Add initial Changelogs to all Charts ([68f10ca](https://github.com/GitGuardian/gitguardian-helm-charts/commit/68f10ca))
+* Add LICENSE ([fdbf1ab](https://github.com/GitGuardian/gitguardian-helm-charts/commit/fdbf1ab))
+* add logos to helm-charts ([fc70cdc](https://github.com/GitGuardian/gitguardian-helm-charts/commit/fc70cdc))
+* Add valkey chart ([43eb50f](https://github.com/GitGuardian/gitguardian-helm-charts/commit/43eb50f))
+* Fix image tag/digest handling ([a5c982b](https://github.com/GitGuardian/gitguardian-helm-charts/commit/a5c982b))
+* Fix imagePullSecrets format and pull always ([ce0d301](https://github.com/GitGuardian/gitguardian-helm-charts/commit/ce0d301))
+* fix readme.md install text, update chart.yaml home-website ([3511582](https://github.com/GitGuardian/gitguardian-helm-charts/commit/3511582))
+* Format README files ([04aacab](https://github.com/GitGuardian/gitguardian-helm-charts/commit/04aacab))
+* Release new chart versions / update sources ([dbb0e45](https://github.com/GitGuardian/gitguardian-helm-charts/commit/dbb0e45))
+* Remove leading $ from code blocks ([836b2e3](https://github.com/GitGuardian/gitguardian-helm-charts/commit/836b2e3))
+* remove serviceaccounts from all charts ([be8f43a](https://github.com/GitGuardian/gitguardian-helm-charts/commit/be8f43a))
+* Update docker.io/valkey/valkey:8.1.3 Docker digest to fea8b3e ([8aa7e5a](https://github.com/GitGuardian/gitguardian-helm-charts/commit/8aa7e5a))
+* update readme, chart.yaml texts and descriptions ([0179046](https://github.com/GitGuardian/gitguardian-helm-charts/commit/0179046))
+* Update serviceaccount config to disable automatic creation, add missing ns ([77281c6](https://github.com/GitGuardian/gitguardian-helm-charts/commit/77281c6))
+* Update valkey version to 8.1.3 ([87cbe41](https://github.com/GitGuardian/gitguardian-helm-charts/commit/87cbe41))
+* Use lookup function for password where applicable ([dfb9a0e](https://github.com/GitGuardian/gitguardian-helm-charts/commit/dfb9a0e))
+* fix: chart icon urls ([cc38c0d](https://github.com/GitGuardian/gitguardian-helm-charts/commit/cc38c0d))
