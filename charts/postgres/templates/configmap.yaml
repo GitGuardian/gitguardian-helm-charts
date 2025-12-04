@@ -97,7 +97,7 @@ data:
     log_min_error_statement = error
     
     {{- if .Values.config.postgresqlLogStatement }}
-    log_statement = {{ .Values.config.postgresqlLogStatement | quote }}
+    log_statement = {{ .Values.config.postgresqlLogStatement | squote }}
     {{- else }}
     log_statement = 'none'
     {{- end }}
