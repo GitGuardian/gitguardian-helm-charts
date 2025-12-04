@@ -1,0 +1,75 @@
+name: Release Charts GitGuardian
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  packages: write
+  attestations: write
+  id-token: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  publish-chart:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+
+      - name: Login to GHCR Helm registry
+        shell: bash
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | helm registry login \
+            ghcr.io \
+            --username ${{ github.actor }} \
+            --password-stdin
+
+      - name: Run chart-releaser
+        id: chart-releaser
+        uses: helm/chart-releaser-action@v1.7.0
+        with:
+          skip_existing: true
+        env:
+          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Upload charts to OCI GHCR
+        id: upload
+        if: ${{ steps.chart-releaser.outputs.changed_charts }}
+        run: |
+          CHANGED_CHARTS="${{ steps.chart-releaser.outputs.changed_charts }}"
+          REPO_LOWER=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+
+          RELEASED_CHARTS=""
+          for chart_directory in ${CHANGED_CHARTS//,/ }; do
+            CHART_NAME=${chart_directory#charts/}
+
+            cd $chart_directory
+
+            CHART_VERSION=$(yq eval '.version' "Chart.yaml")
+            APP_VERSION=$(yq eval '.appVersion' "Chart.yaml")
+
+            # Push to GHCR
+            echo "Pushing Helm chart $CHART_NAME-$CHART_VERSION.tgz to oci://ghcr.io/${REPO_LOWER}"
+            if helm push ${{ github.workspace }}/.cr-release-packages/${CHART_NAME}-${CHART_VERSION}.tgz oci://ghcr.io/${REPO_LOWER}; then
+              echo "Successfully released $CHART_NAME-$CHART_VERSION to GHCR"
+            else
+              echo "Failed to push $CHART_NAME-$CHART_VERSION to GHCR"
+              exit 1
+            fi
+
+            cd ${{ github.workspace }}
+          done
+          echo "released_charts=$RELEASED_CHARTS" >> "$GITHUB_OUTPUT"
