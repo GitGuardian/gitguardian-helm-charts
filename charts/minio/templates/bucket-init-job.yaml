@@ -33,7 +33,7 @@ spec:
 {{ . | nindent 6 }}
 {{- end }}
       restartPolicy: {{ .Values.bucketInitJob.restartPolicy }}
-      securityContext: {{ include "common.renderPodSecurityContext" . | nindent 8 }}
+      securityContext: {{ include "cloudpirates.renderPodSecurityContext" . | nindent 8 }}
       containers:
         - name: bucket-init
           image: {{ include "minio.image" . }}
@@ -59,7 +59,7 @@ spec:
           resources: {{- toYaml .Values.bucketInitJob.resources | nindent 12 }}
           {{- end }}
           securityContext:
-            {{- $securityContext := include "common.renderContainerSecurityContext" . | fromYaml }}
+            {{- $securityContext := include "cloudpirates.renderContainerSecurityContext" . | fromYaml }}
             {{- $_ := set $securityContext "readOnlyRootFilesystem" false }}
             {{- toYaml $securityContext | nindent 12 }}
       volumes:
