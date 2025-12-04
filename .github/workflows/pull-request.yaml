@@ -32,10 +32,19 @@ jobs:
           repository: ${{github.event.pull_request.head.repo.full_name}}
           fetch-depth: 0
 
+      - name: Fetch upstream main branch
+        run: |
+          # Fetch the base repository's target branch and update origin/main to point to it
+          git remote set-url origin https://github.com/CloudPirates-io/helm-charts.git
+          git fetch origin ${{ github.event.repository.default_branch }}
+          # Re-add the fork as a remote and checkout the PR branch
+          git remote add fork https://github.com/${{ github.event.pull_request.head.repo.full_name }}.git || true
+          git fetch fork ${{ github.head_ref }}
+
       # Python is required because `ct lint` runs Yamale (https://github.com/23andMe/Yamale) and
       # yamllint (https://github.com/adrienverge/yamllint) which require Python
       - name: Set up Python
-        uses: actions/setup-python@8d9ed9ac5c53483de85588cdf95a591a75ab9f55 # v5.5.0
+        uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c # v6.0.0
         with:
           python-version: 3.x
 
@@ -145,4 +154,3 @@ jobs:
             # and without cleanup (let GitHub Actions handle it)
             ./test-charts.sh "$CHART_NAME" --no-cleanup
           done
-
