@@ -12,6 +12,8 @@ nameOverride: ""
 fullnameOverride: ""
 ## @param namespaceOverride String to override the namespace for all resources
 namespaceOverride: ""
+## @param clusterDomain Kubernetes cluster domain
+clusterDomain: cluster.local
 ## @param commonLabels Labels to add to all deployed objects
 commonLabels: {}
 ## @param commonAnnotations Annotations to add to all deployed objects
@@ -24,17 +26,20 @@ image:
   ## @param image.repository Redis image repository
   repository: redis
   ## @param image.tag Redis image tag
-  tag: "8.2.2@sha256:f0957bcaa75fd58a9a1847c1f07caf370579196259d69ac07f2e27b5b389b021"
+  tag: "8.2.2@sha256:4521b581dbddea6e7d81f8fe95ede93f5648aaa66a9dacd581611bf6fe7527bd"
   ## @param image.pullPolicy Redis image pull policy
   pullPolicy: Always
 
 ## @section Redis Architecture
-## @param architecture Redis architecture. Allowed values: standalone or replication
+## @param architecture Redis architecture. Allowed values: standalone, replication
+## - standalone: Single Redis instance
+## - replication: Master-replica setup (use sentinel.enabled to enable/disable Sentinel)
 architecture: standalone
 
 ## @param replicaCount Number of Redis instances to deploy (only when architecture=replication)
 ## When using Sentinel, this is the total number of Redis instances (including the initial master)
-## For example: replicaCount: 3 creates 3 Redis instances where Sentinel manages master/replica roles
+## Without Sentinel, pod-0 is always the master and other pods are replicas
+## For example: replicaCount: 3 creates 1 master + 2 replicas
 replicaCount: 3
 
 ## @section Pod labels and annotations
@@ -211,14 +216,16 @@ extraVolumeMounts: []
 ## @section Redis Sentinel configuration
 ## This section configures Redis Sentinel for high availability in replication mode
 ## When enabled, Redis instances use dynamic master/replica role assignment managed by Sentinel
+## When disabled with replication architecture, pod-0 is always the master and other pods are replicas
 sentinel:
   ## @param sentinel.enabled Enable Redis Sentinel for high availability
   ## IMPORTANT: When enabled, applications should use Sentinel-aware clients to discover the current master
+  ## When disabled, pod-0 is the master and can be accessed via the -master service
   enabled: false
   ## @param sentinel.image.repository Redis Sentinel image repository
   image:
     repository: redis
-    tag: "8.2.2@sha256:f0957bcaa75fd58a9a1847c1f07caf370579196259d69ac07f2e27b5b389b021"
+    tag: "8.2.2@sha256:4521b581dbddea6e7d81f8fe95ede93f5648aaa66a9dacd581611bf6fe7527bd"
     pullPolicy: Always
   ## @param sentinel.masterName Name of the master server (default: mymaster)
   masterName: mymaster
@@ -321,6 +328,17 @@ metrics:
     annotations: {}
     ## @param metrics.serviceMonitor.namespaceSelector Namespace selector for ServiceMonitor
     namespaceSelector: {}
+
+## @section Network Policy
+networkPolicy:
+  ## @param networkPolicy.enabled Enable NetworkPolicy
+  enabled: false
+  ## @param networkPolicy.allowExternal Allow external traffic
+  allowExternal: true
+  ## @param networkPolicy.extraIngress Additional ingress rules
+  extraIngress: []
+  ## @param networkPolicy.extraEgress Additional egress rules
+  extraEgress: []
 
 ## @param extraObjects Array of extra objects to deploy with the release
 extraObjects: []
