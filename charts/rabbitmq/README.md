@@ -12,6 +12,25 @@ A Helm chart for RabbitMQ - A messaging broker that implements the Advanced Mess
 - Helm 3.2.0+
 - PV provisioner support in the underlying infrastructure (if persistence is enabled)
 
+## Security & Signature Verification
+
+This Helm chart is cryptographically signed with Cosign to ensure authenticity and prevent tampering.
+
+**Public Key:**
+
+```
+-----BEGIN PUBLIC KEY-----
+MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE7BgqFgKdPtHdXz6OfYBklYwJgGWQ
+mZzYz8qJ9r6QhF3NxK8rD2oG7Bk6nHJz7qWXhQoU2JvJdI3Zx9HGpLfKvw==
+-----END PUBLIC KEY-----
+```
+
+To verify the helm chart before installation, copy the public key to the file `cosign.pub` and run cosign:
+
+```bash
+cosign verify --key cosign.pub registry-1.docker.io/cloudpirates/rabbitmq:<version>
+```
+
 ## Installing the Chart
 
 To install the chart with the release name `my-rabbitmq`:
@@ -37,6 +56,27 @@ $ helm uninstall my-rabbitmq
 ```
 
 The command removes all the Kubernetes components associated with the chart and deletes the release.
+
+> **Important:** By default, PersistentVolumeClaims (PVCs) are **NOT** deleted when you uninstall the chart. This is intentional to prevent accidental data loss. If you reinstall the chart with different passwords or Erlang cookies, you may encounter authentication issues because the old data persists.
+
+### Cleaning up PersistentVolumeClaims
+
+To manually delete the PVCs after uninstalling:
+
+```bash
+$ kubectl delete pvc -l app.kubernetes.io/instance=my-rabbitmq
+```
+
+Alternatively, you can enable automatic PVC deletion by configuring the `persistentVolumeClaimRetentionPolicy` before installation:
+
+```yaml
+persistentVolumeClaimRetentionPolicy:
+  enabled: true
+  whenDeleted: Delete  # Automatically delete PVCs when StatefulSet is deleted
+  whenScaled: Delete   # Automatically delete PVCs when scaling down
+```
+
+See the [Persistent Volume Claim Retention Policy](#persistent-volume-claim-retention-policy) section for more details.
 
 ## Security & Signature Verification
 
@@ -150,13 +190,13 @@ The following table lists the configurable parameters of the RabbitMQ chart and 
 
 ### RabbitMQ configuration
 
-| Parameter                            | Description                                                 | Default      |
-| ------------------------------------ | ----------------------------------------------------------- | ------------ |
-| `config.memoryHighWatermark.enabled` | Enable configuring Memory high watermark on RabbitMQ        | `false`      |
-| `config.memoryHighWatermark.type`    | Memory high watermark type. Either `absolute` or `relative` | `"relative"` |
-| `config.memoryHighWatermark.value`   | Memory high watermark value                                 | `0.4`        |
-| `config.extraConfiguration`          | Additional RabbitMQ configuration                           | `""`         |
-| `config.advancedConfiguration`       | Advanced RabbitMQ configuration                             | `""`         |
+| Parameter                            | Description                                                                                                                                                          | Default      |
+| ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| `config.memoryHighWatermark.enabled` | Enable configuring Memory high watermark on RabbitMQ                                                                                                                 | `false`      |
+| `config.memoryHighWatermark.type`    | Memory high watermark type. Either `absolute` or `relative`                                                                                                          | `"relative"` |
+| `config.memoryHighWatermark.value`   | Memory high watermark value. For relative: use number (e.g., `0.4` for 40%). For absolute: use string to avoid scientific notation (e.g., `"8GB"`, `"8590000000"`) | `0.4`        |
+| `config.extraConfiguration`          | Additional RabbitMQ configuration                                                                                                                                    | `""`         |
+| `config.advancedConfiguration`       | Advanced RabbitMQ configuration                                                                                                                                      | `""`         |
 
 ### PeerDiscoveryK8sPlugin configuration
 
@@ -194,13 +234,15 @@ The following table lists the configurable parameters of the RabbitMQ chart and 
 
 ### Persistence
 
-| Parameter                  | Description                                | Default             |
-| -------------------------- | ------------------------------------------ | ------------------- |
-| `persistence.enabled`      | Enable persistent storage                  | `true`              |
-| `persistence.storageClass` | Storage class to use for persistent volume | `""`                |
-| `persistence.accessModes`  | Persistent Volume access modes             | `["ReadWriteOnce"]` |
-| `persistence.size`         | Size of persistent volume                  | `8Gi`               |
-| `persistence.annotations`  | Annotations for persistent volume claims   | `{}`                |
+| Parameter                   | Description                                                                     | Default             |
+| --------------------------- | ------------------------------------------------------------------------------- | ------------------- |
+| `persistence.enabled`       | Enable persistent storage                                                       | `true`              |
+| `persistence.existingClaim` | Name of existing PVC to use (if empty, a new PVC will be created automatically) | `""`                |
+| `persistence.storageClass`  | Storage class to use for persistent volume                                      | `""`                |
+| `persistence.accessModes`   | Persistent Volume access modes                                                  | `["ReadWriteOnce"]` |
+| `persistence.size`          | Size of persistent volume                                                       | `8Gi`               |
+| `persistence.labels`        | Labels for persistent volume claims                                             | `{}`                |
+| `persistence.annotations`   | Annotations for persistent volume claims                                        | `{}`                |
 
 ### Ingress configuration
 
@@ -260,7 +302,7 @@ The following table lists the configurable parameters of the RabbitMQ chart and 
 
 | Parameter             | Description                                                             | Default        |
 | --------------------- | ----------------------------------------------------------------------- | -------------- |
-| `extraEnv`            | Additional environment variables to set                                 | `[]`           |
+| `extraEnvVars`        | Additional environment variables to set                                 | `[]`           |
 | `extraVolumes`        | Additional volumes to add to the pod                                    | `[]`           |
 | `extraVolumeMounts`   | Additional volume mounts to add to the RabbitMQ container               | `[]`           |
 | `extraObjects`        | A list of additional Kubernetes objects to deploy alongside the release | `[]`           |
