@@ -129,7 +129,7 @@ Return the Keycloak hostname
 */}}
 {{- define "keycloak.hostname" -}}
 {{- if .Values.keycloak.hostname -}}
-{{- .Values.keycloak.hostname -}}
+{{- tpl (.Values.keycloak.hostname | toString) $ -}}
 {{- else if .Values.ingress.enabled -}}
 {{- (index .Values.ingress.hosts 0).host -}}
 {{- else -}}
@@ -142,7 +142,7 @@ Return the Keycloak admin hostname
 */}}
 {{- define "keycloak.hostnameAdmin" -}}
 {{- if .Values.keycloak.hostnameAdmin -}}
-{{- .Values.keycloak.hostnameAdmin -}}
+{{- tpl (.Values.keycloak.hostnameAdmin | toString) $ -}}
 {{- else -}}
 {{- include "keycloak.hostname" . -}}
 {{- end -}}
@@ -190,6 +190,30 @@ Return the url to use for probes
 {{- printf "/realms/master" -}}
 {{- else -}}
 {{- printf "%s/realms/master" .Values.keycloak.httpRelativePath -}}
+{{- end -}}
+{{- end }}
+
+{{/*
+Return TLS certificate secret name
+*/}}
+{{- define "keycloak.tlsSecretName" -}}
+{{- if .Values.tls.certManager.enabled -}}
+    {{- .Values.tls.certManager.secretName | default (printf "%s-tls" (include "keycloak.fullname" .)) -}}
+{{- else if .Values.tls.existingSecret -}}
+    {{- .Values.tls.existingSecret -}}
+{{- else -}}
+    {{- printf "%s-tls" (include "keycloak.fullname" .) -}}
+{{- end -}}
+{{- end }}
+
+{{/*
+Return TLS truststore secret name
+*/}}
+{{- define "keycloak.truststoreSecretName" -}}
+{{- if .Values.tls.truststoreExistingSecret -}}
+    {{- .Values.tls.truststoreExistingSecret -}}
+{{- else -}}
+    {{- printf "%s-truststore" (include "keycloak.fullname" .) -}}
 {{- end -}}
 {{- end }}
 

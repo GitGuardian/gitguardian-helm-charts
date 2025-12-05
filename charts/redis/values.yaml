@@ -58,6 +58,8 @@ service:
 auth:
   ## @param auth.enabled Enable Redis authentication
   enabled: true
+  ## @param auth.enabled Enable Sentinel authentication
+  sentinel: true
   ## @param auth.password Redis password (if empty, random password will be generated)
   password: ""
   ## @param auth.existingSecret Name of existing secret containing Redis password
@@ -78,6 +80,15 @@ config:
   existingConfigmap: ""
   ## param config.existingConfigmapKey Name of the key in the Configmap that should be used
   existingConfigmapKey: ""
+
+## @Section Pod Disruption Budget
+pdb:
+  ## @param pdb.enabled Enable Pod Disruption Budget
+  enabled: false
+  ## @param pdb.minAvailable Minimum number/percentage of pods that should remain scheduled
+  minAvailable: 1
+  ## @param pdb.maxUnavailable Maximum number/percentage of pods that may be made unavailable
+  maxUnavailable: ""
 
 persistence:
   ## @param persistence.enabled Enable persistent storage
@@ -126,12 +137,25 @@ affinity: {}
 topologySpreadConstraints: []
 
 containerSecurityContext:
-  ## @param securityContext.runAsUser User ID to run the container
+  ## @param containerSecurityContext.runAsUser User ID to run the container
   runAsUser: 999
-  ## @param securityContext.runAsNonRoot Run as non-root user
+  ## @param containerSecurityContext.runAsGroup Group ID to run the container
+  runAsGroup: 999
+  ## @param containerSecurityContext.runAsNonRoot Run as non-root user
   runAsNonRoot: true
+  ## @param containerSecurityContext.privileged Set container's privileged mode
+  privileged: false
   ## @param containerSecurityContext.allowPrivilegeEscalation Set Redis container's privilege escalation
   allowPrivilegeEscalation: false
+  ## @param containerSecurityContext.readOnlyRootFilesystem Read-only root filesystem
+  readOnlyRootFilesystem: true
+  ## @param containerSecurityContext.capabilities Linux capabilities to be dropped
+  capabilities:
+    drop:
+      - ALL
+  ## @param containerSecurityContext.seccompProfile Seccomp profile for the container
+  seccompProfile:
+    type: RuntimeDefault
 
 ## @param podSecurityContext Security context for the pod
 podSecurityContext:
@@ -170,6 +194,13 @@ readinessProbe:
 extraEnv: []
 # - name: EXTRA_VAR
 #   value: "extra_value"
+
+## @param extraFlags Additional command-line flags to pass to redis-server
+## Example:
+## extraFlags:
+##   - --maxmemory 230mb
+##   - --maxmemory-policy volatile-lru
+extraFlags: []
 
 ## @param extraVolumes Additional volumes to add to the pod
 extraVolumes: []
@@ -238,7 +269,7 @@ metrics:
   image:
     registry: docker.io
     repository: oliver006/redis_exporter
-    tag: "v1.78.0@sha256:043d380adf3b23c9f73a986d820e79491975c104fe0ce6ecb8639a19914654fd"
+    tag: "v1.79.0@sha256:67e175f144212fe5796b3134dae1f3db33782b57dc53f7c6f5d938f8f70d9754"
     pullPolicy: Always
   ## @param metrics.resources Resource limits and requests for metrics container
   resources:

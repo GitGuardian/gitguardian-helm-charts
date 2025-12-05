@@ -99,6 +99,7 @@ redis-cli -h my-redis -a $REDIS_PASSWORD
 | Parameter                        | Description                                                  | Default |
 | -------------------------------- | ------------------------------------------------------------ | ------- |
 | `auth.enabled`                   | Enable Redis authentication                                  | `true`  |
+| `auth.sentinel`                  | Enable authentication for Redis sentinels                    | `true`  |
 | `auth.password`                  | Redis password (if empty, random password will be generated) | `""`    |
 | `auth.existingSecret`            | Name of existing secret containing Redis password            | `""`    |
 | `auth.existingSecretPasswordKey` | Key in existing secret containing Redis password             | `""`    |
@@ -144,6 +145,14 @@ redis-cli -h my-redis -a $REDIS_PASSWORD
 | `metrics.serviceMonitor.annotations`       | Additional custom annotations for the ServiceMonitor                                    | `{}`                                                                              |
 | `metrics.serviceMonitor.namespaceSelector` | Namespace selector for ServiceMonitor                                                   | `{}`                                                                              |
 
+### Pod Disruption Budget
+
+| Parameter           | Description                                                    | Default |
+|---------------------|----------------------------------------------------------------|---------|
+| `pdb.enabled`       | Enable Pod Disruption Budget                                   | `false` |
+| `pdb.minAvailable`  | Minimum number/percentage of pods that should remain scheduled | `1`     |
+| `pdb.maxUnavailable`| Maximum number/percentage of pods that may be made unavailable | `""`    |
+
 ### Persistence
 
 | Parameter                  | Description                              | Default         |
@@ -183,12 +192,17 @@ redis-cli -h my-redis -a $REDIS_PASSWORD
 
 ### Security Context
 
-| Parameter                                           | Description                    | Default |
-| --------------------------------------------------- | ------------------------------ | ------- |
-| `containerSecurityContext.runAsUser`                | User ID to run the container   | `999`   |
-| `containerSecurityContext.runAsNonRoot`             | Run as non-root user           | `true`  |
-| `containerSecurityContext.allowPrivilegeEscalation` | Allow privilege escalation     | `false` |
-| `podSecurityContext.fsGroup`                        | Pod's Security Context fsGroup | `999`   |
+| Parameter                                           | Description                       | Default          |
+| --------------------------------------------------- | --------------------------------- | ---------------- |
+| `containerSecurityContext.runAsUser`                | User ID to run the container      | `999`            |
+| `containerSecurityContext.runAsGroup`               | Group ID to run the container     | `999`            |
+| `containerSecurityContext.runAsNonRoot`             | Run as non-root user              | `true`           |
+| `containerSecurityContext.privileged`               | Set container's privileged mode   | `false`          |
+| `containerSecurityContext.allowPrivilegeEscalation` | Allow privilege escalation        | `false`          |
+| `containerSecurityContext.readOnlyRootFilesystem`   | Read-only root filesystem         | `true`           |
+| `containerSecurityContext.capabilities.drop`        | Linux capabilities to be dropped  | `["ALL"]`        |
+| `containerSecurityContext.seccompProfile.type`      | Seccomp profile for the container | `RuntimeDefault` |
+| `podSecurityContext.fsGroup`                        | Pod's Security Context fsGroup    | `999`            |
 
 ### Health Checks
 
