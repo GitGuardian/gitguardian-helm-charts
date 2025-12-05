@@ -15,6 +15,11 @@ commonLabels: {}
 ## @param commonAnnotations Annotations to add to all deployed objects
 commonAnnotations: {}
 
+## @param podAnnotations Annotations to add to the pod created by the statefulset
+podAnnotations: {}
+## @param podLabels Labels to add to the pod created by the statefulset
+podLabels: {}
+
 ## @section MongoDB image parameters
 image:
   ## @param image.registry MongoDB image registry
@@ -22,9 +27,13 @@ image:
   ## @param image.repository MongoDB image repository
   repository: mongo
   ## @param image.tag MongoDB image tag
-  tag: "8.0.15@sha256:c23684919810f0341e58744987e4b1c510fb8becdae850217d2d04b6fa7605e7"
+  tag: "8.2.2@sha256:7245ffb851d149dbfac67397caf91bae4974d899972f9fd1d8985fc6eea3c13d"
   ## @param image.pullPolicy MongoDB image pull policy
   pullPolicy: Always
+  ## @param image.command Override default container command (useful when using custom images)
+  command: []
+  ## @param image.args Override default container args (useful when using custom images)
+  args: []
 
 ## @param replicaCount Number of MongoDB replicas to deploy
 replicaCount: 1
@@ -34,6 +43,8 @@ service:
   type: ClusterIP
   ## @param service.port MongoDB service port
   port: 27017
+  ## @param serivce.annotations Annotations to add to the mongodb service
+  annotations: {}
 
 auth:
   ## @param auth.enabled Enable MongoDB authentication
@@ -92,6 +103,11 @@ persistence:
   mountPath: /data/db
   ## @param persistence.annotations Annotations for persistent volume claims
   annotations: {}
+  ## @param persistence.existingClaim The name of an existing PVC to use for persistence
+  existingClaim: ""
+  ## @param persistence.subPath The subdirectory of the volume to mount to
+  ## Useful in dev environments and one PV for multiple services
+  subPath: ""
 
 ## @param resources Resource limits and requests for MongoDB pod
 resources:
@@ -151,8 +167,15 @@ readinessProbe:
   ## @param readinessProbe.successThreshold Number of successes to mark probe as successful
   successThreshold: 1
 
-## @param extraEnv Additional environment variables to set
-extraEnv: []
+## @param extraEnvVars Additional environment variables to set
+extraEnvVars: []
+  # - name: CUSTOM_VAR
+  #   value: "custom-value"
+  # - name: SECRET_VAR
+  #   valueFrom:
+  #     secretKeyRef:
+  #       name: my-secret
+  #       key: secret-key
 
 ## @param extraVolumes Additional volumes to add to the pod
 extraVolumes: []
@@ -189,7 +212,7 @@ metrics:
   image:
     registry: docker.io
     repository: percona/mongodb_exporter
-    tag: "0.47.1"
+    tag: "0.47.2"
     pullPolicy: IfNotPresent
   ## @param metrics.resources Resource limits and requests for metrics container
   resources:
@@ -267,7 +290,14 @@ metrics:
     timeoutSeconds: 5
     failureThreshold: 3
     successThreshold: 1
-  ## @param metrics.extraEnv Additional environment variables for metrics container
-  extraEnv: []
+  ## @param metrics.extraEnvVars Additional environment variables for metrics container
+  extraEnvVars: []
+  # - name: CUSTOM_VAR
+  #   value: "custom-value"
+  # - name: SECRET_VAR
+  #   valueFrom:
+  #     secretKeyRef:
+  #       name: my-secret
+  #       key: secret-key
   ## @param metrics.extraArgs Additional command line arguments for MongoDB Exporter
   extraArgs: []
