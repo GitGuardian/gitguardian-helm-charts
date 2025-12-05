@@ -1,4 +1,4 @@
-name: "Generate values.schema.json"
+name: "Generate values.schema.json GitGuardian"
 
 on:
   push:
