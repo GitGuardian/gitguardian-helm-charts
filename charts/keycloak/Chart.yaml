@@ -2,8 +2,8 @@ apiVersion: v2
 name: keycloak
 description: Open Source Identity and Access Management Solution
 type: application
-version: 0.8.2
-appVersion: "26.4.2"
+version: 0.10.2
+appVersion: "26.4.5"
 keywords:
   - keycloak
   - identity
@@ -51,8 +51,8 @@ annotations:
     - name: Maintainer CloudPirates
       url: https://www.cloudpirates.io
   artifacthub.io/changes: |2
-        - kind: changed
-          description: "[keycloak]: Fix mariadb configuration (#544)"
+        - kind: added
+          description: "[keycloak] Use correct metrics path if httpRelativePath is set"
           links:
-            - name: "Commit 6cec40c"
-              url: "https://github.com/CloudPirates-io/helm-charts/commit/6cec40c"
+            - name: "PR #666"
+              url: "https://github.com/CloudPirates-io/helm-charts/pull/666"
