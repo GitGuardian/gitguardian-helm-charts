@@ -349,12 +349,13 @@ location /stub_status {
 
 ### Extra Configuration Parameters
 
-| Parameter           | Description                                                                         | Default |
-| ------------------- | ----------------------------------------------------------------------------------- | ------- |
-| `extraEnv`          | Additional environment variables to set                                             | `[]`    |
-| `extraVolumes`      | Additional volumes to add to the pod                                                | `[]`    |
-| `extraVolumeMounts` | Additional volume mounts to add to the Nginx container                             | `[]`    |
-| `extraObjects`      | Array of extra objects to deploy with the release                                   | `[]`    |
+| Parameter                  | Description                                                                         | Default |
+| ---------------------------| ----------------------------------------------------------------------------------- | ------- |
+| `extraEnvVars`             | Additional environment variables to set                                             | `[]`    |
+| `extraVolumes`             | Additional volumes to add to the pod                                                | `[]`    |
+| `extraVolumeMounts`        | Additional volume mounts to add to the Nginx container                              | `[]`    |
+| `extraObjects`             | Array of extra objects to deploy with the release                                   | `[]`    |
+| `extrainitContainers`      | Array of extra objects to deploy with the release                                   | `[]`    |
 
 #### Extra Objects
 
@@ -395,11 +396,12 @@ All objects in `extraObjects` will be rendered and deployed with the release. Yo
 
 ### Pod Configuration Parameters
 
-| Parameter        | Description                    | Default |
-| ---------------- | ------------------------------ | ------- |
-| `nodeSelector`   | Node selector for pod assignment| `{}`    |
-| `tolerations`    | Tolerations for pod assignment | `[]`    |
-| `affinity`       | Affinity rules for pod assignment| `{}`  |
+| Parameter           | Description                       | Default |
+| ----------------    | ------------------------------    | ------- |
+| `nodeSelector`      | Node selector for pod assignment  | `{}`    |
+| `priorityClassName` | Priority class for pod eviction   | `""`    |
+| `tolerations`       | Tolerations for pod assignment    | `[]`    |
+| `affinity`          | Affinity rules for pod assignment | `{}`    |
 
 ## Examples
 

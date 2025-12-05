@@ -51,6 +51,8 @@ data:
 
     {{- if .Values.config.memoryHighWatermark.enabled }}
     # Memory configuration
+    # Note: Large absolute values should be specified as strings (e.g., "8GB" or "8590000000")
+    # to avoid scientific notation conversion by YAML (e.g., 8e+9)
     vm_memory_high_watermark.{{ .Values.config.memoryHighWatermark.type }} = {{ .Values.config.memoryHighWatermark.value }}
     {{- end }}
 

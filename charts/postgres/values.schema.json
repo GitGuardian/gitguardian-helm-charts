@@ -117,8 +117,8 @@
         "customUser": {
             "type": "object"
         },
-        "extraEnv": {
-            "type": "object"
+        "extraEnvVars": {
+            "type": "array"
         },
         "extraEnvVarsSecret": {
             "type": "string"
@@ -419,6 +419,9 @@
             "properties": {
                 "annotations": {
                     "type": "object"
+                },
+                "nodePort": {
+                    "type": "integer"
                 },
                 "port": {
                     "type": "integer"
