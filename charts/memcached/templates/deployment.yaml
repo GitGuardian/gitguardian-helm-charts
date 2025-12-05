@@ -18,10 +18,15 @@ spec:
     metadata:
       labels:
         {{- include "memcached.selectorLabels" . | nindent 8 }}
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
     spec:
 {{- with (include "memcached.imagePullSecrets" .) }}
 {{ . | nindent 6 }}
 {{- end }}
+      automountServiceAccountToken: {{ .Values.serviceAccount.automountServiceAccountToken }}
       serviceAccountName: {{ include "memcached.serviceAccountName" . }}
       securityContext: {{ include "cloudpirates.renderPodSecurityContext" . | nindent 8 }}
       containers:
