@@ -1,17 +1,18 @@
+{{- if and (eq .Values.architecture "replication") (not .Values.sentinel.enabled) }}
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "redis.fullname" . }}-headless
+  name: {{ include "redis.fullname" . }}-master
   namespace: {{ include "cloudpirates.namespace" . }}
   labels:
     {{- include "redis.labels" . | nindent 4 }}
+    app.kubernetes.io/component: master
   {{- with (include "redis.annotations" .) }}
-  annotations: 
-{{- . | indent 4 }}
+  annotations:
+    {{- . | nindent 4 }}
   {{- end }}
 spec:
-  type: ClusterIP
-  clusterIP: None
+  type: {{ .Values.service.type }}
   ports:
     - port: {{ .Values.service.port }}
       targetPort: redis
@@ -22,11 +23,7 @@ spec:
       targetPort: {{ .targetPort | default .name }}
       name: {{ .name }}
     {{- end }}
-    {{- if and .Values.sentinel.enabled (eq .Values.architecture "replication") }}
-    - port: {{ .Values.sentinel.port }}
-      targetPort: sentinel
-      protocol: TCP
-      name: sentinel
-    {{- end }}
   selector:
     {{- include "redis.selectorLabels" . | nindent 4 }}
+    statefulset.kubernetes.io/pod-name: {{ include "redis.fullname" . }}-0
+{{- end }}
