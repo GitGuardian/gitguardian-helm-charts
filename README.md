@@ -2,10 +2,27 @@
 ## Contribute
 
 When improving our charts, it is necessary to contribute upstream on `Cloudpirates.io`.
+1. Set upstream URL with `git remote add upstream https://github.com/CloudPirates-io/helm-charts.git`
+2. Execute `./contrib.sh <new-branch>` script to start new contribution
+3. Cherry-pick your changes
+4. Create a new PR on upstream main branch
 
-1. Execute `./contrib.sh <new-branch>` script to start new contribution
-2. Cherry-pick your changes
-3. Create a new PR on upstream main branch
+## Manual sync
+
+First ensure you enable merge policy by adding in your `.git/config` file:
+```
+[merge "theirs"]
+        driver = true
+```
+This will apply the CHANGELOG.md merge policy defined in `.gitattributes`
+
+1. Update upstream `git fetch upstream`
+2. Create sync branch `git checkout -b my-sync-branch`
+3. Check last X most recent commits that are on `upstream/main` but not yet on your branch  `git log --pretty=format:'%h %ad %s' --date=short HEAD..upstream/main | tail -50`
+4. Merge target commit `git merge <sha>`
+5. Push to remote branch `git push origin my-sync-branch`
+
+---
 
 <p align="center">
     <a href="https://artifacthub.io/packages/search?org=cloudpirates">
