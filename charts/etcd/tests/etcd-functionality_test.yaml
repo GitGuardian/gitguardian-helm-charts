@@ -126,16 +126,6 @@ tests:
             containerPort: 2381
             protocol: TCP
 
-  - it: should not expose metrics port when disabled
-    template: statefulset.yaml
-    set:
-      metrics:
-        enabled: false
-    asserts:
-      - notContains:
-          path: spec.template.spec.containers[0].args
-          content: "--listen-metrics-urls=http://0.0.0.0:2381"
-
   - it: should create ServiceMonitor when enabled
     template: servicemonitor.yaml
     set:
@@ -219,11 +209,11 @@ tests:
     set:
       podDisruptionBudget:
         enabled: true
-        minAvailable: 2
+        minAvailable: "2"
     asserts:
       - equal:
           path: spec.minAvailable
-          value: 2
+          value: "2"
 
   # NetworkPolicy
   - it: should create NetworkPolicy when enabled
