@@ -96,6 +96,33 @@
                 }
             }
         },
+        "customScripts": {
+            "type": "object",
+            "properties": {
+                "postStart": {
+                    "type": "object",
+                    "properties": {
+                        "command": {
+                            "type": "array"
+                        },
+                        "enabled": {
+                            "type": "boolean"
+                        }
+                    }
+                },
+                "preStop": {
+                    "type": "object",
+                    "properties": {
+                        "command": {
+                            "type": "array"
+                        },
+                        "enabled": {
+                            "type": "boolean"
+                        }
+                    }
+                }
+            }
+        },
         "extraEnv": {
             "type": "array"
         },
@@ -538,6 +565,9 @@
         "service": {
             "type": "object",
             "properties": {
+                "annotations": {
+                    "type": "object"
+                },
                 "port": {
                     "type": "integer"
                 },
