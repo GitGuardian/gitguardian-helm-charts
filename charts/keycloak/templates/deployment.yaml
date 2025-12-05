@@ -29,12 +29,12 @@ spec:
       serviceAccountName: {{ include "keycloak.serviceAccountName" . }}
       automountServiceAccountToken: {{ .Values.serviceAccount.automountServiceAccountToken }}
 {{- with (include "keycloak.imagePullSecrets" .) }}
-{{ . | nindent 6 }}
+{{- . | nindent 6 }}
 {{- end }}
-      securityContext: {{ include "common.renderPodSecurityContext" . | nindent 8 }}
+      securityContext: {{ include "cloudpirates.renderPodSecurityContext" . | nindent 8 }}
       initContainers:
         - name: copy-quarkus-lib
-          securityContext: {{ include "common.renderContainerSecurityContext" . | nindent 12 }}
+          securityContext: {{ include "cloudpirates.renderContainerSecurityContext" . | nindent 12 }}
           image: {{ include "keycloak.image" . }}
           imagePullPolicy: {{ .Values.image.imagePullPolicy }}
           command: ["sh", "-c", "cp -r /opt/keycloak/lib/quarkus/* /shared-quarkus/"]
@@ -43,12 +43,12 @@ spec:
               mountPath: /shared-quarkus
         {{- if .Values.postgres.enabled }}
         - name: wait-for-postgres
-          securityContext: {{ include "common.renderContainerSecurityContext" . | nindent 12 }}
+          securityContext: {{ include "cloudpirates.renderContainerSecurityContext" . | nindent 12 }}
           image: {{ .Values.initContainers.waitForPostgres.image }}
           command: ["sh", "-c", "until pg_isready -h {{ .Release.Name }}-postgres -p 5432 -U postgres; do echo waiting for database; sleep 2; done;"]
         {{- else if .Values.mariadb.enabled }}
         - name: wait-for-mariadb
-          securityContext: {{ include "common.renderContainerSecurityContext" . | nindent 12 }}
+          securityContext: {{ include "cloudpirates.renderContainerSecurityContext" . | nindent 12 }}
           image: {{ .Values.initContainers.waitForMariadb.image }}
           command: ["sh", "-c", "until mysqladmin ping -h {{ .Release.Name }}-mariadb -P 3306 --silent; do echo waiting for database; sleep 2; done;"]
         {{- end }}
@@ -57,7 +57,7 @@ spec:
         {{- end }}
       containers:
         - name: {{ .Chart.Name }}
-          securityContext: {{ include "common.renderContainerSecurityContext" . | nindent 12 }}
+          securityContext: {{ include "cloudpirates.renderContainerSecurityContext" . | nindent 12 }}
           image: {{ include "keycloak.image" . }}
           imagePullPolicy: {{ .Values.image.imagePullPolicy }}
           command:
@@ -67,6 +67,9 @@ spec:
             - start
             {{- else }}
             - start-dev
+            {{- if .Values.realm.import }}
+            - --import-realm
+            {{- end }}
             {{- end }}
             {{- if .Values.keycloak.httpEnabled }}
             - --http-enabled=true
@@ -108,6 +111,12 @@ spec:
             {{- end }}
             {{- if .Values.features.disabled }}
             - --features-disabled={{ join "," .Values.features.disabled }}
+            {{- end }}
+            {{- if .Values.metrics.enabled }}
+            - --metrics-enabled=true
+            {{- end }}
+            {{- with .Values.keycloak.extraArgs }}
+            {{- toYaml . | nindent 12 }}
             {{- end }}
           env:
             - name: KC_HTTP_RELATIVE_PATH
@@ -162,9 +171,14 @@ spec:
             - name: http
               containerPort: {{ .Values.keycloak.httpPort }}
               protocol: TCP
-            {{- if .Values.keycloak.httpsPort }}
+            {{- if and .Values.keycloak.httpsPort (not .Values.keycloak.httpEnabled) }}
             - name: https
               containerPort: {{ .Values.keycloak.httpsPort }}
+              protocol: TCP
+            {{- end }}
+            {{- if .Values.metrics.enabled }}
+            - name: http-metrics
+              containerPort: {{ .Values.metrics.service.port }}
               protocol: TCP
             {{- end }}
           {{- if .Values.livenessProbe.enabled }}
@@ -220,10 +234,14 @@ spec:
               mountPath: /opt/keycloak/work
             - name: keycloak-lib-quarkus
               mountPath: /opt/keycloak/lib/quarkus
+            {{- if .Values.realm.import }}
+            - name: realm-config
+              mountPath: /opt/keycloak/data/import
+              readOnly: true
+            {{- end }}
             {{- if .Values.extraVolumeMounts }}
               {{- toYaml .Values.extraVolumeMounts | nindent 12}}
             {{- end }}
-
       volumes:
         {{- if .Values.persistence.enabled }}
         - name: data
@@ -244,9 +262,14 @@ spec:
           emptyDir: {}
         - name: keycloak-lib-quarkus
           emptyDir: {}
-          {{- if .Values.extraVolumes }}
-            {{- toYaml .Values.extraVolumes | nindent 8 }}
-          {{- end }}
+        {{- if .Values.realm.import }}
+        - name: realm-config
+          configMap:
+            name: {{ include "keycloak.fullname" . }}-realm
+        {{- end }}
+        {{- if .Values.extraVolumes }}
+          {{- toYaml .Values.extraVolumes | nindent 8 }}
+        {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

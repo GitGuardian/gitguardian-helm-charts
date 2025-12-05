@@ -23,7 +23,7 @@ image:
   ## @param image.repository RabbitMQ image repository
   repository: rabbitmq
   ## @param image.tag RabbitMQ image tag
-  tag: "4.1.4-management@sha256:8c31e22adfd876e183d81281b82fa489cd8032e6f9ef886e52261a1182a60951"
+  tag: "4.1.4-management@sha256:f66d1a21bd0b65fd91a4fd160de656dea92332e6037e58cb48e7174645a0586c"
   ## @param image.imagePullPolicy RabbitMQ image pull policy
   imagePullPolicy: Always
 
@@ -38,6 +38,8 @@ replicaCount: 1
 service:
   ## @param service.type Kubernetes service type
   type: ClusterIP
+  ## @param service.trafficDistribution Traffic distribution policy for the service
+  trafficDistribution: ""
   ## @param service.amqpPort RabbitMQ AMQP service port
   amqpPort: 5672
   ## @param service.managementPort RabbitMQ management UI port
@@ -88,6 +90,18 @@ config:
     ## You can also use an absolute value, e.g.: 256Mi
     ##
     value: 0.4
+  ## Logging configuration
+  ## ref: https://www.rabbitmq.com/docs/logging
+  ##
+  logging:
+    ## @param config.logging.console.enabled Enable console logging (outputs to stdout/stderr instead of files)
+    console:
+      enabled: true
+    ## @param config.logging.file.enabled Enable file logging (outputs to /var/log/rabbitmq/)
+    file:
+      enabled: false
+    ## @param config.logging.level Log level for RabbitMQ (debug, info, warning, error, critical, none)
+    level: "info"
   ## @param config.extraConfiguration Additional RabbitMQ configuration
   extraConfiguration: ""
   ## @param config.advancedConfiguration Advanced RabbitMQ configuration
@@ -246,13 +260,13 @@ readinessProbe:
   ## @param readinessProbe.enabled Enable readinessProbe on RabbitMQ containers
   enabled: true
   ## @param readinessProbe.initialDelaySeconds Initial delay seconds for readinessProbe
-  initialDelaySeconds: 0
+  initialDelaySeconds: 10
   ## @param readinessProbe.periodSeconds Period seconds for readinessProbe
-  periodSeconds: 10
+  periodSeconds: 30
   ## @param readinessProbe.timeoutSeconds Timeout seconds for readinessProbe
-  timeoutSeconds: 5
+  timeoutSeconds: 20
   ## @param readinessProbe.failureThreshold Failure threshold for readinessProbe
-  failureThreshold: 1
+  failureThreshold: 3
   ## @param readinessProbe.successThreshold Success threshold for readinessProbe
   successThreshold: 1
 
@@ -374,6 +388,10 @@ definitions:
   existingConfigMap: ""
   ## @param definitions.existingConfigMapKey Key in existing ConfigMap containing RabbitMQ definitions
   existingConfigMapKey: defs.json
+  ## @param definitions.existingSecret Name of existing Secret containing RabbitMQ definitions
+  existingSecret: ""
+  ## @param definitions.existingSecretKey Key in existing Secret containing RabbitMQ definitions
+  existingSecretKey: defs.json
   ## @param definitions.bindings Array of RabbitMQ bindings to create
   bindings: []
   ## @param definitions.global_parameters Array of RabbitMQ global parameters to create

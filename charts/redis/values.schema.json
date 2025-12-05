@@ -16,16 +16,10 @@
         },
         "imagePullSecrets": {
           "type": "array",
-          "title": "Global Image Pull Secrets",
-          "description": "Global Docker registry secret names as an array of objects",
           "items": {
-            "type": "object",
+            "type": ["string", "object"],
             "properties": {
-              "name": {
-                "type": "string",
-                "title": "Secret Name",
-                "description": "Name of the image pull secret"
-              }
+              "name": { "type": "string" }
             },
             "required": ["name"]
           }
@@ -41,6 +35,11 @@
       "type": "string",
       "title": "Full Name Override",
       "description": "String to fully override redis.fullname"
+    },
+    "namespaceOverride": {
+      "type": "string",
+      "title": "Namespace Override",
+      "description": "String to override the namespace for all resources"
     },
     "commonLabels": {
       "type": "object",

@@ -103,11 +103,15 @@ The following table lists the configurable parameters of the RabbitMQ chart and 
 | `podAnnotations`         | Annotations to attach to pods   | `{}`    |
 | `statefulsetAnnotations` | Annotations for StatefulSet     | `{}`    |
 
+### RabbitMQ Definitions
+
 | Parameter                          | Description                                                                                                                                  | Default     |
 | ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
 | `definitions.enabled`              | Enable loading of RabbitMQ definitions on startup. When `true`, definitions will be loaded at container boot.                                | `false`     |
 | `definitions.existingConfigMap`    | Name of an existing ConfigMap containing RabbitMQ definitions (e.g., created via `kubectl create configmap rmq-defs --from-file=defs.json`). | `""`        |
 | `definitions.existingConfigMapKey` | Key in the existing ConfigMap containing the RabbitMQ definitions JSON file.                                                                 | `defs.json` |
+| `defintions.existingSecret`        | Name of an existing Secret containing RabbitMQ definitions.                                                                                  | `""`        |
+| `definitions.existingSecretKey`    | Key in the existing Secret containing the RabbitMQ definitions JSON file.                                                                    | `defs.json` |
 | `definitions.users`                | Array of RabbitMQ users to create.                                                                                                           | `[]`        |
 | `definitions.vhosts`               | Array of RabbitMQ virtual hosts to create.                                                                                                   | `[]`        |
 | `definitions.permissions`          | Array of RabbitMQ permissions to set per vhost.                                                                                              | `[]`        |
@@ -121,15 +125,16 @@ The following table lists the configurable parameters of the RabbitMQ chart and 
 
 ### Service configuration
 
-| Parameter                     | Description                            | Default     |
-| ----------------------------- | -------------------------------------- | ----------- |
-| `service.type`                | Kubernetes service type                | `ClusterIP` |
-| `service.amqpPort`            | RabbitMQ AMQP service port             | `5672`      |
-| `service.managementPort`      | RabbitMQ management UI port            | `15672`     |
-| `service.epmdPort`            | RabbitMQ EPMD port                     | `4369`      |
-| `service.distPort`            | RabbitMQ distribution port             | `25672`     |
-| `service.annotations`         | Kubernetes service annotations         | `{}`        |
-| `service.annotationsHeadless` | Kubernetes service annotationsHeadless | `25672`     |
+| Parameter                     | Description                                 | Default     |
+| ----------------------------- | ------------------------------------------- | ----------- |
+| `service.type`                | Kubernetes service type                     | `ClusterIP` |
+| `service.amqpPort`            | RabbitMQ AMQP service port                  | `5672`      |
+| `service.managementPort`      | RabbitMQ management UI port                 | `15672`     |
+| `service.epmdPort`            | RabbitMQ EPMD port                          | `4369`      |
+| `service.distPort`            | RabbitMQ distribution port                  | `25672`     |
+| `service.annotations`         | Kubernetes service annotations              | `{}`        |
+| `service.annotationsHeadless` | Kubernetes service annotationsHeadless      | `25672`     |
+| `service.trafficDistribution` | Traffic distribution policy for the service | `""`        |
 
 ### RabbitMQ Authentication
 
@@ -245,10 +250,10 @@ The following table lists the configurable parameters of the RabbitMQ chart and 
 | `livenessProbe.failureThreshold`     | Failure threshold for livenessProbe          | `3`     |
 | `livenessProbe.successThreshold`     | Success threshold for livenessProbe          | `1`     |
 | `readinessProbe.enabled`             | Enable readinessProbe on RabbitMQ containers | `true`  |
-| `readinessProbe.initialDelaySeconds` | Initial delay seconds for readinessProbe     | `0`     |
-| `readinessProbe.periodSeconds`       | Period seconds for readinessProbe            | `10`    |
-| `readinessProbe.timeoutSeconds`      | Timeout seconds for readinessProbe           | `5`     |
-| `readinessProbe.failureThreshold`    | Failure threshold for readinessProbe         | `1`     |
+| `readinessProbe.initialDelaySeconds` | Initial delay seconds for readinessProbe     | `10`    |
+| `readinessProbe.periodSeconds`       | Period seconds for readinessProbe            | `30`    |
+| `readinessProbe.timeoutSeconds`      | Timeout seconds for readinessProbe           | `20`    |
+| `readinessProbe.failureThreshold`    | Failure threshold for readinessProbe         | `3`     |
 | `readinessProbe.successThreshold`    | Success threshold for readinessProbe         | `1`     |
 
 ### Additional Configuration

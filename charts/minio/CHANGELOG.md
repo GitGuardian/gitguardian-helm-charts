@@ -1,88 +1,67 @@
 # Changelog
 
-## 0.5.2 (2025-11-14)
 
-* feat(minio): rename post job and add variables to configure it ([#24](https://github.com/GitGuardian/gitguardian-helm-charts/pull/24))
+## 0.5.0 (2025-10-14)
 
-## <small>0.5.1 (2025-11-14)</small>
+* Update chart.yaml dependencies for indepentent charts (#382) ([87acfb1](https://github.com/CloudPirates-io/helm-charts/commit/87acfb1))
+* chore: update CHANGELOG.md for merged changes ([84cf67b](https://github.com/CloudPirates-io/helm-charts/commit/84cf67b))
+* chore: update CHANGELOG.md for all charts via manual trigger ([6974964](https://github.com/CloudPirates-io/helm-charts/commit/6974964))
+* chore: update CHANGELOG.md for merged changes ([63b7bfa](https://github.com/CloudPirates-io/helm-charts/commit/63b7bfa))
+* chore: update CHANGELOG.md for merged changes ([da69e0e](https://github.com/CloudPirates-io/helm-charts/commit/da69e0e))
+* chore: update CHANGELOG.md for merged changes ([5da1b15](https://github.com/CloudPirates-io/helm-charts/commit/5da1b15))
 
-* fix(minio): hook deletion on job ([d2d52c7](https://github.com/GitGuardian/gitguardian-helm-charts/commit/d2d52c7))
-* fix(minio): reduce ttlSecondsAfterFinished to 20sec ([9be7d34](https://github.com/GitGuardian/gitguardian-helm-charts/commit/9be7d34))
-* fix(minio): reduce ttlSecondsAfterFinished to 20sec ([40741dd](https://github.com/GitGuardian/gitguardian-helm-charts/commit/40741dd))
-* fix(minio): values schema update ([16d9950](https://github.com/GitGuardian/gitguardian-helm-charts/commit/16d9950))
-* [all] add tests for openshift (#226) ([c80c98a](https://github.com/GitGuardian/gitguardian-helm-charts/commit/c80c98a)), closes [#226](https://github.com/GitGuardian/gitguardian-helm-charts/issues/226)
-* [mongodb] feat: add metrics exporter (#243) ([c931978](https://github.com/GitGuardian/gitguardian-helm-charts/commit/c931978)), closes [#243](https://github.com/GitGuardian/gitguardian-helm-charts/issues/243)
-* Update CHANGELOG.md ([fdffec9](https://github.com/GitGuardian/gitguardian-helm-charts/commit/fdffec9))
-* Update CHANGELOG.md ([4e93e9d](https://github.com/GitGuardian/gitguardian-helm-charts/commit/4e93e9d))
+## 0.4.1 (2025-10-13)
 
-## 0.5.0 (2025-10-08)
 
-* feat(ci): implement ci for for workflow ([46ee227](https://github.com/GitGuardian/gitguardian-helm-charts/commit/46ee227))
-* feat(minio): add serviceAccount to MinIO deployment (#14) ([264d4ea](https://github.com/GitGuardian/gitguardian-helm-charts/commit/264d4ea)), closes [#14](https://github.com/GitGuardian/gitguardian-helm-charts/issues/14)
-*  [minio, mongodb, postgres, timescaledb] Update securityContext to containerSecurityContext in the v ([45499b9](https://github.com/GitGuardian/gitguardian-helm-charts/commit/45499b9)), closes [#213](https://github.com/GitGuardian/gitguardian-helm-charts/issues/213)
-*  [minio, mongodb, postgres, timescaledb] Update securityContext to containerSecurityContext in the v ([8a4003f](https://github.com/GitGuardian/gitguardian-helm-charts/commit/8a4003f)), closes [#213](https://github.com/GitGuardian/gitguardian-helm-charts/issues/213)
-* [keycloak] Add support for extra volumes, volumeMounts and initContainers (#215) ([5466858](https://github.com/GitGuardian/gitguardian-helm-charts/commit/5466858)), closes [#215](https://github.com/GitGuardian/gitguardian-helm-charts/issues/215)
-* [mariadb] use tpl to return existingConfigMap (#217) ([175e223](https://github.com/GitGuardian/gitguardian-helm-charts/commit/175e223)), closes [#217](https://github.com/GitGuardian/gitguardian-helm-charts/issues/217)
-* [mariadb] use tpl to return existingConfigMap (#217) ([c7c2f4c](https://github.com/GitGuardian/gitguardian-helm-charts/commit/c7c2f4c)), closes [#217](https://github.com/GitGuardian/gitguardian-helm-charts/issues/217)
-* [memcached] chore(deps): update docker.io/memcached:1.6.39 Docker digest to 157c563 (#185) ([27d0ff5](https://github.com/GitGuardian/gitguardian-helm-charts/commit/27d0ff5)), closes [#185](https://github.com/GitGuardian/gitguardian-helm-charts/issues/185)
-* add post job to auto create default buckets (#9) ([493263e](https://github.com/GitGuardian/gitguardian-helm-charts/commit/493263e)), closes [#9](https://github.com/GitGuardian/gitguardian-helm-charts/issues/9)
-* make minio run on openshift (#203) ([18c7be5](https://github.com/GitGuardian/gitguardian-helm-charts/commit/18c7be5)), closes [#203](https://github.com/GitGuardian/gitguardian-helm-charts/issues/203)
-* fix(minio): revert to 0.2.4 ([b660d6f](https://github.com/GitGuardian/gitguardian-helm-charts/commit/b660d6f))
+## 0.4.0 (2025-10-09)
 
-## <small>0.2.4 (2025-09-30)</small>
+* add auto bucket creation through k8s job and option to create ServiceAccount for Deployment (#288) ([47d3947](https://github.com/CloudPirates-io/helm-charts/commit/47d3947))
+* add tests for openshift (#226) ([c80c98a](https://github.com/CloudPirates-io/helm-charts/commit/c80c98a))
+*  [minio, mongodb, postgres, timescaledb] Update securityContext to containerSecurityContext in the values schema (#213) ([8a4003f](https://github.com/CloudPirates-io/helm-charts/commit/8a4003f))
 
-* add more configuration options for the minio server (#189) ([8066d07](https://github.com/GitGuardian/gitguardian-helm-charts/commit/8066d07)), closes [#189](https://github.com/GitGuardian/gitguardian-helm-charts/issues/189)
-* add option to use cpu-v1 image ([91bfd29](https://github.com/GitGuardian/gitguardian-helm-charts/commit/91bfd29))
-* bump verion to 0.2.3 ([af6beca](https://github.com/GitGuardian/gitguardian-helm-charts/commit/af6beca))
-* bump version to 0.2.2 ([afaf2d1](https://github.com/GitGuardian/gitguardian-helm-charts/commit/afaf2d1))
-* set strategy to recreate in deployment ([6e01f97](https://github.com/GitGuardian/gitguardian-helm-charts/commit/6e01f97))
-* update minio README.md ([cbca20c](https://github.com/GitGuardian/gitguardian-helm-charts/commit/cbca20c))
-* Update CHANGELOG.md ([55a987f](https://github.com/GitGuardian/gitguardian-helm-charts/commit/55a987f))
-* Update CHANGELOG.md ([f31d5a5](https://github.com/GitGuardian/gitguardian-helm-charts/commit/f31d5a5))
+## 0.3.0 (2025-10-02)
 
-## <small>0.2.1 (2025-09-08)</small>
+* make minio run on openshift (#203) ([18c7be5](https://github.com/CloudPirates-io/helm-charts/commit/18c7be5))
 
-* Update appVersion ([5c23cb1](https://github.com/GitGuardian/gitguardian-helm-charts/commit/5c23cb1))
-* revert ([ba71354](https://github.com/GitGuardian/gitguardian-helm-charts/commit/ba71354))
-* revert 2 ([b64c81d](https://github.com/GitGuardian/gitguardian-helm-charts/commit/b64c81d))
-* revert 3 ([d8ced5c](https://github.com/GitGuardian/gitguardian-helm-charts/commit/d8ced5c))
-* Update CHANGELOG.md ([bb8e730](https://github.com/GitGuardian/gitguardian-helm-charts/commit/bb8e730))
-* Update CHANGELOG.md ([82fe11f](https://github.com/GitGuardian/gitguardian-helm-charts/commit/82fe11f))
-* Update CHANGELOG.md ([808cae0](https://github.com/GitGuardian/gitguardian-helm-charts/commit/808cae0))
-* Upgrade minio to latest stable ([94ab830](https://github.com/GitGuardian/gitguardian-helm-charts/commit/94ab830))
-* Upgrade minio to latest stable ([b199ea4](https://github.com/GitGuardian/gitguardian-helm-charts/commit/b199ea4))
+## 0.2.4 (2025-09-30)
+
+* add more configuration options for the minio server (#189) ([8066d07](https://github.com/CloudPirates-io/helm-charts/commit/8066d07))
+
+## 0.2.3 (2025-09-15)
+
+* Update CHANGELOG.md ([55a987f](https://github.com/CloudPirates-io/helm-charts/commit/55a987f))
+* bump verion to 0.2.3 ([af6beca](https://github.com/CloudPirates-io/helm-charts/commit/af6beca))
+* set strategy to recreate in deployment ([6e01f97](https://github.com/CloudPirates-io/helm-charts/commit/6e01f97))
+
+## 0.2.2 (2025-09-15)
+
+* Update CHANGELOG.md ([f31d5a5](https://github.com/CloudPirates-io/helm-charts/commit/f31d5a5))
+* update minio README.md ([cbca20c](https://github.com/CloudPirates-io/helm-charts/commit/cbca20c))
+* bump version to 0.2.2 ([afaf2d1](https://github.com/CloudPirates-io/helm-charts/commit/afaf2d1))
+* add option to use cpu-v1 image ([91bfd29](https://github.com/CloudPirates-io/helm-charts/commit/91bfd29))
+
+## 0.2.1 (2025-09-08)
+
+* Update CHANGELOG.md ([bb8e730](https://github.com/CloudPirates-io/helm-charts/commit/bb8e730))
+* Update appVersion ([5c23cb1](https://github.com/CloudPirates-io/helm-charts/commit/5c23cb1))
+* Update CHANGELOG.md ([82fe11f](https://github.com/CloudPirates-io/helm-charts/commit/82fe11f))
+* Upgrade minio to latest stable ([94ab830](https://github.com/CloudPirates-io/helm-charts/commit/94ab830))
+* revert 3 ([d8ced5c](https://github.com/CloudPirates-io/helm-charts/commit/d8ced5c))
+* revert 2 ([b64c81d](https://github.com/CloudPirates-io/helm-charts/commit/b64c81d))
+* Update CHANGELOG.md ([808cae0](https://github.com/CloudPirates-io/helm-charts/commit/808cae0))
+* revert ([ba71354](https://github.com/CloudPirates-io/helm-charts/commit/ba71354))
+* Upgrade minio to latest stable ([b199ea4](https://github.com/CloudPirates-io/helm-charts/commit/b199ea4))
 
 ## 0.2.0 (2025-09-02)
 
-* [documentation] update readme files ([16944cd](https://github.com/GitGuardian/gitguardian-helm-charts/commit/16944cd))
-* add persistence.mountPath, use dynamic mountPath for data-volume ([5c2b721](https://github.com/GitGuardian/gitguardian-helm-charts/commit/5c2b721))
-* change securitycontext ids to 1001 ([9dc576e](https://github.com/GitGuardian/gitguardian-helm-charts/commit/9dc576e))
-* Fix public CDN readme ([68416b1](https://github.com/GitGuardian/gitguardian-helm-charts/commit/68416b1))
-* fix: remove debug-values ([385683d](https://github.com/GitGuardian/gitguardian-helm-charts/commit/385683d))
-* Improve ingress configuration ([47b5ceb](https://github.com/GitGuardian/gitguardian-helm-charts/commit/47b5ceb))
-* increase version to 0.1.4 ([3e6a8f3](https://github.com/GitGuardian/gitguardian-helm-charts/commit/3e6a8f3))
-* pin image in test, fix podAnnotations, dynamic ports in server command ([c0fc3c4](https://github.com/GitGuardian/gitguardian-helm-charts/commit/c0fc3c4))
-* Release ([c46ef4c](https://github.com/GitGuardian/gitguardian-helm-charts/commit/c46ef4c))
-* update readme, remove default values, fix chart.yaml ([37bbb1e](https://github.com/GitGuardian/gitguardian-helm-charts/commit/37bbb1e))
-* update version to 0.1.5 ([eedc099](https://github.com/GitGuardian/gitguardian-helm-charts/commit/eedc099))
-* Add ArtifactHub Badges to all Charts ([08b855b](https://github.com/GitGuardian/gitguardian-helm-charts/commit/08b855b))
-* Add ArtifactHub repo config ([15180a8](https://github.com/GitGuardian/gitguardian-helm-charts/commit/15180a8))
-* Add cosign signature READMEs ([5f82e7f](https://github.com/GitGuardian/gitguardian-helm-charts/commit/5f82e7f))
-* Add extensive chart testing ([a46efac](https://github.com/GitGuardian/gitguardian-helm-charts/commit/a46efac))
-* add extraObject array to all charts ([34772b7](https://github.com/GitGuardian/gitguardian-helm-charts/commit/34772b7))
-* Add generated values.schema.json files from values.yaml ([aa79ac3](https://github.com/GitGuardian/gitguardian-helm-charts/commit/aa79ac3))
-* Add initial Changelogs to all Charts ([68f10ca](https://github.com/GitGuardian/gitguardian-helm-charts/commit/68f10ca))
-* Add LICENSE ([fdbf1ab](https://github.com/GitGuardian/gitguardian-helm-charts/commit/fdbf1ab))
-* add logos to helm-charts ([fc70cdc](https://github.com/GitGuardian/gitguardian-helm-charts/commit/fc70cdc))
-* Add Minio helm-chart ([6a68b08](https://github.com/GitGuardian/gitguardian-helm-charts/commit/6a68b08))
-* bump all chart versions for new extraObjects feature ([aaa57f9](https://github.com/GitGuardian/gitguardian-helm-charts/commit/aaa57f9))
-* Fix image tag/digest handling ([a5c982b](https://github.com/GitGuardian/gitguardian-helm-charts/commit/a5c982b))
-* Fix imagePullSecrets format and pull always ([ce0d301](https://github.com/GitGuardian/gitguardian-helm-charts/commit/ce0d301))
-* fix readme.md install text, update chart.yaml home-website ([3511582](https://github.com/GitGuardian/gitguardian-helm-charts/commit/3511582))
-* Fix values.yaml / Chart.yaml linting issues ([043c7e0](https://github.com/GitGuardian/gitguardian-helm-charts/commit/043c7e0))
-* Format README files ([04aacab](https://github.com/GitGuardian/gitguardian-helm-charts/commit/04aacab))
-* Release new chart versions / update sources ([dbb0e45](https://github.com/GitGuardian/gitguardian-helm-charts/commit/dbb0e45))
-* Remove leading $ from code blocks ([836b2e3](https://github.com/GitGuardian/gitguardian-helm-charts/commit/836b2e3))
-* remove serviceaccounts from all charts ([be8f43a](https://github.com/GitGuardian/gitguardian-helm-charts/commit/be8f43a))
-* update readme, chart.yaml texts and descriptions ([0179046](https://github.com/GitGuardian/gitguardian-helm-charts/commit/0179046))
-* Use lookup function for password where applicable ([dfb9a0e](https://github.com/GitGuardian/gitguardian-helm-charts/commit/dfb9a0e))
+* bump all chart versions for new extraObjects feature ([aaa57f9](https://github.com/CloudPirates-io/helm-charts/commit/aaa57f9))
+* add extraObject array to all charts ([34772b7](https://github.com/CloudPirates-io/helm-charts/commit/34772b7))
+
+## 0.1.8 (2025-08-27)
+
+* Fix values.yaml / Chart.yaml linting issues ([043c7e0](https://github.com/CloudPirates-io/helm-charts/commit/043c7e0))
+* Add initial Changelogs to all Charts ([68f10ca](https://github.com/CloudPirates-io/helm-charts/commit/68f10ca))
+
+## 0.1.7 (2025-08-26)
+
+* Initial tagged release

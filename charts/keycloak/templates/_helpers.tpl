@@ -2,7 +2,7 @@
 Expand the name of the chart.
 */}}
 {{- define "keycloak.name" -}}
-{{- include "common.name" . -}}
+{{- include "cloudpirates.name" . -}}
 {{- end }}
 
 {{/*
@@ -11,21 +11,21 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 If release name contains chart name it will be used as a full name.
 */}}
 {{- define "keycloak.fullname" -}}
-{{- include "common.fullname" . -}}
+{{- include "cloudpirates.fullname" . -}}
 {{- end }}
 
 {{/*
 Create chart name and version as used by the chart label.
 */}}
 {{- define "keycloak.chart" -}}
-{{- include "common.chart" . -}}
+{{- include "cloudpirates.chart" . -}}
 {{- end }}
 
 {{/*
 Common labels
 */}}
 {{- define "keycloak.labels" -}}
-{{- include "common.labels" . -}}
+{{- include "cloudpirates.labels" . -}}
 {{- end }}
 
 {{/*
@@ -41,14 +41,14 @@ Common annotations
 Selector labels
 */}}
 {{- define "keycloak.selectorLabels" -}}
-{{- include "common.selectorLabels" . -}}
+{{- include "cloudpirates.selectorLabels" . -}}
 {{- end }}
 
 {{/*
 Return the proper Keycloak image name
 */}}
 {{- define "keycloak.image" -}}
-{{- include "common.image" (dict "image" .Values.image "global" .Values.global) -}}
+{{- include "cloudpirates.image" (dict "image" .Values.image "global" .Values.global) -}}
 {{- end }}
 
 {{/*
@@ -110,7 +110,7 @@ db-username
 Return the proper Docker Image Registry Secret Names
 */}}
 {{- define "keycloak.imagePullSecrets" -}}
-{{ include "common.images.renderPullSecrets" (dict "images" (list .Values.image) "context" .) }}
+{{ include "cloudpirates.images.renderPullSecrets" (dict "images" (list .Values.image) "context" .) }}
 {{- end -}}
 
 {{/*
@@ -192,3 +192,20 @@ Return the url to use for probes
 {{- printf "%s/realms/master" .Values.keycloak.httpRelativePath -}}
 {{- end -}}
 {{- end }}
+
+{{/*
+Return metrics service name
+*/}}
+{{- define "keycloak.metrics.fullname" -}}
+{{- printf "%s-metrics" (include "keycloak.fullname" .) -}}
+{{- end -}}
+
+{{/*
+Return ServiceMonitor labels
+*/}}
+{{- define "keycloak.metrics.serviceMonitor.labels" -}}
+{{- include "keycloak.labels" . }}
+{{- with .Values.metrics.serviceMonitor.additionalLabels }}
+{{ toYaml . }}
+{{- end }}
+{{- end -}}
