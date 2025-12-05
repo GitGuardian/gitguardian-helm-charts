@@ -50,7 +50,7 @@ spec:
         - name: wait-for-mariadb
           securityContext: {{ include "cloudpirates.renderContainerSecurityContext" . | nindent 12 }}
           image: {{ .Values.initContainers.waitForMariadb.image }}
-          command: ["sh", "-c", "until mysqladmin ping -h {{ .Release.Name }}-mariadb -P 3306 --silent; do echo waiting for database; sleep 2; done;"]
+          command: ["sh", "-c", "until mariadb-admin ping -h {{ .Release.Name }}-mariadb -P 3306 --silent; do echo waiting for database; sleep 2; done;"]
         {{- end }}
         {{- if .Values.extraInitContainers }}
           {{- toYaml .Values.extraInitContainers | nindent 8 }}
@@ -180,9 +180,8 @@ spec:
                   key: {{ include "keycloak.databasePasswordKey" . }}
               {{- end }}
             {{- end }}
-            {{- range $key, $value := .Values.extraEnv }}
-            - name: {{ $key }}
-              value: {{ $value | quote }}
+            {{- with .Values.extraEnvVars }}
+{{- toYaml . | nindent 12 }}
             {{- end }}
           {{- if .Values.extraEnvVarsSecret }}
           envFrom:
@@ -190,16 +189,17 @@ spec:
                 name: {{ .Values.extraEnvVarsSecret }}
           {{- end }}
           ports:
+            {{- if .Values.keycloak.httpEnabled }}
             - name: http
               containerPort: {{ .Values.keycloak.httpPort }}
               protocol: TCP
-            {{- if and .Values.keycloak.httpsPort (not .Values.keycloak.httpEnabled) }}
+            {{- else }}
             - name: https
               containerPort: {{ .Values.keycloak.httpsPort }}
               protocol: TCP
             {{- end }}
             {{- if .Values.metrics.enabled }}
-            - name: http-metrics
+            - name: {{ .Values.metrics.service.targetPort }}
               containerPort: {{ .Values.metrics.service.port }}
               protocol: TCP
             {{- end }}
@@ -207,8 +207,13 @@ spec:
           livenessProbe:
             httpGet:
               path: {{ include "keycloak.probeUrl" . }}
+              {{- if .Values.keycloak.httpEnabled }}
               port: http
               scheme: HTTP
+              {{- else }}
+              port: https
+              scheme: HTTPS
+              {{- end }}
             initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
             periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
             timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
@@ -219,8 +224,13 @@ spec:
           readinessProbe:
             httpGet:
               path: {{ include "keycloak.probeUrl" . }}
+              {{- if .Values.keycloak.httpEnabled }}
               port: http
               scheme: HTTP
+              {{- else }}
+              port: https
+              scheme: HTTPS
+              {{- end }}
             initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
             periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
             timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
@@ -231,8 +241,13 @@ spec:
           startupProbe:
             httpGet:
               path: {{ include "keycloak.probeUrl" . }}
+              {{- if .Values.keycloak.httpEnabled }}
               port: http
               scheme: HTTP
+              {{- else }}
+              port: https
+              scheme: HTTPS
+              {{- end }}
             initialDelaySeconds: {{ .Values.startupProbe.initialDelaySeconds }}
             periodSeconds: {{ .Values.startupProbe.periodSeconds }}
             timeoutSeconds: {{ .Values.startupProbe.timeoutSeconds }}
@@ -256,6 +271,10 @@ spec:
               mountPath: /opt/keycloak/work
             - name: keycloak-lib-quarkus
               mountPath: /opt/keycloak/lib/quarkus
+            - name: keycloak-themes
+              mountPath: /opt/keycloak/themes
+            - name: keycloak-providers
+              mountPath: /opt/keycloak/providers
             {{- if .Values.realm.configFile }}
             - name: realm-config
               mountPath: /opt/keycloak/data/import
@@ -293,6 +312,10 @@ spec:
         - name: keycloak-work
           emptyDir: {}
         - name: keycloak-lib-quarkus
+          emptyDir: {}
+        - name: keycloak-themes
+          emptyDir: {}
+        - name: keycloak-providers
           emptyDir: {}
         {{- if .Values.realm.configFile }}
         - name: realm-config
