@@ -71,13 +71,14 @@ redis-cli -h my-redis -a $REDIS_PASSWORD
 
 | Parameter           | Description                                                             | Default      |
 |---------------------| ----------------------------------------------------------------------- | ------------ |
-| `nameOverride`      | String to partially override redis.fullname                             | `""`         |
-| `fullnameOverride`  | String to fully override redis.fullname                                 | `""`         |
-| `namespaceOverride` | String to override the namespace for all resources                      | `""`         |
-| `commonLabels`      | Labels to add to all deployed objects                                   | `{}`         |
-| `commonAnnotations` | Annotations to add to all deployed objects                              | `{}`         |
-| `architecture`      | Redis architecture. Allowed values: `standalone` or `replication`       | `standalone` |
-| `replicaCount`      | Number of Redis replicas to deploy (only when architecture=replication) | `2`          |
+| `nameOverride`      | String to partially override redis.fullname                                                                      | `""`         |
+| `fullnameOverride`  | String to fully override redis.fullname                                                                          | `""`         |
+| `namespaceOverride` | String to override the namespace for all resources                                                               | `""`         |
+| `clusterDomain`     | Kubernetes cluster domain                                                                                        | `cluster.local` |
+| `commonLabels`      | Labels to add to all deployed objects                                                                            | `{}`         |
+| `commonAnnotations` | Annotations to add to all deployed objects                                                                       | `{}`         |
+| `architecture`      | Redis architecture. `standalone`: Single instance, `replication`: Master-replica (use `sentinel.enabled` to control automatic failover) | `standalone` |
+| `replicaCount`      | Number of Redis instances (when `architecture=replication`). With Sentinel: total instances. Without: 1 master + (n-1) replicas      | `3`          |
 
 ### Pod labels and annotations
 
@@ -91,6 +92,7 @@ redis-cli -h my-redis -a $REDIS_PASSWORD
 
 | Parameter      | Description             | Default     |
 | -------------- | ----------------------- | ----------- |
+| `service.annotations` | Kubernetes service annotations | `{}` |
 | `service.type` | Kubernetes service type | `ClusterIP` |
 | `service.port` | Redis service port      | `6379`      |
 
@@ -99,6 +101,7 @@ redis-cli -h my-redis -a $REDIS_PASSWORD
 | Parameter                        | Description                                                  | Default |
 | -------------------------------- | ------------------------------------------------------------ | ------- |
 | `auth.enabled`                   | Enable Redis authentication                                  | `true`  |
+| `auth.sentinel`                  | Enable authentication for Redis sentinels                    | `true`  |
 | `auth.password`                  | Redis password (if empty, random password will be generated) | `""`    |
 | `auth.existingSecret`            | Name of existing secret containing Redis password            | `""`    |
 | `auth.existingSecretPasswordKey` | Key in existing secret containing Redis password             | `""`    |
@@ -144,6 +147,14 @@ redis-cli -h my-redis -a $REDIS_PASSWORD
 | `metrics.serviceMonitor.annotations`       | Additional custom annotations for the ServiceMonitor                                    | `{}`                                                                              |
 | `metrics.serviceMonitor.namespaceSelector` | Namespace selector for ServiceMonitor                                                   | `{}`                                                                              |
 
+### Pod Disruption Budget
+
+| Parameter           | Description                                                    | Default |
+|---------------------|----------------------------------------------------------------|---------|
+| `pdb.enabled`       | Enable Pod Disruption Budget                                   | `false` |
+| `pdb.minAvailable`  | Minimum number/percentage of pods that should remain scheduled | `1`     |
+| `pdb.maxUnavailable`| Maximum number/percentage of pods that may be made unavailable | `""`    |
+
 ### Persistence
 
 | Parameter                  | Description                              | Default         |
@@ -183,12 +194,17 @@ redis-cli -h my-redis -a $REDIS_PASSWORD
 
 ### Security Context
 
-| Parameter                                           | Description                    | Default |
-| --------------------------------------------------- | ------------------------------ | ------- |
-| `containerSecurityContext.runAsUser`                | User ID to run the container   | `999`   |
-| `containerSecurityContext.runAsNonRoot`             | Run as non-root user           | `true`  |
-| `containerSecurityContext.allowPrivilegeEscalation` | Allow privilege escalation     | `false` |
-| `podSecurityContext.fsGroup`                        | Pod's Security Context fsGroup | `999`   |
+| Parameter                                           | Description                       | Default          |
+| --------------------------------------------------- | --------------------------------- | ---------------- |
+| `containerSecurityContext.runAsUser`                | User ID to run the container      | `999`            |
+| `containerSecurityContext.runAsGroup`               | Group ID to run the container     | `999`            |
+| `containerSecurityContext.runAsNonRoot`             | Run as non-root user              | `true`           |
+| `containerSecurityContext.privileged`               | Set container's privileged mode   | `false`          |
+| `containerSecurityContext.allowPrivilegeEscalation` | Allow privilege escalation        | `false`          |
+| `containerSecurityContext.readOnlyRootFilesystem`   | Read-only root filesystem         | `true`           |
+| `containerSecurityContext.capabilities.drop`        | Linux capabilities to be dropped  | `["ALL"]`        |
+| `containerSecurityContext.seccompProfile.type`      | Seccomp profile for the container | `RuntimeDefault` |
+| `podSecurityContext.fsGroup`                        | Pod's Security Context fsGroup    | `999`            |
 
 ### Health Checks
 
@@ -216,11 +232,11 @@ redis-cli -h my-redis -a $REDIS_PASSWORD
 
 ### Redis Sentinel Configuration (High Availability)
 
-Redis Sentinel provides high availability for Redis through automatic failover. When enabled in `replication` mode, Sentinel monitors the master and replicas, and promotes a replica to master if the current master becomes unavailable.
+Redis Sentinel provides high availability for Redis through automatic failover. When enabled in `replication` mode, Sentinel monitors the master and replicas, and promotes a replica to master if the current master becomes unavailable. When disabled with `replication` mode, pod-0 is always the master.
 
-| Parameter                            | Description                                           | Default            |
-| ------------------------------------ | ----------------------------------------------------- | ------------------ |
-| `sentinel.enabled`                   | Enable Redis Sentinel for high availability           | `false`            |
+| Parameter                            | Description                                                                                    | Default            |
+| ------------------------------------ | ---------------------------------------------------------------------------------------------- | ------------------ |
+| `sentinel.enabled`                   | Enable Redis Sentinel for high availability. When disabled, pod-0 is master (manual failover) | `false`            |
 | `sentinel.image.repository`          | Redis Sentinel image repository                       | `redis`            |
 | `sentinel.image.tag`                 | Redis Sentinel image tag                              | `8.2.1@sha256:...` |
 | `sentinel.image.pullPolicy`          | Sentinel image pull policy                            | `Always`           |
@@ -348,15 +364,31 @@ redis-cli -h <master-ip> -p 6379 -a $REDIS_PASSWORD
 
 ### Master-Replica without Sentinel
 
-If you want replication without Sentinel (manual failover):
+Deploy Redis with replication but without Sentinel for scenarios where automatic failover is not needed:
 
 ```yaml
-# values-replication.yaml
 architecture: replication
-replicaCount: 2
+replicaCount: 3  # 1 master + 2 replicas
 sentinel:
   enabled: false
+
+auth:
+  enabled: true
 ```
+
+After deployment, you'll have:
+
+- 1 Redis master instance (pod-0, always the master)
+- 2 Redis replica instances (pod-1, pod-2)
+- No automatic failover (manual intervention required if master fails)
+
+**Key differences from Sentinel mode:**
+
+- Pod-0 is always the master, other pods are always replicas
+- No automatic failover - if the master fails, manual intervention is required
+- Simpler setup with fewer components
+- Lower resource usage (no Sentinel containers)
+
 
 ## Upgrading
 
