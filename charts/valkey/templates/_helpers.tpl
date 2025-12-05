@@ -56,7 +56,7 @@ Return Valkey credentials secret name
 */}}
 {{- define "valkey.secretName" -}}
 {{- if .Values.auth.existingSecret -}}
-    {{- .Values.auth.existingSecret -}}
+    {{- include "cloudpirates.tplvalues.render" (dict "value" .Values.auth.existingSecret "context" .) -}}
 {{- else -}}
     {{- include "valkey.fullname" . -}}
 {{- end -}}
@@ -115,3 +115,17 @@ Return the proper Docker Image Registry Secret Names
 {{- define "valkey.imagePullSecrets" -}}
 {{ include "cloudpirates.images.renderPullSecrets" (dict "images" (list .Values.image) "context" .) }}
 {{- end -}}
+
+{{/*
+Return the proper Valkey Sentinel image name
+*/}}
+{{- define "valkey.sentinel.image" -}}
+{{- include "cloudpirates.image" (dict "image" .Values.sentinel.image "global" .Values.global) -}}
+{{- end }}
+
+{{/*
+Return Valkey config full path name
+*/}}
+{{- define "valkey.configFullName" -}}
+{{- printf "%s/valkey.conf" (include "valkey.configDir" .) -}}
+{{- end }}
