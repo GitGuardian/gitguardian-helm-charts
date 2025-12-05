@@ -56,7 +56,7 @@ Return PostgreSQL credentials secret name
 */}}
 {{- define "postgres.secretName" -}}
 {{- if .Values.auth.existingSecret -}}
-    {{- .Values.auth.existingSecret -}}
+    {{- include "cloudpirates.tplvalues.render" (dict "value" .Values.auth.existingSecret "context" .) -}}
 {{- else -}}
     {{- include "postgres.fullname" . -}}
 {{- end -}}
@@ -137,7 +137,7 @@ Get PostgreSQL username
 */}}
 {{- define "postgres.username" -}}
 {{- if .Values.auth.username -}}
-{{- .Values.auth.username -}}
+{{- include "cloudpirates.tplvalues.render" (dict "value" .Values.auth.username "context" .) -}}
 {{- else -}}
 postgres
 {{- end -}}
