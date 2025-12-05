@@ -1,0 +1,75 @@
+name: Sync Fork with Upstream
+
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+    branches:
+      - main
+  schedule:
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: write
+    
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config merge.theirs.driver true
+      
+      - name: Sync with upstream
+        run: |
+          git remote add upstream https://github.com/CloudPirates-io/helm-charts.git
+          git fetch upstream main
+          git fetch origin
+          
+          BRANCH="automated-upstream-sync"
+
+          if git ls-remote --heads origin $BRANCH | grep $BRANCH; then
+            echo "Updating existing branch"
+            git checkout $BRANCH
+          else
+            echo "Creating new branch"
+            git checkout -b $BRANCH
+          fi
+          
+          git merge upstream/main --no-edit
+          git push origin $BRANCH --force-with-lease
+      
+      - name: Create or update PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BRANCH="automated-upstream-sync"
+          COMMITS=$(git rev-list --count origin/main..origin/$BRANCH)
+          
+          # Check if PR exists
+          PR_NUMBER=$(gh pr list --head $BRANCH --state open --json number --jq '.[0].number')
+          
+          if [ -n "$PR_NUMBER" ]; then
+            echo "Updating existing PR #$PR_NUMBER"
+            gh pr edit $PR_NUMBER --title "🔄 Sync with upstream - $COMMITS commits"
+            gh pr comment $PR_NUMBER --body "🔄 Updated on $(date +%Y-%m-%d) with $COMMITS total commits"
+          else
+            echo "Creating new PR"
+            gh pr create \
+              --title "🔄 Sync with upstream - $COMMITS commits" \
+              --body "Automated sync with upstream repository" \
+              --head $BRANCH \
+              --base main \
+              --label "sync,automated"
+          fi
