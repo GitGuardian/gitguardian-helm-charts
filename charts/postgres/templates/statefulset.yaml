@@ -30,6 +30,9 @@ spec:
         {{- end }}
     spec:
       serviceAccountName: {{ include "postgres.serviceAccountName" . }}
+      {{- if .Values.priorityClassName }}
+      priorityClassName: {{ .Values.priorityClassName }}
+      {{- end }}
       automountServiceAccountToken: {{ .Values.serviceAccount.automountServiceAccountToken }}
 {{- with (include "postgres.imagePullSecrets" .) }}
 {{- . | nindent 6 }}
@@ -56,7 +59,7 @@ spec:
             {{- end }}
             {{- if .Values.auth.username }}
             - name: POSTGRES_USER
-              value: {{ .Values.auth.username | quote }}
+              value: {{ include "postgres.username" .}}
             {{- end }}
             {{- if .Values.auth.database }}
             - name: POSTGRES_DB
@@ -66,7 +69,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ include "postgres.secretName" . }}
-                  key: {{ .Values.auth.secretKeys.passwordKey }}
+                  key: {{ include "postgres.adminPasswordKey" . }}
             {{- if .Values.config.postgresqlMaxConnections }}
             - name: POSTGRES_MAX_CONNECTIONS
               value: {{ .Values.config.postgresqlMaxConnections | quote }}
@@ -79,16 +82,15 @@ spec:
             - name: POSTGRES_EFFECTIVE_CACHE_SIZE
               value: {{ .Values.config.postgresqlEffectiveCacheSize | quote }}
             {{- end }}
-            {{- range $key, $value := .Values.extraEnv }}
-            - name: {{ $key }}
-              value: {{ $value | quote }}
+            {{- with .Values.extraEnvVars }}
+{{ toYaml . | indent 12 }}
             {{- end }}
             {{- if and .Values.customUser (or .Values.customUser.name .Values.customUser.existingSecret) }}
             - name: CUSTOM_DB
               valueFrom:
                 secretKeyRef:
                   {{- if .Values.customUser.existingSecret }}
-                  name: {{ .Values.customUser.existingSecret }}
+                  name: {{ include "cloudpirates.tplvalues.render" (dict "value" .Values.customUser.existingSecret "context" $) }}
                   {{- else }}
                   name: {{ include "postgres.custom-user-configname" . }}
                   {{- end }}
@@ -101,7 +103,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   {{- if .Values.customUser.existingSecret }}
-                  name: {{ .Values.customUser.existingSecret }}
+                  name: {{ include "cloudpirates.tplvalues.render" (dict "value" .Values.customUser.existingSecret "context" $) }}
                   {{- else }}
                   name: {{ include "postgres.custom-user-configname" . }}
                   {{- end }}
@@ -114,7 +116,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   {{- if .Values.customUser.existingSecret }}
-                  name: {{ .Values.customUser.existingSecret }}
+                  name: {{ include "cloudpirates.tplvalues.render" (dict "value" .Values.customUser.existingSecret "context" $) }}
                   {{- else }}
                   name: {{ include "postgres.custom-user-configname" . }}
                   {{- end }}
@@ -180,7 +182,10 @@ spec:
           volumeMounts:
             - name: data
               mountPath: {{ include "postgres.dataDir" . }}
-            {{- if not .Values.config.existingConfigmap }}
+              {{- if .Values.persistence.subPath }}
+              subPath: {{ .Values.persistence.subPath }}
+              {{- end }}
+            {{- if .Values.config.mountConfigMap }}
             - name: config
               mountPath: {{ include "postgres.configDir" . }}
             {{- end }}
@@ -191,6 +196,9 @@ spec:
             {{- if or .Values.initdb.scriptsConfigMap .Values.initdb.scripts (and .Values.customUser (or .Values.customUser.name .Values.customUser.existingSecret)) }}
             - name: custom-init-scripts
               mountPath: {{ .Values.initdb.directory }}
+            {{- end }}
+            {{- if .Values.extraVolumeMounts }}
+            {{- toYaml .Values.extraVolumeMounts | nindent 12 }}
             {{- end }}
         {{- if .Values.metrics.enabled }}
         - name: metrics
@@ -213,7 +221,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ include "postgres.secretName" . }}
-                  key: {{ .Values.auth.secretKeys.passwordKey }}
+                  key: {{ include "postgres.adminPasswordKey" . }}
           ports:
             - name: metrics
               containerPort: 9187
@@ -245,7 +253,7 @@ spec:
           persistentVolumeClaim:
             claimName: {{ .Values.persistence.existingClaim }}
         {{- end }}
-        {{- if not .Values.config.existingConfigmap }}
+        {{- if .Values.config.mountConfigMap }}
         - name: config
           configMap:
             name: {{ include "postgres.configmapName" . }}
@@ -260,6 +268,9 @@ spec:
           configMap:
             name: {{ include "postgres.initdb.scriptsCM" . }}
             defaultMode: 0755
+        {{- end }}
+        {{- if .Values.extraVolumes }}
+        {{- toYaml .Values.extraVolumes | nindent 8 }}
         {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:

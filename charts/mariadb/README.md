@@ -1,10 +1,12 @@
 <p align="center">
-    <a href="https://artifacthub.io/packages/search?repo=cloudpirates-mariadb"><img src="https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/cloudpirates-mariadb" /></a>
+    <a href="https://artifacthub.io/packages/helm/cloudpirates-mariadb/mariadb"><img src="https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/cloudpirates-mariadb" /></a>
 </p>
 
 # MariaDB
 
-MariaDB is a high-performance, open-source relational database server that is a drop-in replacement for MySQL. This Helm chart deploys MariaDB as a StatefulSet on Kubernetes with comprehensive configuration options for development and production environments, providing stable network identities and persistent storage.
+MariaDB is a high-performance, open-source relational database server that is a drop-in replacement for MySQL. This Helm chart deploys MariaDB as a StatefulSet on Kubernetes with comprehensive configuration options for development and production environments, providing stable network identities and persistent storage. 
+
+The chart supports both single-node deployments and multi-node Galera cluster configurations for high availability and automatic failover.
 
 ## Installing the Chart
 
@@ -18,6 +20,12 @@ To install with custom values:
 
 ```bash
 helm install my-mariadb oci://registry-1.docker.io/cloudpirates/mariadb -f my-values.yaml
+```
+
+Or install directly from the local chart:
+
+```bash
+helm install my-valkey ./charts/valkey
 ```
 
 ## Uninstalling the Chart
@@ -97,14 +105,13 @@ The following table lists the configurable parameters of the MariaDB chart and t
 
 ### MariaDB Image Parameters
 
-| Parameter           | Description                                        | Default        |
-| ------------------- | -------------------------------------------------- | -------------- |
-| `image.registry`    | MariaDB image registry                             | `docker.io`    |
-| `image.repository`  | MariaDB image repository                           | `mariadb`      |
-| `image.tag`         | MariaDB image tag (immutable tags are recommended) | `"11.8.2"`     |
-| `image.digest`      | MariaDB image digest                               | `""`           |
-| `image.pullPolicy`  | MariaDB image pull policy                          | `IfNotPresent` |
-| `image.pullSecrets` | MariaDB image pull secrets                         | `[]`           |
+| Parameter          | Description                                        | Default                                                                            |
+| ------------------ | -------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| `image.registry`   | MariaDB image registry                             | `docker.io`                                                                        |
+| `image.repository` | MariaDB image repository                           | `mariadb`                                                                          |
+| `image.tag`        | MariaDB image tag (immutable tags are recommended) | `"12.1.2@sha256:e1bcd6f85781f4a875abefb11c4166c1d79e4237c23de597bf0df81fec225b40"` |
+| `image.pullPolicy` | MariaDB image pull policy                          | `IfNotPresent`                                                                     |
+
 
 ### MariaDB Authentication Parameters
 
@@ -126,6 +133,41 @@ The following table lists the configurable parameters of the MariaDB chart and t
 | ---------------------------- | ----------------------------------------------------- | ------- |
 | `config.customConfiguration` | Custom configuration for MariaDB                      | `""`    |
 | `config.existingConfigMap`   | Name of existing ConfigMap with MariaDB configuration | `""`    |
+
+### Galera Cluster Parameters
+
+For a detailed explanation of Galera parameters and usage, see [README_GALERA.md](README_GALERA.md).
+
+> [!WARNING]  
+> You must migrate from a standalone MariaDB to Galera carefully. Do not enable Galera on an existing standalone database without following proper migration steps.
+
+| Parameter                           | Description                                                         | Default                            |
+| ----------------------------------- | ------------------------------------------------------------------- | ---------------------------------- |
+| `galera.enabled`                    | Enable Galera Cluster mode                                          | `false`                            |
+| `galera.name`                       | Galera cluster name                                                 | `"galera"`                         |
+| `galera.bootstrap.enabled`          | Enable bootstrap mode for the first node in the cluster             | `true`                             |
+| `galera.replicaCount`               | Number of nodes in the Galera cluster                               | `3`                                |
+| `galera.wsrepProvider`              | Path to wsrep provider library                                      | `/usr/lib/galera/libgalera_smm.so` |
+| `galera.wsrepMethod`                | Method for state snapshot transfers (mariabackup, mysqldump, rsync) | `mariabackup`                      |
+| `galera.forceSafeToBootstrap`       | Force safe_to_bootstrap=1 in grastate.dat                           | `false`                            |
+| `galera.wsrepSlaveThreads`          | Number of slave threads for applying writesets                      | `1`                                |
+| `galera.wsrepCertifyNonPK`          | Require primary key for replication                                 | `true`                             |
+| `galera.wsrepMaxWsRows`             | Maximum number of rows in writeset                                  | `0`                                |
+| `galera.wsrepMaxWsSize`             | Maximum size of writeset in bytes                                   | `1073741824`                       |
+| `galera.wsrepDebug`                 | Enable wsrep debugging                                              | `false`                            |
+| `galera.wsrepRetryAutocommit`       | Number of times to retry autocommit                                 | `1`                                |
+| `galera.wsrepAutoIncrementControl`  | Enable auto increment control                                       | `true`                             |
+| `galera.wsrepDrupalHack`            | Enable Drupal compatibility hack                                    | `false`                            |
+| `galera.wsrepLogConflicts`          | Log conflicts to error log                                          | `false`                            |
+| `galera.innodb.flushLogAtTrxCommit` | InnoDB flush log at transaction commit                              | `0`                                |
+| `galera.innodb.bufferPoolSize`      | InnoDB buffer pool size                                             | `"128M"`                           |
+| `galera.sst.user`                   | SST user for authentication                                         | `"sstuser"`                        |
+| `galera.sst.password`               | SST password for authentication                                     | `""`                               |
+| `galera.sst.existingSecret`         | Existing secret containing SST credentials                          | `""`                               |
+| `galera.sst.secretKeys.userKey`     | Secret key for SST user                                             | `sst-user`                         |
+| `galera.sst.secretKeys.passwordKey` | Secret key for SST password                                         | `sst-password`                     |
+| `galera.recovery.enabled`           | Enable automatic recovery                                           | `true`                             |
+| `galera.recovery.clusterBootstrap`  | Enable cluster bootstrap in recovery                                | `true`                             |
 
 ### Service Parameters
 
@@ -165,11 +207,20 @@ The following table lists the configurable parameters of the MariaDB chart and t
 | `resources.limits`   | The resources limits for the MariaDB containers    | `{}`    |
 | `resources.requests` | The requested resources for the MariaDB containers | `{}`    |
 
+### Service Account
+
+| Parameter                                     | Description                                                                                                               | Default |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- | ------- |
+| `serviceAccount.create`                       | Specifies whether a service account should be created                                                                     | `false` |
+| `serviceAccount.annotations`                  | Annotations to add to the service account                                                                                 | `{}`    |
+| `serviceAccount.name`                         | The name of the service account to use. If not set and create is true, a name is generated using the `fullname` template. | `""`    |
+| `serviceAccount.automountServiceAccountToken` | Whether to automount the SA token inside the pod                                                                          | `false` |
+
 ### Extra Configuration Parameters
 
 | Parameter      | Description                                                                      | Default |
 | -------------- | -------------------------------------------------------------------------------- | ------- |
-| `env`          | A list of additional environment variables                                       | `[]`    |
+| `extraEnvVars` | Additional environment variables to set                                          | `[]`    |
 | `extraSecrets` | A list of additional existing secrets that will be mounted into the container    | `[]`    |
 | `extraConfigs` | A list of additional existing configMaps that will be mounted into the container | `[]`    |
 | `extraVolumes` | A list of additional existing volumes that will be mounted into the container    | `[]`    |
@@ -351,7 +402,7 @@ config:
 
 ```yaml
 # Additional environment variables
-env:
+extraEnvVars:
   - name: MYSQL_INIT_ONLY
     value: "0"
   - name: MARIADB_AUTO_UPGRADE
@@ -374,27 +425,6 @@ extraVolumes:
   - name: backup-storage
     mountPath: /backup
     pvcName: mariadb-backup-pvc
-```
-
-### With Ingress (for development only)
-
-**Note**: MariaDB ingress should only be used for development purposes. In production, use direct service connections.
-
-```yaml
-ingress:
-  enabled: true
-  className: "nginx"
-  annotations:
-    nginx.ingress.kubernetes.io/tcp-services-configmap: "default/tcp-services"
-  hosts:
-    - host: mariadb.local
-      paths:
-        - path: /
-          pathType: Prefix
-
-service:
-  type: NodePort
-  nodePort: 30306
 ```
 
 ## Troubleshooting
@@ -468,3 +498,4 @@ For production workloads, consider:
 - [MariaDB Official Documentation](https://mariadb.org/documentation/)
 - [MariaDB Docker Hub](https://hub.docker.com/_/mariadb)
 - [Kubernetes Documentation](https://kubernetes.io/docs/)
+- [Create an issue](https://github.com/CloudPirates-io/helm-charts/issues)

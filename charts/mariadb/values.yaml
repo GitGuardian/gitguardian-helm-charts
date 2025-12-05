@@ -22,7 +22,7 @@ image:
   ## @param image.repository MariaDB image repository
   repository: mariadb
   ## @param image.tag MariaDB image tag (immutable tags are recommended)
-  tag: "12.0.2@sha256:5b6a1eac15b85b981a61afb89aea2a22bf76b5f58809d05f0bcc13ab6ec44cb8"
+  tag: "12.1.2@sha256:e1bcd6f85781f4a875abefb11c4166c1d79e4237c23de597bf0df81fec225b40"
   ## @param image.pullPolicy MariaDB image pull policy
   imagePullPolicy: Always
 
@@ -54,6 +54,67 @@ config:
   customConfiguration: ""
   ## @param config.existingConfigMap Name of existing ConfigMap with MariaDB configuration
   existingConfigMap: ""
+
+## @section Galera Cluster parameters
+galera:
+  ## @param galera.enabled Enable Galera Cluster mode
+  enabled: false
+  ## @param galera.name Galera cluster name
+  name: "galera"
+  ## @param galera.bootstrap.enabled Enable bootstrap mode for the first node in the cluster
+  bootstrap:
+    enabled: true
+  ## @param galera.replicaCount Number of nodes in the Galera cluster
+  replicaCount: 3
+  ## @param galera.wsrepProvider Path to wsrep provider library
+  wsrepProvider: "/usr/lib/galera/libgalera_smm.so"
+  ## @param galera.wsrepMethod Method for state snapshot transfers
+  ## Options: mariabackup, mysqldump, rsync
+  wsrepMethod: "mariabackup"
+  ## @param galera.forceSafeToBootstrap Force safe_to_bootstrap=1 in grastate.dat
+  forceSafeToBootstrap: false
+  ## @param galera.wsrepSlaveThreads Number of slave threads for applying writesets
+  wsrepSlaveThreads: 1
+  ## @param galera.wsrepCertifyNonPK Require primary key for replication
+  wsrepCertifyNonPK: true
+  ## @param galera.wsrepMaxWsRows Maximum number of rows in writeset
+  wsrepMaxWsRows: 0
+  ## @param galera.wsrepMaxWsSize Maximum size of writeset in bytes
+  wsrepMaxWsSize: "1073741824"
+  ## @param galera.wsrepDebug Enable wsrep debugging
+  wsrepDebug: false
+  ## @param galera.wsrepRetryAutocommit Number of times to retry autocommit
+  wsrepRetryAutocommit: 1
+  ## @param galera.wsrepAutoIncrementControl Enable auto increment control
+  wsrepAutoIncrementControl: true
+  ## @param galera.wsrepDrupalHack Enable Drupal compatibility hack
+  wsrepDrupalHack: false
+  ## @param galera.wsrepLogConflicts Log conflicts to error log
+  wsrepLogConflicts: false
+  ## @param galera.innodb.flushLogAtTrxCommit InnoDB flush log at transaction commit
+  innodb:
+    flushLogAtTrxCommit: 0
+    ## @param galera.innodb.bufferPoolSize InnoDB buffer pool size
+    bufferPoolSize: "128M"
+  ## @param galera.sst SST specific configuration
+  sst:
+    ## @param galera.sst.user SST user for authentication
+    user: ""
+    ## @param galera.sst.password SST password for authentication
+    password: ""
+    ## @param galera.sst.existingSecret Existing secret containing SST credentials
+    existingSecret: ""
+    ## @param galera.sst.secretKeys.userKey Secret key for SST user
+    ## @param galera.sst.secretKeys.passwordKey Secret key for SST password
+    secretKeys:
+      userKey: sst-user
+      passwordKey: sst-password
+  ## @param galera.recovery Enable Galera recovery options
+  recovery:
+    ## @param galera.recovery.enabled Enable automatic recovery
+    enabled: true
+    ## @param galera.recovery.clusterBootstrap Enable cluster bootstrap in recovery
+    clusterBootstrap: true
 
 ## @section MariaDB service parameters
 service:
@@ -111,11 +172,27 @@ resources:
   ##   memory: 300Mi
   ##   cpu: 100m
 
+## @section Service Account
+serviceAccount:
+  ## @param serviceAccount.create Specifies whether a service account should be created
+  create: false
+  ## @param serviceAccount.annotations Annotations to add to the service account
+  annotations: {}
+  ## @param serviceAccount.name The name of the service account to use. If not set and create is true, a name is generated using the `fullname` template.
+  name: ""
+  ## @param serviceAccount.automountServiceAccountToken whether to automount the SA token inside the pod
+  automountServiceAccountToken: false
+
 ## @section Extra Configs
-## @param env A list of additional environment Variables
-env: []
-## - name: ENV_VARIABLE
-##   value: "value"
+## @param extraEnvVars Additional environment variables to set
+extraEnvVars: []
+  # - name: CUSTOM_VAR
+  #   value: "custom-value"
+  # - name: SECRET_VAR
+  #   valueFrom:
+  #     secretKeyRef:
+  #       name: my-secret
+  #       key: secret-key
 ## @param extraSecrets A list of additional existing secrets that will be mounted into the container
 extraSecrets: []
 ##  - name: secret

@@ -15,3 +15,78 @@ tests:
       - equal:
           path: spec.template.spec.containers[0].readinessProbe.httpGet.path
           value: /auth/realms/master
+  - it: hostname explicitly set should be unchanged
+    set:
+      keycloak:
+        hostname: keycloak.example.com
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].args[2]
+          value: --hostname=keycloak.example.com
+  - it: hostname with template should be rendered
+    set:
+      keycloak:
+        hostname: keycloak.{{ .Values.myDomain }}
+      myDomain: mydomain.com
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].args[2]
+          value: --hostname=keycloak.mydomain.com
+  - it: hostnameAdmin explicitly set should be unchanged
+    set:
+      keycloak:
+        hostnameAdmin: keycloak.example.com
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].args[2]
+          value: --hostname-admin=keycloak.example.com
+  - it: hostname with template should be rendered
+    set:
+      keycloak:
+        hostnameAdmin: keycloak.{{ .Values.myDomain }}
+      myDomain: mydomain.com
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].args[2]
+          value: --hostname-admin=keycloak.mydomain.com
+  - it: resources should be set
+    set:
+      resources:
+        requests:
+          cpu: 100m
+          memory: 128Mi
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].resources.requests.cpu
+          value: 100m
+      - equal:
+          path: spec.template.spec.containers[0].resources.requests.memory
+          value: 128Mi
+      - equal:
+          path: spec.template.spec.initContainers[0].resources.requests.cpu
+          value: 100m
+      - equal:
+          path: spec.template.spec.initContainers[0].resources.requests.memory
+          value: 128Mi
+  - it: resources should be set when postgres is enabled
+    set:
+      resources:
+        requests:
+          cpu: 100m
+      postgres:
+        enabled: true
+    asserts:
+      - equal:
+          path: spec.template.spec.initContainers[1].resources.requests.cpu
+          value: 100m
+  - it: resources should be set when mariadb is enabled
+    set:
+      resources:
+        requests:
+          cpu: 100m
+      mariadb:
+        enabled: true
+    asserts:
+      - equal:
+          path: spec.template.spec.initContainers[1].resources.requests.cpu
+          value: 100m
