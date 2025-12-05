@@ -45,7 +45,7 @@ Get the secret name for Redis password
 */}}
 {{- define "redis.secretName" -}}
 {{- if .Values.auth.existingSecret }}
-{{- .Values.auth.existingSecret }}
+{{- include "cloudpirates.tplvalues.render" (dict "value" .Values.auth.existingSecret "context" .) }}
 {{- else }}
 {{- include "redis.fullname" . }}
 {{- end }}
@@ -106,18 +106,22 @@ app.kubernetes.io/component: sentinel
 {{- end }}
 
 {{/*
-Generate Redis CLI command with auth
+Generate Redis CLI command with automated auth
 */}}
 {{- define "redis.cli" -}}
-{{- if .auth -}}
-redis-cli -a "${REDIS_PASSWORD}"
-{{- else -}}
 redis-cli
-{{- end -}}
 {{- end -}}
 
 {{/*
-Generate Sentinel CLI command with auth and connection info
+Generate Redis CLI ping command with automated auth
+*/}}
+{{- define "redis.ping" -}}
+{{ include "redis.cli" . }} ping
+{{- end -}}
+
+
+{{/*
+Generate Sentinel CLI command with automated auth and connection info
 */}}
 {{- define "redis.sentinelCli" -}}
 {{- if .auth -}}

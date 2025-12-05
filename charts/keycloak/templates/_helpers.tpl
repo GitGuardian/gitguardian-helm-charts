@@ -56,7 +56,7 @@ Return Keycloak admin credentials secret name
 */}}
 {{- define "keycloak.secretName" -}}
 {{- if .Values.keycloak.existingSecret -}}
-    {{- .Values.keycloak.existingSecret -}}
+    {{- include "cloudpirates.tplvalues.render" (dict "value" .Values.keycloak.existingSecret "context" .) -}}
 {{- else -}}
     {{- include "keycloak.fullname" . -}}
 {{- end -}}
@@ -129,7 +129,7 @@ Return the Keycloak hostname
 */}}
 {{- define "keycloak.hostname" -}}
 {{- if .Values.keycloak.hostname -}}
-{{- .Values.keycloak.hostname -}}
+{{- tpl (.Values.keycloak.hostname | toString) $ -}}
 {{- else if .Values.ingress.enabled -}}
 {{- (index .Values.ingress.hosts 0).host -}}
 {{- else -}}
@@ -142,7 +142,7 @@ Return the Keycloak admin hostname
 */}}
 {{- define "keycloak.hostnameAdmin" -}}
 {{- if .Values.keycloak.hostnameAdmin -}}
-{{- .Values.keycloak.hostnameAdmin -}}
+{{- tpl (.Values.keycloak.hostnameAdmin | toString) $ -}}
 {{- else -}}
 {{- include "keycloak.hostname" . -}}
 {{- end -}}
@@ -176,6 +176,8 @@ Return the database JDBC URL
 {{- else if or (eq .Values.database.type "mysql") (eq .Values.database.type "mariadb") -}}
 {{- if .Values.mariadb.enabled -}}
 {{- printf "jdbc:mysql://%s-mariadb:%s/%s%s" .Release.Name "3306" (default "keycloak" .Values.mariadb.auth.database) (ternary (printf "?%s" .Values.database.jdbcParams) "" (ne .Values.database.jdbcParams "")) -}}
+{{- else if eq .Values.database.type "mssql" -}}
+{{- printf "jdbc:mssql://%s:%s/%s%s" .Values.database.host (default "1433" (.Values.database.port | toString)) .Values.database.name (ternary (printf "?%s" .Values.database.jdbcParams) "" (ne .Values.database.jdbcParams "")) -}}
 {{- else -}}
 {{- printf "jdbc:mysql://%s:%s/%s%s" .Values.database.host (default "3306" (.Values.database.port | toString)) .Values.database.name (ternary (printf "?%s" .Values.database.jdbcParams) "" (ne .Values.database.jdbcParams "")) -}}
 {{- end -}}
@@ -190,6 +192,30 @@ Return the url to use for probes
 {{- printf "/realms/master" -}}
 {{- else -}}
 {{- printf "%s/realms/master" .Values.keycloak.httpRelativePath -}}
+{{- end -}}
+{{- end }}
+
+{{/*
+Return TLS certificate secret name
+*/}}
+{{- define "keycloak.tlsSecretName" -}}
+{{- if .Values.tls.certManager.enabled -}}
+    {{- .Values.tls.certManager.secretName | default (printf "%s-tls" (include "keycloak.fullname" .)) -}}
+{{- else if .Values.tls.existingSecret -}}
+    {{- .Values.tls.existingSecret -}}
+{{- else -}}
+    {{- printf "%s-tls" (include "keycloak.fullname" .) -}}
+{{- end -}}
+{{- end }}
+
+{{/*
+Return TLS truststore secret name
+*/}}
+{{- define "keycloak.truststoreSecretName" -}}
+{{- if .Values.tls.truststoreExistingSecret -}}
+    {{- .Values.tls.truststoreExistingSecret -}}
+{{- else -}}
+    {{- printf "%s-truststore" (include "keycloak.fullname" .) -}}
 {{- end -}}
 {{- end }}
 
