@@ -1,3 +1,5 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
+---
 name: Sync Fork with Upstream
 
 on:
@@ -11,7 +13,7 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-    
+
     steps:
       - uses: actions/checkout@v5
         with:
@@ -24,6 +26,7 @@ jobs:
           git config merge.theirs.driver true
       
       - name: Sync with upstream
+        id: sync
         run: |
           git remote add upstream https://github.com/CloudPirates-io/helm-charts.git
           git fetch upstream main
@@ -40,9 +43,17 @@ jobs:
           fi
           
           git merge upstream/main --no-edit
-          git push origin $BRANCH --force-with-lease
+          
+          if git diff --quiet origin/main; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "No changes to sync"
+          else
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            git push origin $BRANCH --force-with-lease
+          fi
       
       - name: Create or update PR
+        if: steps.sync.outputs.has_changes == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
