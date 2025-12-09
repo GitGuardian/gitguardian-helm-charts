@@ -338,6 +338,9 @@
                 "enabled": {
                     "type": "boolean"
                 },
+                "labels": {
+                    "type": "object"
+                },
                 "selector": {
                     "type": "object"
                 },
