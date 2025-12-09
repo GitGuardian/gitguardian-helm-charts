@@ -7,6 +7,14 @@ When improving our charts, it is necessary to contribute upstream on `Cloudpirat
 3. Cherry-pick your changes
 4. Create a new PR on upstream main branch
 
+## Automated sync
+
+To keep our fork aligned with the upstream repository, a dedicated pipeline runs daily to synchronize changes. This pipeline automatically creates a pull request containing all upstream updates. The PR is created from a dedicated branch (`automated-upstream-sync`) and is updated daily if new changes are detected upstream.
+
+The pipeline can also be triggered manually from the **Actions** tab by running the `Sync Fork with Upstream` workflow.
+
+When ready, merge the PR to sync the fork with the upstream repository.
+
 ## Manual sync
 
 First ensure you enable merge policy by adding in your `.git/config` file:
