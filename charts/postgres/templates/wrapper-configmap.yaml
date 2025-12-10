@@ -1,0 +1,41 @@
+{{- if or .Values.initdb.scriptsConfigMap .Values.initdb.scripts (and .Values.customUser (or .Values.customUser.name .Values.customUser.existingSecret)) }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ printf "%s-wrapper" (include "postgres.fullname" .) }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "postgres.labels" . | nindent 4 }}
+  {{- if .Values.commonAnnotations }}
+  annotations:
+    {{- include "postgres.annotations" . | nindent 4 }}
+  {{- end }}
+data:
+  postgres-wrapper.sh: |
+    #!/bin/bash
+    set -e
+
+    SEMAPHORE_FILE="{{ include "postgres.dataDir" . }}/.init-scripts-completed"
+    PGDATA_PATH="{{ include "postgres.pgdataPath" . }}"
+
+    echo "PostgreSQL wrapper: Checking initialization status..."
+    echo "Semaphore file: $SEMAPHORE_FILE"
+    echo "PGDATA path: $PGDATA_PATH"
+
+    # Check if PGDATA exists and semaphore doesn't
+    if [ -d "$PGDATA_PATH" ] && [ ! -f "$SEMAPHORE_FILE" ]; then
+      echo "❌ ERROR: Database directory exists but initialization scripts did not complete successfully"
+      echo "❌ This indicates that initialization scripts failed during the previous run"
+      echo "❌ Removing PGDATA to force re-initialization..."
+      rm -rf "$PGDATA_PATH"
+      echo "✅ PGDATA removed. Database will be re-initialized with init scripts"
+    elif [ -f "$SEMAPHORE_FILE" ]; then
+      echo "✅ Semaphore file found - initialization scripts completed successfully in a previous run"
+    else
+      echo "ℹ️  First run - database will be initialized with init scripts"
+    fi
+
+    echo "Starting PostgreSQL..."
+    # Execute the original docker-entrypoint.sh with all arguments
+    exec docker-entrypoint.sh "$@"
+{{- end }}
