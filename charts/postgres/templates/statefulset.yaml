@@ -47,7 +47,13 @@ spec:
           securityContext: {{ include "cloudpirates.renderContainerSecurityContext" . | nindent 12 }}
           image: {{ include "postgres.image" . }}
           imagePullPolicy: {{ .Values.image.imagePullPolicy }}
+          {{- if or .Values.initdb.scriptsConfigMap .Values.initdb.scripts (and .Values.customUser (or .Values.customUser.name .Values.customUser.existingSecret)) }}
+          command:
+            - /bin/bash
+            - /scripts/postgres-wrapper.sh
+          {{- end }}
           args:
+            - postgres
             - -c
             - 'config_file={{ include "postgres.configDir" . }}/postgresql.conf'
           env:
@@ -196,6 +202,8 @@ spec:
             {{- if or .Values.initdb.scriptsConfigMap .Values.initdb.scripts (and .Values.customUser (or .Values.customUser.name .Values.customUser.existingSecret)) }}
             - name: custom-init-scripts
               mountPath: {{ .Values.initdb.directory }}
+            - name: wrapper-script
+              mountPath: /scripts
             {{- end }}
             {{- if .Values.extraVolumeMounts }}
             {{- toYaml .Values.extraVolumeMounts | nindent 12 }}
@@ -267,6 +275,10 @@ spec:
         - name: custom-init-scripts
           configMap:
             name: {{ include "postgres.initdb.scriptsCM" . }}
+            defaultMode: 0755
+        - name: wrapper-script
+          configMap:
+            name: {{ printf "%s-wrapper" (include "postgres.fullname" .) }}
             defaultMode: 0755
         {{- end }}
         {{- if .Values.extraVolumes }}
