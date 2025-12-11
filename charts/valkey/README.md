@@ -128,6 +128,7 @@ The following table lists the configurable parameters of the Valkey chart and th
 
 | Parameter                  | Description                                               | Default                   |
 | -------------------------- | --------------------------------------------------------- | ------------------------- |
+| `config.mountPath`         | Redis configuration mount path                            | `/etc/valkey`             |
 | `config.maxMemory`         | Maximum memory usage for Valkey (e.g., 256mb, 1gb)        | `""`                      |
 | `config.maxMemoryPolicy`   | Memory eviction policy when maxmemory is reached          | `"allkeys-lru"`           |
 | `config.save`              | Valkey save configuration (e.g., "900 1 300 10 60 10000") | `"900 1 300 10 60 10000"` |
@@ -247,6 +248,7 @@ Sentinel provides high availability for Valkey replication. When enabled, Sentin
 | `sentinel.image.repository`          | Valkey Sentinel image repository                                                    | `valkey/valkey`                                                                              |
 | `sentinel.image.tag`                 | Valkey Sentinel image tag                                                           | `"9.0.0-alpine3.22@sha256:b4ee67d73e00393e712accc72cfd7003b87d0fcd63f0eba798b23251bfc9c394"` |
 | `sentinel.image.pullPolicy`          | Valkey Sentinel image pull policy                                                   | `Always`                                                                                     |
+| `sentinel.config.announceHostnames`  | Use the hostnames instead of the IP in "announce-ip" commands                       | `true`                                                                                       |
 | `sentinel.masterName`                | Name of the master server                                                           | `mymaster`                                                                                   |
 | `sentinel.quorum`                    | Number of Sentinels that need to agree about the fact the master is not reachable   | `2`                                                                                          |
 | `sentinel.downAfterMilliseconds`     | Time in milliseconds after the master is declared down                              | `1500`                                                                                       |

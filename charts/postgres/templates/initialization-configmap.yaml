@@ -12,11 +12,11 @@ metadata:
   annotations:
     {{- include "postgres.annotations" . | nindent 4 }}
   {{- end }}
-data: 
+data:
   {{- if $createCustomUser }}
   00-init-custom-user.sh: |
     #!/bin/sh
-    
+
     if [ -z "$CUSTOM_DB" ] && [ -z "$CUSTOM_USER" ] && [ -z "$CUSTOM_PASSWORD" ]; then
       echo "No custom user configuration found, skipping..."
       exit 0
@@ -31,10 +31,18 @@ data:
       GRANT ALL PRIVILEGES ON DATABASE :DATABASENAME TO :USERNAME;
       ALTER DATABASE :DATABASENAME OWNER TO :USERNAME;
     EOSQL
-    
+
     echo "✅ Custom user and database created successfully!"
   {{- end }}
   {{- if $appendInitdbScripts }}
   {{- include "cloudpirates.tplvalues.render" (dict "value" .Values.initdb.scripts "context" .) | nindent 2 }}
   {{- end }}
+  zz-mark-init-complete.sh: |
+    #!/bin/sh
+    # This script runs last (zz prefix ensures it runs after all other init scripts)
+    # It creates a semaphore file to indicate that all init scripts completed successfully
+    set -e
+    echo "✅ All initialization scripts completed successfully"
+    touch {{ include "postgres.dataDir" . }}/.init-scripts-completed
+    echo "Created semaphore file: {{ include "postgres.dataDir" . }}/.init-scripts-completed"
 {{- end }}
