@@ -518,6 +518,9 @@
         "resources": {
             "type": "object"
         },
+        "revisionHistoryLimit": {
+            "type": "integer"
+        },
         "service": {
             "type": "object",
             "properties": {
@@ -552,6 +555,9 @@
             "properties": {
                 "annotations": {
                     "type": "object"
+                },
+                "automountServiceAccountToken": {
+                    "type": "boolean"
                 },
                 "create": {
                     "type": "boolean"
