@@ -545,6 +545,12 @@
                 "trafficDistribution": {
                     "type": "string"
                 },
+                "externalTrafficPolicy": {
+                    "type": "string"
+                },
+                "allocateLoadBalancerNodePorts": {
+                    "type": "boolean"
+                },
                 "type": {
                     "type": "string"
                 }
