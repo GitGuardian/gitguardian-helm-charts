@@ -525,6 +525,9 @@
                 }
             }
         },
+        "revisionHistoryLimit": {
+            "type": "integer"
+        },
         "sentinel": {
             "type": "object",
             "properties": {
@@ -561,6 +564,9 @@
                             "type": "string"
                         }
                     }
+                },
+                "loglevel": {
+                    "type": "string"
                 },
                 "masterName": {
                     "type": "string"
