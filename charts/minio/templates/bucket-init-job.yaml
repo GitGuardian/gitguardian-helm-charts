@@ -6,7 +6,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "minio.labels" . | nindent 4 }}
-  {{- $annotations := merge (include "minio.annotations" . | fromYaml) .Values.postJob.annotations }}
+  {{- $annotations := merge (include "minio.annotations" . | fromYaml) .Values.bucketInitJob.annotations }}
   {{- with $annotations }}
   annotations: 
 {{ toYaml . | indent 4 }}
