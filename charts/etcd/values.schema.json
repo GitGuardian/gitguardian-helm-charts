@@ -255,6 +255,9 @@
                 "enabled": {
                     "type": "boolean"
                 },
+                "labels": {
+                    "type": "object"
+                },
                 "mountPath": {
                     "type": "string"
                 },
