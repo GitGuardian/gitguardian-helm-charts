@@ -565,6 +565,9 @@
                         }
                     }
                 },
+                "loglevel": {
+                    "type": "string"
+                },
                 "masterName": {
                     "type": "string"
                 },
