@@ -337,6 +337,14 @@
                 }
             }
         },
+        "postJob": {
+            "type": "object",
+            "properties": {
+                "annotations": {
+                    "type": "object"
+                }
+            }
+        },
         "readinessProbe": {
             "type": "object",
             "properties": {

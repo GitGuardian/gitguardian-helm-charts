@@ -49,6 +49,9 @@
                 "maxMemoryPolicy": {
                     "type": "string"
                 },
+                "mountPath": {
+                    "type": "string"
+                },
                 "save": {
                     "type": "string"
                 }
@@ -395,9 +398,20 @@
                 }
             }
         },
+        "revisionHistoryLimit": {
+            "type": "integer"
+        },
         "sentinel": {
             "type": "object",
             "properties": {
+                "config": {
+                    "type": "object",
+                    "properties": {
+                        "announceHostnames": {
+                            "type": "boolean"
+                        }
+                    }
+                },
                 "downAfterMilliseconds": {
                     "type": "integer"
                 },

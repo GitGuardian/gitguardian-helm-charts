@@ -518,9 +518,15 @@
         "resources": {
             "type": "object"
         },
+        "revisionHistoryLimit": {
+            "type": "integer"
+        },
         "service": {
             "type": "object",
             "properties": {
+                "allocateLoadBalancerNodePorts": {
+                    "type": "boolean"
+                },
                 "amqpPort": {
                     "type": "integer"
                 },
@@ -535,6 +541,9 @@
                 },
                 "epmdPort": {
                     "type": "integer"
+                },
+                "externalTrafficPolicy": {
+                    "type": "string"
                 },
                 "managementPort": {
                     "type": "integer"
@@ -552,6 +561,9 @@
             "properties": {
                 "annotations": {
                     "type": "object"
+                },
+                "automountServiceAccountToken": {
+                    "type": "boolean"
                 },
                 "create": {
                     "type": "boolean"
