@@ -23,7 +23,7 @@ image:
   ## @param image.repository RabbitMQ image repository
   repository: rabbitmq
   ## @param image.tag RabbitMQ image tag
-  tag: "4.2.2-management@sha256:e96344e767085fedcdc74cce176c72414938f28502ee238bcc0a8db6d1a402b0"
+  tag: "4.2.3-management@sha256:5deee3f817cb61eef73b2a934c9fe303be347a23db4e45123ec1698f25118e8c"
   ## @param image.imagePullPolicy RabbitMQ image pull policy
   imagePullPolicy: Always
 
@@ -233,9 +233,22 @@ queueBalancing:
 ##          targetGroupSize: 3  # 3 replicas even in 5-node cluster
 ##          interval: 1800000  # 30 minutes in milliseconds
 ##
-## Note: When upgrading existing RabbitMQ deployments, enable autoRebalance
-##       to redistribute existing queues. For new deployments, queueLeaderLocator
-##       alone is usually sufficient.
+## Important Notes:
+##
+## - When upgrading existing RabbitMQ deployments, enable autoRebalance to
+##   redistribute existing queues across cluster nodes.
+##
+## - For new deployments with stable nodes and low queue churn, queueLeaderLocator
+##   alone may be sufficient for balanced queue distribution.
+##
+## - However, if you have HIGH QUEUE CHURN (especially auto-delete queues) or expect
+##   node failures/restarts/redeployments during operation, you should ALSO enable
+##   autoRebalance even for new deployments. This ensures queues are rebalanced after
+##   node recoveries, preventing long-term unbalanced distribution.
+##
+##   Example scenario: If a node goes down during peak queue creation (e.g., daily
+##   workstation reconnections), new queues will only be placed on available nodes.
+##   Without autoRebalance, these queues remain unbalanced even after the node returns.
 
 ## @section PeerDiscoveryK8sPlugin configuration
 peerDiscoveryK8sPlugin:
@@ -259,7 +272,7 @@ initContainer:
     ## @param initContainer.image.registry Init container image repository
     repository: busybox
     ## @param initContainer.image.tag Init container image tag
-    tag: "1.37.0@sha256:e226d6308690dbe282443c8c7e57365c96b5228f0fe7f40731b5d84d37a06839"
+    tag: "1.37.0@sha256:b3255e7dfbcd10cb367af0d409747d511aeb66dfac98cf30e97e87e4207dd76f"
     ## @param initContainer.image.pullPolicy Init container image pull policy
     pullPolicy: IfNotPresent
 
@@ -282,6 +295,8 @@ metrics:
     interval: 30s
     ## @param metrics.serviceMonitor.scrapeTimeout Scrape timeout
     scrapeTimeout: 10s
+    ## @param metrics.serviceMonitor.path Select detail of metrics (/metrics, /metrics/detailed, /metrics/per-object)
+    path: /metrics
 
 ## @param additionalPlugins Additional default RabbitMQ plugins to enable (Prometheus Metrics, PeerDiscoveryK8s and Management plugins are automatically added)
 additionalPlugins: []
@@ -297,6 +312,8 @@ persistence:
   existingClaim: ""
   ## @param persistence.storageClass Storage class to use for persistent volume
   storageClass: ""
+  ## @param persistence.mountPath Set the mountPath for the data Volume
+  mountPath: "/var/lib/rabbitmq"
   ## @param persistence.accessModes Persistent Volume access modes
   accessModes:
     - ReadWriteOnce
@@ -637,3 +654,23 @@ definitions:
   #   configure: ".*"
   #   write: ".*"
   #   read: ".*"
+  ## @param definitions.autoReload.enabled Enable sidecar container to watch for ConfigMap/Secret changes and reload definitions automatically
+  autoReload:
+    enabled: false
+    ## @param definitions.autoReload.image.registry Container image registry for the config watcher sidecar
+    ## @param definitions.autoReload.image.repository Container image repository for the config watcher sidecar
+    ## @param definitions.autoReload.image.tag Container image tag for the config watcher sidecar
+    ## @param definitions.autoReload.image.pullPolicy Container image pull policy for the config watcher sidecar
+    image:
+      registry: docker.io
+      repository: curlimages/curl
+      tag: "8.18.0"
+      pullPolicy: IfNotPresent
+    ## @param definitions.autoReload.resources Resource limits and requests for the config watcher sidecar
+    resources:
+      requests:
+        cpu: 10m
+        memory: 16Mi
+      limits:
+        cpu: 50m
+        memory: 32Mi
