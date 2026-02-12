@@ -67,7 +67,12 @@ data:
     {{- end }}
 
     {{- if .Values.definitions.enabled }}
-    management.load_definitions = /etc/rabbitmq-definitions/defs.json
+    definitions.import_backend = local_filesystem
+    {{- if .Values.definitions.autoReload.enabled }}
+    definitions.local.path = /etc/rabbitmq-definitions/{{- if .Values.definitions.existingConfigMap }}{{ .Values.definitions.existingConfigMapKey | default "defs.json" }}{{- else if .Values.definitions.existingSecret }}{{ .Values.definitions.existingSecretKey | default "defs.json" }}{{- else }}defs.json{{- end }}
+    {{- else }}
+    definitions.local.path = /etc/rabbitmq-definitions/defs.json
+    {{- end }}
     {{- end }}
 
     {{- if .Values.queueBalancing.enabled }}
