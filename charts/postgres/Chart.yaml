@@ -2,7 +2,7 @@ apiVersion: v2
 name: postgres
 description: The World's Most Advanced Open Source Relational Database
 type: application
-version: 0.13.5
+version: 0.14.5
 appVersion: "18.1.0"
 keywords:
   - postgres
@@ -43,7 +43,7 @@ annotations:
       url: https://www.cloudpirates.io
   artifacthub.io/changes: |2
         - kind: changed
-          description: "Update charts/postgres/values.yaml postgres (#726)"
+          description: "Add support for volumeName (#878)"
           links:
-            - name: "Commit fd08dc9"
-              url: "https://github.com/CloudPirates-io/helm-charts/commit/fd08dc9"
+            - name: "Commit 6524a9b"
+              url: "https://github.com/CloudPirates-io/helm-charts/commit/6524a9b"
