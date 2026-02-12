@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(helm lint *)",
+      "Bash(helm unittest *)",
+      "Bash(helm dependency *)",
+      "Bash(helm template *)",
+      "Bash(ct lint *)",
+      "Bash(git status*)",
+      "Bash(git log*)",
+      "Bash(git diff*)"
+    ]
+  }
+}
