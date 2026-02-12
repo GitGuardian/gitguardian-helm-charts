@@ -42,7 +42,7 @@ jobs:
             git checkout -b $BRANCH
           fi
           
-          git merge upstream/main --no-edit
+          git merge upstream/main --no-edit -X theirs
           
           if git diff --quiet origin/main; then
             echo "has_changes=false" >> $GITHUB_OUTPUT
