@@ -115,6 +115,7 @@ The following table lists the configurable parameters of the Valkey chart and th
 | `containerSecurityContext.runAsGroup`               | Group ID for the Valkey container                 | `1000`    |
 | `containerSecurityContext.readOnlyRootFilesystem`   | Mount container root filesystem as read-only      | `true`    |
 | `containerSecurityContext.capabilities.drop`        | Linux capabilities to be dropped                  | `["ALL"]` |
+| `priorityClassName`                                 | Priority class for the valkey instance            | `""`      |
 
 ### Valkey Authentication
 
@@ -246,6 +247,7 @@ Sentinel provides high availability for Valkey replication. When enabled, Sentin
 | Parameter                            | Description                                                                         | Default                                                                                      |
 | ------------------------------------ | ----------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
 | `sentinel.enabled`                   | Enable Valkey Sentinel for high availability                                        | `false`                                                                                      |
+| `sentinel.image.registry`            | Valkey Sentinel image registry                                                      | `docker.io`                                                                                  |
 | `sentinel.image.repository`          | Valkey Sentinel image repository                                                    | `valkey/valkey`                                                                              |
 | `sentinel.image.tag`                 | Valkey Sentinel image tag                                                           | `"9.0.0-alpine3.22@sha256:b4ee67d73e00393e712accc72cfd7003b87d0fcd63f0eba798b23251bfc9c394"` |
 | `sentinel.image.pullPolicy`          | Valkey Sentinel image pull policy                                                   | `Always`                                                                                     |
