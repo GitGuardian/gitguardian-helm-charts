@@ -4,6 +4,14 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'charts/**'
+  workflow_dispatch:
+    inputs:
+      chart:
+        description: 'Specific chart to release (optional, e.g. "charts/my-chart")'
+        required: false
+        type: string
 
 permissions:
   contents: write
@@ -12,15 +20,16 @@ permissions:
   id-token: write
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
-  cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   publish-chart:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
           fetch-depth: 0
 
@@ -29,47 +38,171 @@ jobs:
           git config user.name "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
 
-      - name: Login to GHCR Helm registry
-        shell: bash
+      - name: Login to GHCR
+        uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3.6.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install yq
         run: |
-          echo "${{ secrets.GITHUB_TOKEN }}" | helm registry login \
-            ghcr.io \
-            --username ${{ github.actor }} \
-            --password-stdin
+          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+          sudo chmod +x /usr/local/bin/yq
+
+      - name: Update chart dependencies
+        run: |
+          set -euo pipefail
+          for chart_dir in charts/*; do
+            if [ -f "$chart_dir/Chart.yaml" ]; then
+              if grep -q "^dependencies:" "$chart_dir/Chart.yaml"; then
+                echo "Updating dependencies for $chart_dir"
+                helm dependency update "$chart_dir"
+              fi
+            fi
+          done
+
+      - name: Detect changed charts
+        id: detect-changed-charts
+        run: |
+          set -euo pipefail
+          CHANGED_CHARTS=""
+
+          for chart_dir in charts/*; do
+            [ ! -f "$chart_dir/Chart.yaml" ] && continue
+
+            CHART_NAME=$(basename "$chart_dir")
+            CHART_VERSION=$(yq eval '.version' "$chart_dir/Chart.yaml")
+
+            # Check if already released
+            if git tag -l | grep -q "^${CHART_NAME}-${CHART_VERSION}$"; then
+              echo "✓ $CHART_NAME-$CHART_VERSION already released, skipping"
+              continue
+            fi
+
+            # Check for changes since last release
+            LAST_CHART_TAG=$(git tag -l "${CHART_NAME}-*" | sort -V | tail -1)
+            if [ -n "$LAST_CHART_TAG" ]; then
+              CHART_CHANGES=$(git diff --name-only "$LAST_CHART_TAG" HEAD -- "$chart_dir/" 2>/dev/null || echo "")
+              if [ -z "$CHART_CHANGES" ]; then
+                echo "✓ $CHART_NAME: No changes since $LAST_CHART_TAG, skipping"
+                continue
+              else
+                echo "📦 $CHART_NAME: Changes detected since $LAST_CHART_TAG"
+              fi
+            else
+              echo "🆕 $CHART_NAME: New chart (no previous tags)"
+            fi
+
+            [ -z "$CHANGED_CHARTS" ] && CHANGED_CHARTS="$CHART_NAME" || CHANGED_CHARTS="$CHANGED_CHARTS,$CHART_NAME"
+            echo "🚀 Will release: $CHART_NAME-$CHART_VERSION"
+          done
+
+          echo "changed_charts=$CHANGED_CHARTS" >> $GITHUB_OUTPUT
+          if [ -n "$CHANGED_CHARTS" ]; then
+            echo "📋 Summary: Will release charts: $CHANGED_CHARTS"
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "📋 Summary: No charts need to be released"
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          fi
 
       - name: Run chart-releaser
         id: chart-releaser
-        uses: helm/chart-releaser-action@v1.7.0
+        if: steps.detect-changed-charts.outputs.has_changes == 'true'
+        uses: helm/chart-releaser-action@cae68fefc6b5f367a0275617c9f83181ba54714f # v1.7.0
         with:
           skip_existing: true
+          charts_dir: charts
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
 
+      - name: Package manually specified chart
+        if: github.event.inputs.chart != ''
+        env:
+          CHART_DIR: ${{ github.event.inputs.chart }}
+        run: |
+          set -euo pipefail
+
+          if [ ! -d "$CHART_DIR" ]; then
+            echo "ERROR: Chart directory $CHART_DIR does not exist"
+            exit 1
+          fi
+
+          if grep -q "^dependencies:" "$CHART_DIR/Chart.yaml"; then
+            echo "Updating dependencies for $CHART_DIR..."
+            helm dependency update "$CHART_DIR"
+          fi
+
+          echo "Packaging chart from $CHART_DIR..."
+          mkdir -p .cr-release-packages
+          helm package "$CHART_DIR" --destination .cr-release-packages
+
       - name: Upload charts to OCI GHCR
         id: upload
-        if: ${{ steps.chart-releaser.outputs.changed_charts }}
+        if: steps.detect-changed-charts.outputs.has_changes == 'true' || github.event.inputs.chart != ''
+        env:
+          INPUT_CHART: ${{ github.event.inputs.chart }}
+          DETECTED_CHARTS: ${{ steps.detect-changed-charts.outputs.changed_charts }}
         run: |
-          CHANGED_CHARTS="${{ steps.chart-releaser.outputs.changed_charts }}"
+          set -euo pipefail
+
           REPO_LOWER=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
 
-          RELEASED_CHARTS=""
-          for chart_directory in ${CHANGED_CHARTS//,/ }; do
-            CHART_NAME=${chart_directory#charts/}
+          # Determine which charts to release
+          if [ -n "$INPUT_CHART" ]; then
+            CHANGED_CHARTS=$(basename "$INPUT_CHART")
+          else
+            CHANGED_CHARTS="$DETECTED_CHARTS"
+          fi
 
-            cd $chart_directory
+          if [ -z "$CHANGED_CHARTS" ]; then
+            echo "No charts to release."
+            exit 0
+          fi
+
+          # Retry function for network operations
+          retry() {
+            local max_attempts=3
+            local attempt=1
+            local delay=5
+            while [ $attempt -le $max_attempts ]; do
+              if "$@"; then return 0; fi
+              echo "Attempt $attempt failed. Retrying in ${delay}s..."
+              sleep $delay
+              delay=$((delay * 2))
+              attempt=$((attempt + 1))
+            done
+            echo "ERROR: All $max_attempts attempts failed"
+            return 1
+          }
+
+          RELEASED_CHARTS=""
+          for CHART_NAME in ${CHANGED_CHARTS//,/ }; do
+            chart_directory="charts/$CHART_NAME"
+            cd "$chart_directory"
 
             CHART_VERSION=$(yq eval '.version' "Chart.yaml")
-            APP_VERSION=$(yq eval '.appVersion' "Chart.yaml")
 
-            # Push to GHCR
-            echo "Pushing Helm chart $CHART_NAME-$CHART_VERSION.tgz to oci://ghcr.io/${REPO_LOWER}"
-            if helm push ${{ github.workspace }}/.cr-release-packages/${CHART_NAME}-${CHART_VERSION}.tgz oci://ghcr.io/${REPO_LOWER}; then
-              echo "Successfully released $CHART_NAME-$CHART_VERSION to GHCR"
+            echo "Pushing $CHART_NAME-$CHART_VERSION to oci://ghcr.io/${REPO_LOWER}"
+            if retry helm push ${{ github.workspace }}/.cr-release-packages/${CHART_NAME}-${CHART_VERSION}.tgz oci://ghcr.io/${REPO_LOWER}; then
+              echo "✅ Successfully released $CHART_NAME-$CHART_VERSION"
+              RELEASED_CHARTS="$RELEASED_CHARTS ${CHART_NAME}"
             else
-              echo "Failed to push $CHART_NAME-$CHART_VERSION to GHCR"
+              echo "❌ Failed to push $CHART_NAME-$CHART_VERSION"
               exit 1
             fi
 
             cd ${{ github.workspace }}
           done
+
           echo "released_charts=$RELEASED_CHARTS" >> "$GITHUB_OUTPUT"
+
+          if [ -n "$RELEASED_CHARTS" ]; then
+            echo "## 📦 Helm Charts Released" >> $GITHUB_STEP_SUMMARY
+            for chart in $RELEASED_CHARTS; do
+              echo "- ✅ **$chart**" >> $GITHUB_STEP_SUMMARY
+            done
+            echo "### 📍 Registry" >> $GITHUB_STEP_SUMMARY
+            echo "- GHCR: \`ghcr.io/${REPO_LOWER}\`" >> $GITHUB_STEP_SUMMARY
+          fi
