@@ -3221,6 +3221,57 @@ entries:
       license: Apache-2.0
     apiVersion: v2
     appVersion: 2025.10.15
+    created: "2026-02-13T08:33:52.62493507Z"
+    dependencies:
+    - name: common
+      repository: oci://registry-1.docker.io/cloudpirates
+      version: 2.x.x
+    description: High Performance Object Storage compatible with Amazon S3 APIs
+    digest: 76af24599c5ba776ab33b13002113fc5304c582cf982ce02eaf34172f640c1be
+    home: https://min.io
+    icon: https://a.storyblok.com/f/143071/512x512/5d3310f00d/minio-logo.svg
+    keywords:
+    - minio
+    - object-storage
+    - s3
+    - storage
+    - cloud-native
+    maintainers:
+    - email: hello@cloudpirates.io
+      name: CloudPirates GmbH & Co. KG
+      url: https://www.cloudpirates.io
+    name: minio
+    sources:
+    - https://github.com/CloudPirates-io/helm-charts/tree/main/charts/minio
+    - https://github.com/minio/minio
+    type: application
+    urls:
+    - https://github.com/GitGuardian/gitguardian-helm-charts/releases/download/minio-0.9.2/minio-0.9.2.tgz
+    version: 0.9.2
+  - annotations:
+      artifacthub.io/category: storage
+      artifacthub.io/changes: |2
+            - kind: changed
+              description: "[minio]: Use wget instead of curl (#899)"
+              links:
+                - name: "Commit 1b83954"
+                  url: "https://github.com/CloudPirates-io/helm-charts/commit/1b83954"
+      artifacthub.io/containsSecurityUpdates: "false"
+      artifacthub.io/links: |
+        - name: MinIO
+          url: https://min.io
+        - name: Helm Chart
+          url: https://github.com/CloudPirates-io/helm-charts/tree/main/charts/minio
+        - name: Application
+          url: https://github.com/minio/minio
+        - name: Maintainer CloudPirates
+          url: https://www.cloudpirates.io
+      artifacthub.io/signKey: |
+        fingerprint: 6917f1a88c122cbb1de5aa55457752135bdcf95a
+        url: https://raw.githubusercontent.com/CloudPirates-io/helm-charts/refs/heads/main/cosign.pub
+      license: Apache-2.0
+    apiVersion: v2
+    appVersion: 2025.10.15
     created: "2026-02-12T11:34:42.35078714Z"
     dependencies:
     - name: common
@@ -5877,6 +5928,63 @@ entries:
       license: Apache-2.0
     apiVersion: v2
     appVersion: 4.2.3
+    created: "2026-02-13T08:33:52.831233162Z"
+    dependencies:
+    - name: common
+      repository: oci://registry-1.docker.io/cloudpirates
+      version: 2.x.x
+    description: A messaging broker that implements the Advanced Message Queuing Protocol
+      (AMQP)
+    digest: 5e694b7b993a4bdd837fac30134661128faeeef53837d51e48b15a5eee019480
+    home: https://www.rabbitmq.com
+    icon: https://a.storyblok.com/f/143071/512x512/aa1bd68288/rabbitmq-logo.svg
+    keywords:
+    - rabbitmq
+    - message broker
+    - amqp
+    - messaging
+    - queue
+    maintainers:
+    - email: hello@cloudpirates.io
+      name: CloudPirates GmbH & Co. KG
+      url: https://www.cloudpirates.io
+    name: rabbitmq
+    sources:
+    - https://github.com/CloudPirates-io/helm-charts/tree/main/charts/rabbitmq
+    - https://github.com/rabbitmq/rabbitmq-server
+    type: application
+    urls:
+    - https://github.com/GitGuardian/gitguardian-helm-charts/releases/download/rabbitmq-0.15.11/rabbitmq-0.15.11.tgz
+    version: 0.15.11
+  - annotations:
+      artifacthub.io/category: streaming-messaging
+      artifacthub.io/changes: |2
+            - kind: changed
+              description: "[all]: Update every chart to newest common (#920)"
+              links:
+                - name: "Commit f8d134d"
+                  url: "https://github.com/CloudPirates-io/helm-charts/commit/f8d134d"
+            - kind: changed
+              description: "add option to set mountPath for data volume (#902)"
+              links:
+                - name: "Commit 7d892f9"
+                  url: "https://github.com/CloudPirates-io/helm-charts/commit/7d892f9"
+      artifacthub.io/containsSecurityUpdates: "false"
+      artifacthub.io/links: |
+        - name: RabbitMQ
+          url: https://www.rabbitmq.com
+        - name: Helm Chart
+          url: https://github.com/CloudPirates-io/helm-charts/tree/main/charts/rabbitmq
+        - name: Application
+          url: https://github.com/rabbitmq/rabbitmq-server
+        - name: Maintainer CloudPirates
+          url: https://www.cloudpirates.io
+      artifacthub.io/signKey: |
+        fingerprint: 6917f1a88c122cbb1de5aa55457752135bdcf95a
+        url: https://raw.githubusercontent.com/CloudPirates-io/helm-charts/refs/heads/main/cosign.pub
+      license: Apache-2.0
+    apiVersion: v2
+    appVersion: 4.2.3
     created: "2026-02-12T11:34:43.041997121Z"
     dependencies:
     - name: common
@@ -7108,6 +7216,59 @@ entries:
     - https://github.com/GitGuardian/gitguardian-helm-charts/releases/download/rabbitmq-cluster-operator-0.1.0/rabbitmq-cluster-operator-0.1.0.tgz
     version: 0.1.0
   redis:
+  - annotations:
+      artifacthub.io/category: database
+      artifacthub.io/changes: |2
+            - kind: changed
+              description: "[redis]: Adjust condition around serviceAccountName (#945)"
+              links:
+                - name: "Commit ff1ee15"
+                  url: "https://github.com/CloudPirates-io/helm-charts/commit/ff1ee15"
+      artifacthub.io/containsSecurityUpdates: "false"
+      artifacthub.io/links: |
+        - name: Redis
+          url: https://redis.io
+        - name: Helm Chart
+          url: https://github.com/CloudPirates-io/helm-charts/tree/main/charts/redis
+        - name: Application
+          url: https://github.com/redis/redis
+        - name: Maintainer CloudPirates
+          url: https://www.cloudpirates.io
+      artifacthub.io/signKey: |
+        fingerprint: 6917f1a88c122cbb1de5aa55457752135bdcf95a
+        url: https://raw.githubusercontent.com/CloudPirates-io/helm-charts/refs/heads/main/cosign.pub
+      license: Apache-2.0
+    apiVersion: v2
+    appVersion: 8.4.0
+    created: "2026-02-13T08:33:52.998984972Z"
+    dependencies:
+    - name: common
+      repository: oci://registry-1.docker.io/cloudpirates
+      version: 2.x.x
+    description: An open source, in-memory data structure store used as a database,
+      cache, and message broker.
+    digest: 731dfca882c32c6bf1c8945d49c1215ee7f2467bccbbbc3d0299a73c75bab50d
+    home: https://www.redis.io
+    icon: https://a.storyblok.com/f/143071/512x512/32c74816d1/redis-logo.svg
+    keywords:
+    - redis
+    - database
+    - cache
+    - in-memory
+    - key-value
+    - nosql
+    maintainers:
+    - email: hello@cloudpirates.io
+      name: CloudPirates GmbH & Co. KG
+      url: https://www.cloudpirates.io
+    name: redis
+    sources:
+    - https://github.com/CloudPirates-io/helm-charts/tree/main/charts/redis
+    - https://github.com/redis/redis
+    type: application
+    urls:
+    - https://github.com/GitGuardian/gitguardian-helm-charts/releases/download/redis-0.22.2/redis-0.22.2.tgz
+    version: 0.22.2
   - annotations:
       artifacthub.io/category: database
       artifacthub.io/changes: |2
@@ -9975,4 +10136,4 @@ entries:
     urls:
     - https://github.com/CloudPirates-io/helm-charts/releases/download/zookeeper-0.1.0/zookeeper-0.1.0.tgz
     version: 0.1.0
-generated: "2026-02-12T11:37:08.837585736Z"
+generated: "2026-02-13T08:33:52.999805115Z"
