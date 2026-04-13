@@ -18,15 +18,16 @@ spec:
       {{- include "minio.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- $annotations := merge .Values.podAnnotations .Values.commonAnnotations }}
+      {{- $globalPodAnnotations := (.Values.global).podAnnotations | default dict }}
+      {{- $annotations := mergeOverwrite (deepCopy $globalPodAnnotations) .Values.podAnnotations .Values.commonAnnotations }}
       {{- with $annotations }}
       annotations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
         {{- include "minio.labels" . | nindent 8 }}
-        {{- with .Values.podLabels }}
-        {{- toYaml . | nindent 8 }}
+        {{- with (include "minio.podLabels" (dict "local" .Values.podLabels "context" $)) }}
+        {{- . | nindent 8 }}
         {{- end }}
     spec:
 {{- with (include "minio.imagePullSecrets" .) }}
@@ -45,7 +46,7 @@ spec:
           securityContext: {{ include "cloudpirates.renderContainerSecurityContext" . | nindent 12 }}
           {{- end }}
           image: {{ include "minio.image" . }}
-          imagePullPolicy: {{ .Values.image.imagePullPolicy }}
+          imagePullPolicy: {{ include "minio.imagePullPolicy" . }}
           command: ["/bin/sh"]
           args:
             - -c
@@ -112,9 +113,13 @@ spec:
               value: {{ .Values.config.minioCompressionMimeTypes | quote }}
             {{- end }}
 
-            {{- with .Values.config.extraEnvVars }}
-            {{- toYaml . | nindent 12 }}
+            {{- with (include "minio.envVars" (dict "local" .Values.config.extraEnvVars "context" $)) }}
+            {{- . | nindent 12 }}
             {{- end }}
+          {{- with (include "minio.envFrom" $) }}
+          envFrom:
+            {{- . | nindent 12 }}
+          {{- end }}
           ports:
             - name: minio
               containerPort: {{ .Values.service.port }}
@@ -167,6 +172,9 @@ spec:
               mountPath: {{ .Values.persistence.mountPath }}
             - name: tmp
               mountPath: /tmp
+            {{- with (include "minio.extraVolumeMounts" (dict "local" (list) "context" $)) }}
+            {{- . | nindent 12 }}
+            {{- end }}
       volumes:
         - name: data
           {{- if .Values.persistence.enabled }}
@@ -181,15 +189,18 @@ spec:
           {{- end }}
         - name: tmp
           emptyDir: {}
-      {{- with .Values.nodeSelector }}
+        {{- with (include "minio.extraVolumes" (dict "local" (list) "context" $)) }}
+        {{- . | nindent 8 }}
+        {{- end }}
+      {{- with (include "minio.nodeSelector" (dict "local" .Values.nodeSelector "context" $)) }}
       nodeSelector:
-        {{- toYaml . | nindent 8 }}
+        {{- . | nindent 8 }}
       {{- end }}
       {{- with .Values.affinity }}
       affinity:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.tolerations }}
+      {{- with (include "minio.tolerations" (dict "local" .Values.tolerations "context" $)) }}
       tolerations:
-        {{- toYaml . | nindent 8 }}
+        {{- . | nindent 8 }}
       {{- end }}

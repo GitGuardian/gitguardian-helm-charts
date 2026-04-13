@@ -1,0 +1,216 @@
+suite: test minio global.* propagation
+templates:
+  - deployment.yaml
+  - bucket-init-job.yaml
+  - bucket-init-configmap.yaml
+set:
+  image:
+    tag: RELEASE.2025-07-23T15-54-02Z@sha256:d249d1fb6966de4d8ad26c04754b545205ff15a62e4fd19ebd0f26fa5baacbc0
+  defaultBuckets: "test-bucket"
+tests:
+  - it: should propagate global.podLabels to Deployment pod template
+    template: deployment.yaml
+    set:
+      global:
+        podLabels:
+          sidecar.istio.io/inject: "false"
+          team: "platform"
+    asserts:
+      - equal:
+          path: spec.template.metadata.labels["sidecar.istio.io/inject"]
+          value: "false"
+      - equal:
+          path: spec.template.metadata.labels["team"]
+          value: "platform"
+
+  - it: should propagate global.podLabels to bucket-init Job pod template
+    template: bucket-init-job.yaml
+    set:
+      global:
+        podLabels:
+          sidecar.istio.io/inject: "false"
+    asserts:
+      - equal:
+          path: spec.template.metadata.labels["sidecar.istio.io/inject"]
+          value: "false"
+
+  - it: should prefer component-level podLabels over global.podLabels on conflict
+    template: deployment.yaml
+    set:
+      global:
+        podLabels:
+          env: "global-value"
+      podLabels:
+        env: "component-value"
+    asserts:
+      - equal:
+          path: spec.template.metadata.labels["env"]
+          value: "component-value"
+
+  - it: should propagate global.podAnnotations to Deployment
+    template: deployment.yaml
+    set:
+      global:
+        podAnnotations:
+          prometheus.io/scrape: "true"
+    asserts:
+      - equal:
+          path: spec.template.metadata.annotations["prometheus.io/scrape"]
+          value: "true"
+
+  - it: should propagate global.podAnnotations to bucket-init Job
+    template: bucket-init-job.yaml
+    set:
+      global:
+        podAnnotations:
+          prometheus.io/scrape: "true"
+    asserts:
+      - equal:
+          path: spec.template.metadata.annotations["prometheus.io/scrape"]
+          value: "true"
+
+  - it: should use global.nodeSelector as fallback when component nodeSelector is empty
+    template: deployment.yaml
+    set:
+      global:
+        nodeSelector:
+          disk: "ssd"
+    asserts:
+      - equal:
+          path: spec.template.spec.nodeSelector.disk
+          value: "ssd"
+
+  - it: should prefer component nodeSelector over global.nodeSelector
+    template: deployment.yaml
+    set:
+      global:
+        nodeSelector:
+          disk: "hdd"
+      nodeSelector:
+        disk: "nvme"
+    asserts:
+      - equal:
+          path: spec.template.spec.nodeSelector.disk
+          value: "nvme"
+
+  - it: should concat global.tolerations with component tolerations
+    template: deployment.yaml
+    set:
+      global:
+        tolerations:
+          - key: "global-key"
+            operator: "Exists"
+      tolerations:
+        - key: "local-key"
+          operator: "Exists"
+    asserts:
+      - equal:
+          path: spec.template.spec.tolerations[0].key
+          value: "local-key"
+      - equal:
+          path: spec.template.spec.tolerations[1].key
+          value: "global-key"
+
+  - it: should inject global.envVars on Deployment container
+    template: deployment.yaml
+    set:
+      global:
+        envVars:
+          - name: GLOBAL_VAR
+            value: "global"
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: GLOBAL_VAR
+            value: "global"
+
+  - it: should inject global.envFrom on Deployment container
+    template: deployment.yaml
+    set:
+      global:
+        envFrom:
+          - configMapRef:
+              name: shared-config
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].envFrom[0].configMapRef.name
+          value: "shared-config"
+
+  - it: should inject global.envFrom on bucket-init Job container
+    template: bucket-init-job.yaml
+    set:
+      global:
+        envFrom:
+          - configMapRef:
+              name: shared-config
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].envFrom[0].configMapRef.name
+          value: "shared-config"
+
+  - it: should append global.extraVolumes to Deployment
+    template: deployment.yaml
+    set:
+      global:
+        extraVolumes:
+          - name: shared-ca
+            secret:
+              secretName: shared-ca-bundle
+    asserts:
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: shared-ca
+            secret:
+              secretName: shared-ca-bundle
+
+  - it: should append global.extraVolumeMounts to Deployment container
+    template: deployment.yaml
+    set:
+      global:
+        extraVolumeMounts:
+          - name: shared-ca
+            mountPath: /etc/ssl/certs/ca-bundle.crt
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: shared-ca
+            mountPath: /etc/ssl/certs/ca-bundle.crt
+
+  - it: should use global.image.imagePullPolicy as fallback when image.imagePullPolicy is empty
+    template: deployment.yaml
+    set:
+      global:
+        image:
+          imagePullPolicy: "Never"
+      image:
+        imagePullPolicy: ""
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].imagePullPolicy
+          value: "Never"
+
+  - it: should prefer image.imagePullPolicy over global.image.imagePullPolicy
+    template: deployment.yaml
+    set:
+      global:
+        image:
+          imagePullPolicy: "Never"
+      image:
+        imagePullPolicy: "Always"
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].imagePullPolicy
+          value: "Always"
+
+  - it: should default imagePullPolicy to Always when neither global nor component sets it
+    template: deployment.yaml
+    set:
+      image:
+        imagePullPolicy: ""
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].imagePullPolicy
+          value: "Always"
