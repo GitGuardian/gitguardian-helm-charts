@@ -22,12 +22,12 @@ spec:
       labels:
         {{- include "minio.labels" . | nindent 8 }}
         app.kubernetes.io/component: bucket-init
-        {{- with .Values.bucketInitJob.podLabels }}
-        {{- toYaml . | nindent 8 }}
+        {{- with (include "minio.podLabels" (dict "local" .Values.bucketInitJob.podLabels "context" $)) }}
+        {{- . | nindent 8 }}
         {{- end }}
-      {{- with .Values.bucketInitJob.podAnnotations }}
+      {{- with (include "minio.podAnnotations" (dict "local" .Values.bucketInitJob.podAnnotations "context" $)) }}
       annotations:
-        {{- toYaml . | nindent 8 }}
+        {{- . | nindent 8 }}
       {{- end }}
     spec:
 {{- with (include "minio.imagePullSecrets" .) }}
@@ -42,7 +42,7 @@ spec:
       containers:
         - name: bucket-init
           image: {{ include "minio.image" . }}
-          imagePullPolicy: {{ .Values.image.imagePullPolicy }}
+          imagePullPolicy: {{ include "minio.imagePullPolicy" . }}
           command: ["/bin/sh", "/scripts/provision-buckets.sh"]
           env:
             - name: MINIO_ROOT_USER
@@ -55,11 +55,21 @@ spec:
                 secretKeyRef:
                   name: {{ include "minio.secretName" . }}
                   key: {{ include "minio.rootPasswordKey" . }}
+            {{- with (include "minio.envVars" (dict "local" (list) "context" $)) }}
+            {{- . | nindent 12 }}
+            {{- end }}
+          {{- with (include "minio.envFrom" $) }}
+          envFrom:
+            {{- . | nindent 12 }}
+          {{- end }}
           volumeMounts:
             - name: scripts
               mountPath: /scripts
             - name: tmp
               mountPath: /tmp
+            {{- with (include "minio.extraVolumeMounts" (dict "local" (list) "context" $)) }}
+            {{- . | nindent 12 }}
+            {{- end }}
           {{- if .Values.bucketInitJob.resources }}
           resources: {{- toYaml .Values.bucketInitJob.resources | nindent 12 }}
           {{- end }}
@@ -74,16 +84,19 @@ spec:
             defaultMode: 0755
         - name: tmp
           emptyDir: {}
-      {{- with .Values.nodeSelector }}
+        {{- with (include "minio.extraVolumes" (dict "local" (list) "context" $)) }}
+        {{- . | nindent 8 }}
+        {{- end }}
+      {{- with (include "minio.nodeSelector" (dict "local" .Values.nodeSelector "context" $)) }}
       nodeSelector:
-        {{- toYaml . | nindent 8 }}
+        {{- . | nindent 8 }}
       {{- end }}
       {{- with .Values.affinity }}
       affinity:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.tolerations }}
+      {{- with (include "minio.tolerations" (dict "local" .Values.tolerations "context" $)) }}
       tolerations:
-        {{- toYaml . | nindent 8 }}
+        {{- . | nindent 8 }}
       {{- end }}
 {{- end }}

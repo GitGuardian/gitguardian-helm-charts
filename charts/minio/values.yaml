@@ -4,6 +4,25 @@ global:
   imageRegistry: ""
   ## @param global.imagePullSecrets Global Docker registry secret names as an array
   imagePullSecrets: []
+  ## @param global.image.imagePullPolicy Fallback image pull policy when image.imagePullPolicy is not set
+  image:
+    imagePullPolicy: ""
+  ## @param global.podLabels Labels merged into the Deployment and bucket-init Job pod templates (component-level podLabels win on conflict)
+  podLabels: {}
+  ## @param global.podAnnotations Annotations merged into the Deployment and bucket-init Job pod templates (component-level podAnnotations win on conflict)
+  podAnnotations: {}
+  ## @param global.nodeSelector Fallback nodeSelector applied when component-level nodeSelector is unset
+  nodeSelector: {}
+  ## @param global.tolerations Tolerations concatenated with component-level tolerations
+  tolerations: []
+  ## @param global.envVars Environment variables concatenated to all containers' env (after config.extraEnvVars)
+  envVars: []
+  ## @param global.envFrom envFrom sources injected in all containers
+  envFrom: []
+  ## @param global.extraVolumes Extra volumes added to pod specs (Deployment and bucket-init Job)
+  extraVolumes: []
+  ## @param global.extraVolumeMounts Extra volume mounts added to all containers
+  extraVolumeMounts: []
 
 ## @section Common parameters
 ## @param nameOverride String to partially override minio.fullname

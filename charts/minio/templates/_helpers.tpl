@@ -128,3 +128,120 @@ Returns MinIO serviceAccount name
         {{ default "default" .Values.serviceAccount.name }}
     {{- end -}}
 {{- end -}}
+
+{{/*
+Merge global.podLabels with a component-level podLabels map.
+Component-level values win over global values on conflict.
+Usage: {{ include "minio.podLabels" (dict "local" .Values.podLabels "context" $) }}
+*/}}
+{{- define "minio.podLabels" -}}
+{{- $global := (.context.Values.global).podLabels | default dict -}}
+{{- $local := .local | default dict -}}
+{{- $merged := merge (deepCopy $local) $global -}}
+{{- if $merged -}}
+{{- toYaml $merged }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Merge global.podAnnotations with a component-level podAnnotations map.
+Component-level values win over global values on conflict.
+Usage: {{ include "minio.podAnnotations" (dict "local" .Values.podAnnotations "context" $) }}
+*/}}
+{{- define "minio.podAnnotations" -}}
+{{- $global := (.context.Values.global).podAnnotations | default dict -}}
+{{- $local := .local | default dict -}}
+{{- $merged := merge (deepCopy $local) $global -}}
+{{- if $merged -}}
+{{- toYaml $merged }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return nodeSelector: component-level value if set, otherwise global.nodeSelector.
+Usage: {{ include "minio.nodeSelector" (dict "local" .Values.nodeSelector "context" $) }}
+*/}}
+{{- define "minio.nodeSelector" -}}
+{{- $global := (.context.Values.global).nodeSelector | default dict -}}
+{{- $local := .local | default dict -}}
+{{- if $local -}}
+{{- toYaml $local }}
+{{- else if $global -}}
+{{- toYaml $global }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Concat component-level tolerations with global.tolerations.
+Usage: {{ include "minio.tolerations" (dict "local" .Values.tolerations "context" $) }}
+*/}}
+{{- define "minio.tolerations" -}}
+{{- $global := (.context.Values.global).tolerations | default list -}}
+{{- $local := .local | default list -}}
+{{- $merged := concat $local $global -}}
+{{- if $merged -}}
+{{- toYaml $merged }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Concat component-level extraVolumes with global.extraVolumes.
+Usage: {{ include "minio.extraVolumes" (dict "local" .Values.extraVolumes "context" $) }}
+*/}}
+{{- define "minio.extraVolumes" -}}
+{{- $global := (.context.Values.global).extraVolumes | default list -}}
+{{- $local := .local | default list -}}
+{{- $merged := concat $local $global -}}
+{{- if $merged -}}
+{{- toYaml $merged }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Concat component-level extraVolumeMounts with global.extraVolumeMounts.
+Usage: {{ include "minio.extraVolumeMounts" (dict "local" .Values.extraVolumeMounts "context" $) }}
+*/}}
+{{- define "minio.extraVolumeMounts" -}}
+{{- $global := (.context.Values.global).extraVolumeMounts | default list -}}
+{{- $local := .local | default list -}}
+{{- $merged := concat $local $global -}}
+{{- if $merged -}}
+{{- toYaml $merged }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Concat component-level env vars with global.envVars.
+Usage: {{ include "minio.envVars" (dict "local" .Values.config.extraEnvVars "context" $) }}
+*/}}
+{{- define "minio.envVars" -}}
+{{- $global := (.context.Values.global).envVars | default list -}}
+{{- $local := .local | default list -}}
+{{- $merged := concat $local $global -}}
+{{- if $merged -}}
+{{- toYaml $merged }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return global.envFrom list (no component-level equivalent in this chart).
+Usage: {{ include "minio.envFrom" $ }}
+*/}}
+{{- define "minio.envFrom" -}}
+{{- $global := (.Values.global).envFrom | default list -}}
+{{- if $global -}}
+{{- toYaml $global }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return imagePullPolicy: image.imagePullPolicy if set, otherwise global.image.imagePullPolicy.
+Fallback order matches cloudpirates.imagePullPolicy ("Always") for consistency with
+the rest of the library chart.
+Usage: {{ include "minio.imagePullPolicy" $ }}
+*/}}
+{{- define "minio.imagePullPolicy" -}}
+{{- $global := ((.Values.global).image).imagePullPolicy -}}
+{{- $local := .Values.image.imagePullPolicy -}}
+{{- $local | default $global | default "Always" -}}
+{{- end -}}
