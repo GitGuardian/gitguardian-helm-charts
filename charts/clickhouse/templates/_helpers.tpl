@@ -123,3 +123,52 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{/*
+ClickHouse Keeper fully qualified name
+*/}}
+{{- define "clickhouse.keeper.fullname" -}}
+{{- printf "%s-keeper" (include "clickhouse.fullname" .) -}}
+{{- end }}
+
+{{/*
+ClickHouse Keeper client service name (targeted by ClickHouse <zookeeper>)
+*/}}
+{{- define "clickhouse.keeper.serviceName" -}}
+{{- include "clickhouse.keeper.fullname" . -}}
+{{- end }}
+
+{{/*
+ClickHouse Keeper headless service name (stable per-pod DNS for the Raft quorum)
+*/}}
+{{- define "clickhouse.keeper.headlessServiceName" -}}
+{{- printf "%s-headless" (include "clickhouse.keeper.fullname" .) -}}
+{{- end }}
+
+{{/*
+ClickHouse Keeper config ConfigMap name
+*/}}
+{{- define "clickhouse.keeper.configmapName" -}}
+{{- printf "%s-config" (include "clickhouse.keeper.fullname" .) -}}
+{{- end }}
+
+{{/*
+Cluster domain used to build stable in-cluster DNS names.
+*/}}
+{{- define "clickhouse.clusterDomain" -}}
+{{- .Values.clusterDomain | default "cluster.local" -}}
+{{- end }}
+
+{{/*
+Return the proper ClickHouse Keeper image name
+*/}}
+{{- define "clickhouse.keeper.image" -}}
+{{- include "cloudpirates.image" (dict "image" .Values.keeper.image "global" .Values.global) -}}
+{{- end }}
+
+{{/*
+Return the proper Docker Image Registry Secret Names for the Keeper image
+*/}}
+{{- define "clickhouse.keeper.imagePullSecrets" -}}
+{{ include "cloudpirates.images.renderPullSecrets" (dict "images" (list .Values.keeper.image) "context" .) }}
+{{- end -}}

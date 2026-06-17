@@ -33,6 +33,17 @@
                 }
             }
         },
+        "cluster": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "clusterDomain": {
+            "type": "string"
+        },
         "command": {
             "type": "array"
         },
@@ -56,6 +67,9 @@
                 },
                 "extraUsersConfig": {
                     "type": "string"
+                },
+                "interserverHttpPort": {
+                    "type": "integer"
                 },
                 "listenHost": {
                     "type": "string"
@@ -276,6 +290,129 @@
                 },
                 "scriptsConfigMap": {
                     "type": "string"
+                }
+            }
+        },
+        "keeper": {
+            "type": "object",
+            "properties": {
+                "affinity": {
+                    "type": "object"
+                },
+                "enabled": {
+                    "type": "boolean"
+                },
+                "extraConfig": {
+                    "type": "string"
+                },
+                "extraVolumeMounts": {
+                    "type": "array"
+                },
+                "extraVolumes": {
+                    "type": "array"
+                },
+                "image": {
+                    "type": "object",
+                    "properties": {
+                        "imagePullPolicy": {
+                            "type": "string"
+                        },
+                        "registry": {
+                            "type": "string"
+                        },
+                        "repository": {
+                            "type": "string"
+                        },
+                        "tag": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "nodeSelector": {
+                    "type": "object"
+                },
+                "pdb": {
+                    "type": "object",
+                    "properties": {
+                        "create": {
+                            "type": "boolean"
+                        },
+                        "maxUnavailable": {
+                            "type": "integer"
+                        },
+                        "minAvailable": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "persistence": {
+                    "type": "object",
+                    "properties": {
+                        "accessModes": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "annotations": {
+                            "type": "object"
+                        },
+                        "enabled": {
+                            "type": "boolean"
+                        },
+                        "size": {
+                            "type": "string"
+                        },
+                        "storageClass": {
+                            "type": "string"
+                        },
+                        "volumeName": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "podAnnotations": {
+                    "type": "object"
+                },
+                "podLabels": {
+                    "type": "object"
+                },
+                "podManagementPolicy": {
+                    "type": "string"
+                },
+                "ports": {
+                    "type": "object",
+                    "properties": {
+                        "client": {
+                            "type": "integer"
+                        },
+                        "raft": {
+                            "type": "integer"
+                        }
+                    }
+                },
+                "raftLogsLevel": {
+                    "type": "string"
+                },
+                "replicaCount": {
+                    "type": "integer"
+                },
+                "resources": {
+                    "type": "object"
+                },
+                "service": {
+                    "type": "object",
+                    "properties": {
+                        "annotations": {
+                            "type": "object"
+                        },
+                        "type": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "tolerations": {
+                    "type": "array"
                 }
             }
         },

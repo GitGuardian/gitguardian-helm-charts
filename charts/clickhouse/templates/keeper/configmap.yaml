@@ -1,0 +1,54 @@
+{{- if .Values.keeper.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "clickhouse.keeper.configmapName" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "clickhouse.labels" . | nindent 4 }}
+    app.kubernetes.io/component: keeper
+  {{- if .Values.commonAnnotations }}
+  annotations:
+    {{- include "clickhouse.annotations" . | nindent 4 }}
+  {{- end }}
+data:
+  keeper_config.xml: |
+    <?xml version="1.0"?>
+    <clickhouse>
+      <listen_host>{{ .Values.config.listenHost }}</listen_host>
+      <logger>
+        <level>{{ .Values.config.logLevel }}</level>
+        <console>1</console>
+      </logger>
+      <max_connections>4096</max_connections>
+      <keeper_server>
+        <tcp_port>{{ .Values.keeper.ports.client }}</tcp_port>
+        <!-- server_id is injected per-pod from the StatefulSet ordinal (see statefulset command) -->
+        <server_id from_env="KEEPER_SERVER_ID"></server_id>
+        <log_storage_path>/var/lib/clickhouse-keeper/coordination/log</log_storage_path>
+        <snapshot_storage_path>/var/lib/clickhouse-keeper/coordination/snapshots</snapshot_storage_path>
+        <coordination_settings>
+          <operation_timeout_ms>10000</operation_timeout_ms>
+          <session_timeout_ms>30000</session_timeout_ms>
+          <raft_logs_level>{{ .Values.keeper.raftLogsLevel }}</raft_logs_level>
+        </coordination_settings>
+        <raft_configuration>
+          {{- $fullname := include "clickhouse.keeper.fullname" . }}
+          {{- $headless := include "clickhouse.keeper.headlessServiceName" . }}
+          {{- $ns := .Release.Namespace }}
+          {{- $domain := include "clickhouse.clusterDomain" . }}
+          {{- $raftPort := .Values.keeper.ports.raft }}
+          {{- range $i := until (int .Values.keeper.replicaCount) }}
+          <server>
+            <id>{{ add $i 1 }}</id>
+            <hostname>{{ printf "%s-%d.%s.%s.svc.%s" $fullname $i $headless $ns $domain }}</hostname>
+            <port>{{ $raftPort }}</port>
+          </server>
+          {{- end }}
+        </raft_configuration>
+      </keeper_server>
+      {{- if .Values.keeper.extraConfig }}
+      {{ .Values.keeper.extraConfig | nindent 6 }}
+      {{- end }}
+    </clickhouse>
+{{- end }}

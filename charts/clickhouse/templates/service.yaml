@@ -32,6 +32,7 @@ spec:
       name: tcp
   selector:
     {{- include "clickhouse.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: server
 ---
 apiVersion: v1
 kind: Service
@@ -57,5 +58,12 @@ spec:
       targetPort: tcp
       protocol: TCP
       name: tcp
+    {{- if .Values.keeper.enabled }}
+    - port: {{ .Values.config.interserverHttpPort }}
+      targetPort: interserver
+      protocol: TCP
+      name: interserver
+    {{- end }}
   selector:
     {{- include "clickhouse.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: server

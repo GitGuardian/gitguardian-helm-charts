@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.2.0]
+
+### Added
+
+- ClickHouse Keeper support (Raft-based coordination, ZooKeeper replacement) as a dedicated, opt-in StatefulSet (`keeper.enabled`)
+- Keeper quorum templates: StatefulSet (per-pod `server_id` derived from the pod ordinal), Raft config ConfigMap, headless service (stable per-member DNS), client service (`9181`), optional PodDisruptionBudget
+- ClickHouse wired to Keeper when enabled: `<zookeeper>`, single-shard `<remote_servers>` cluster across the replicas, per-pod `<macros>` (`{shard}`/`{replica}`), and `<interserver_http_credentials>` so `ReplicatedMergeTree` / `ON CLUSTER` work out of the box
+- `app.kubernetes.io/component` (`server` / `keeper`) labels to isolate ClickHouse and Keeper pods/services
+- `clusterDomain` and `cluster.name` values
+
 ## [0.1.0]
 
 ### Added

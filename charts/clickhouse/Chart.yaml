@@ -2,7 +2,7 @@ apiVersion: v2
 name: clickhouse
 description: The Open-Source, High Performance Columnar OLAP Database Management System
 type: application
-version: 0.1.0
+version: 0.2.0
 appVersion: "25.3.14.14"
 keywords:
   - clickhouse

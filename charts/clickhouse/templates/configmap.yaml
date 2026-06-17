@@ -24,6 +24,45 @@ data:
         <level>{{ .Values.config.logLevel }}</level>
         <console>1</console>
       </logger>
+      {{- if .Values.keeper.enabled }}
+      <interserver_http_port>{{ .Values.config.interserverHttpPort }}</interserver_http_port>
+      <interserver_http_credentials>
+        <user>{{ .Values.auth.username }}</user>
+        <password from_env="CLICKHOUSE_PASSWORD"></password>
+      </interserver_http_credentials>
+      <zookeeper>
+        <node>
+          <host>{{ include "clickhouse.keeper.serviceName" . }}</host>
+          <port>{{ .Values.keeper.ports.client }}</port>
+        </node>
+      </zookeeper>
+      <remote_servers>
+        <{{ .Values.cluster.name }}>
+          <shard>
+            <internal_replication>true</internal_replication>
+            {{- $fullname := include "clickhouse.fullname" . }}
+            {{- $headless := printf "%s-headless" (include "clickhouse.fullname" .) }}
+            {{- $ns := .Release.Namespace }}
+            {{- $domain := include "clickhouse.clusterDomain" . }}
+            {{- $tcpPort := .Values.service.tcpPort }}
+            {{- $user := .Values.auth.username }}
+            {{- range $i := until (int .Values.replicaCount) }}
+            <replica>
+              <host>{{ printf "%s-%d.%s.%s.svc.%s" $fullname $i $headless $ns $domain }}</host>
+              <port>{{ $tcpPort }}</port>
+              <user>{{ $user }}</user>
+              <password from_env="CLICKHOUSE_PASSWORD"></password>
+            </replica>
+            {{- end }}
+          </shard>
+        </{{ .Values.cluster.name }}>
+      </remote_servers>
+      <macros>
+        <cluster>{{ .Values.cluster.name }}</cluster>
+        <shard>01</shard>
+        <replica from_env="POD_NAME"></replica>
+      </macros>
+      {{- end }}
       {{- if .Values.config.extraConfig }}
       {{ .Values.config.extraConfig | nindent 6 }}
       {{- end }}

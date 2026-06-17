@@ -95,6 +95,8 @@ config:
   timezone: "UTC"
   ## @param config.logLevel Log level (trace, debug, information, warning, error, fatal)
   logLevel: "information"
+  ## @param config.interserverHttpPort Port used for data replication between ClickHouse replicas (only wired when keeper.enabled)
+  interserverHttpPort: 9009
   ## @param config.extraConfig Additional ClickHouse XML configuration snippets merged into config.xml
   extraConfig: ""
   ## @param config.extraUsersConfig Additional ClickHouse XML configuration snippets merged into users.xml
@@ -349,3 +351,82 @@ metrics:
     metricRelabelings: []
     ## @param metrics.serviceMonitor.namespaceSelector ServiceMonitor namespace selector
     namespaceSelector: {}
+
+## @section Cluster topology
+## @param clusterDomain Kubernetes cluster domain used to build stable in-cluster DNS names
+clusterDomain: cluster.local
+cluster:
+  ## @param cluster.name Logical ClickHouse cluster name used in <remote_servers> and the {cluster} macro
+  name: default
+
+## @section ClickHouse Keeper (Raft coordination — required for ReplicatedMergeTree / ON CLUSTER)
+## When enabled, a dedicated ClickHouse Keeper StatefulSet is deployed and ClickHouse is wired to it
+## (<zookeeper>, <remote_servers>, <macros>, <interserver_http_credentials>). Disabled by default so the
+## chart stays a standalone single-node ClickHouse, identical to upstream.
+keeper:
+  ## @param keeper.enabled Deploy a ClickHouse Keeper quorum and wire ClickHouse to it
+  enabled: false
+  ## @param keeper.replicaCount Number of Keeper replicas (use an odd number for a Raft quorum, e.g. 3)
+  replicaCount: 3
+  image:
+    ## @param keeper.image.registry ClickHouse Keeper image registry
+    registry: docker.io
+    ## @param keeper.image.repository ClickHouse Keeper image repository
+    repository: clickhouse/clickhouse-keeper
+    ## @param keeper.image.tag ClickHouse Keeper image tag (immutable tags are recommended)
+    tag: "25.3"
+    ## @param keeper.image.imagePullPolicy ClickHouse Keeper image pull policy
+    imagePullPolicy: IfNotPresent
+  ports:
+    ## @param keeper.ports.client Keeper client port (ClickHouse connects here via <zookeeper>)
+    client: 9181
+    ## @param keeper.ports.raft Keeper Raft inter-node port
+    raft: 9234
+  ## @param keeper.raftLogsLevel Raft logs verbosity (trace, debug, information, warning, error)
+  raftLogsLevel: "warning"
+  ## @param keeper.podManagementPolicy StatefulSet pod management policy for the Keeper quorum
+  podManagementPolicy: Parallel
+  persistence:
+    ## @param keeper.persistence.enabled Enable persistence for Keeper coordination data
+    enabled: true
+    ## @param keeper.persistence.storageClass Persistent Volume storage class for Keeper
+    storageClass: ""
+    ## @param keeper.persistence.size Persistent Volume size for Keeper
+    size: 8Gi
+    ## @param keeper.persistence.accessModes Persistent Volume access modes for Keeper
+    accessModes:
+      - ReadWriteOnce
+    ## @param keeper.persistence.annotations Persistent Volume Claim annotations for Keeper
+    annotations: {}
+    ## @param keeper.persistence.volumeName Keeper volume name and volume claim prefix
+    volumeName: "data"
+  service:
+    ## @param keeper.service.type Keeper client service type
+    type: ClusterIP
+    ## @param keeper.service.annotations Keeper client service annotations
+    annotations: {}
+  pdb:
+    ## @param keeper.pdb.create Create a PodDisruptionBudget for the Keeper quorum
+    create: false
+    ## @param keeper.pdb.minAvailable Minimum available Keeper pods (set either minAvailable or maxUnavailable)
+    minAvailable: ""
+    ## @param keeper.pdb.maxUnavailable Maximum unavailable Keeper pods
+    maxUnavailable: 1
+  ## @param keeper.resources Resource limits and requests for the Keeper container
+  resources: {}
+  ## @param keeper.podAnnotations Map of annotations to add to the Keeper pods
+  podAnnotations: {}
+  ## @param keeper.podLabels Map of labels to add to the Keeper pods
+  podLabels: {}
+  ## @param keeper.nodeSelector Node labels for Keeper pod assignment
+  nodeSelector: {}
+  ## @param keeper.affinity Affinity for Keeper pod assignment
+  affinity: {}
+  ## @param keeper.tolerations Tolerations for Keeper pod assignment
+  tolerations: []
+  ## @param keeper.extraConfig Additional Keeper XML configuration snippets merged into keeper_config.xml
+  extraConfig: ""
+  ## @param keeper.extraVolumes Extra volumes for the Keeper pod
+  extraVolumes: []
+  ## @param keeper.extraVolumeMounts Extra volume mounts for the Keeper container
+  extraVolumeMounts: []

@@ -1,0 +1,31 @@
+{{- if .Values.keeper.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "clickhouse.keeper.headlessServiceName" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "clickhouse.labels" . | nindent 4 }}
+    app.kubernetes.io/component: keeper
+  {{- if .Values.commonAnnotations }}
+  annotations:
+    {{- include "clickhouse.annotations" . | nindent 4 }}
+  {{- end }}
+spec:
+  type: ClusterIP
+  clusterIP: None
+  # Raft members must resolve each other (by stable per-pod DNS) before they are Ready.
+  publishNotReadyAddresses: true
+  ports:
+    - port: {{ .Values.keeper.ports.client }}
+      targetPort: client
+      protocol: TCP
+      name: client
+    - port: {{ .Values.keeper.ports.raft }}
+      targetPort: raft
+      protocol: TCP
+      name: raft
+  selector:
+    {{- include "clickhouse.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: keeper
+{{- end }}

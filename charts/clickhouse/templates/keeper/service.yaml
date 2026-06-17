@@ -1,0 +1,25 @@
+{{- if .Values.keeper.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "clickhouse.keeper.serviceName" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "clickhouse.labels" . | nindent 4 }}
+    app.kubernetes.io/component: keeper
+  {{- $annotations := merge .Values.keeper.service.annotations .Values.commonAnnotations }}
+  {{- with $annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.keeper.service.type }}
+  ports:
+    - port: {{ .Values.keeper.ports.client }}
+      targetPort: client
+      protocol: TCP
+      name: client
+  selector:
+    {{- include "clickhouse.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: keeper
+{{- end }}

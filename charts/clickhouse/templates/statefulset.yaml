@@ -18,6 +18,7 @@ spec:
   selector:
     matchLabels:
       {{- include "clickhouse.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: server
   template:
     metadata:
       {{- $annotations := merge .Values.podAnnotations .Values.commonAnnotations }}
@@ -26,6 +27,7 @@ spec:
       {{- end }}
       labels:
         {{- include "clickhouse.labels" . | nindent 8 }}
+        app.kubernetes.io/component: server
         {{- with .Values.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -68,6 +70,10 @@ spec:
               value: {{ .Values.auth.username | quote }}
             - name: CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT
               value: "1"
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
             {{- with .Values.extraEnvVars }}
 {{ toYaml . | indent 12 }}
             {{- end }}
@@ -83,6 +89,11 @@ spec:
             - name: tcp
               containerPort: {{ .Values.service.tcpPort }}
               protocol: TCP
+            {{- if .Values.keeper.enabled }}
+            - name: interserver
+              containerPort: {{ .Values.config.interserverHttpPort }}
+              protocol: TCP
+            {{- end }}
           {{- if .Values.livenessProbe.enabled }}
           livenessProbe:
             httpGet:

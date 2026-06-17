@@ -1,0 +1,146 @@
+{{- if .Values.keeper.enabled }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "clickhouse.keeper.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "clickhouse.labels" . | nindent 4 }}
+    app.kubernetes.io/component: keeper
+  {{- if .Values.commonAnnotations }}
+  annotations:
+    {{- include "clickhouse.annotations" . | nindent 4 }}
+  {{- end }}
+spec:
+  replicas: {{ .Values.keeper.replicaCount }}
+  serviceName: {{ include "clickhouse.keeper.headlessServiceName" . }}
+  podManagementPolicy: {{ .Values.keeper.podManagementPolicy }}
+  updateStrategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      {{- include "clickhouse.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: keeper
+  template:
+    metadata:
+      {{- $annotations := merge .Values.keeper.podAnnotations .Values.commonAnnotations }}
+      {{- with $annotations }}
+      annotations: {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "clickhouse.labels" . | nindent 8 }}
+        app.kubernetes.io/component: keeper
+        {{- with .Values.keeper.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      serviceAccountName: {{ include "clickhouse.serviceAccountName" . }}
+      {{- if .Values.priorityClassName }}
+      priorityClassName: {{ .Values.priorityClassName }}
+      {{- end }}
+      automountServiceAccountToken: {{ .Values.serviceAccount.automountServiceAccountToken }}
+{{- with (include "clickhouse.keeper.imagePullSecrets" .) }}
+{{- . | nindent 6 }}
+{{- end }}
+      securityContext: {{ include "cloudpirates.renderPodSecurityContext" . | nindent 8 }}
+      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
+      enableServiceLinks: {{ .Values.global.enableServiceLinks }}
+      containers:
+        - name: keeper
+          securityContext: {{ include "cloudpirates.renderContainerSecurityContext" . | nindent 12 }}
+          image: {{ include "clickhouse.keeper.image" . }}
+          imagePullPolicy: {{ .Values.keeper.image.imagePullPolicy }}
+          # ClickHouse Keeper needs a unique server_id per Raft member. Derive it
+          # from the StatefulSet pod ordinal (1-based to match raft_configuration <id>).
+          command:
+            - /bin/bash
+            - -c
+            - |
+              set -euo pipefail
+              ORDINAL="${HOSTNAME##*-}"
+              export KEEPER_SERVER_ID="$((ORDINAL + 1))"
+              exec /usr/bin/clickhouse-keeper --config-file=/etc/clickhouse-keeper/keeper_config.xml
+          ports:
+            - name: client
+              containerPort: {{ .Values.keeper.ports.client }}
+              protocol: TCP
+            - name: raft
+              containerPort: {{ .Values.keeper.ports.raft }}
+              protocol: TCP
+          livenessProbe:
+            tcpSocket:
+              port: client
+            initialDelaySeconds: 20
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 6
+          readinessProbe:
+            tcpSocket:
+              port: client
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
+          resources:
+            {{- toYaml .Values.keeper.resources | nindent 12 }}
+          volumeMounts:
+            - name: config
+              mountPath: /etc/clickhouse-keeper/keeper_config.xml
+              subPath: keeper_config.xml
+            - name: {{ .Values.keeper.persistence.volumeName }}
+              mountPath: /var/lib/clickhouse-keeper
+            - name: tmp
+              mountPath: /tmp
+            {{- with .Values.keeper.extraVolumeMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "clickhouse.keeper.configmapName" . }}
+        - name: tmp
+          emptyDir: {}
+        {{- if not .Values.keeper.persistence.enabled }}
+        - name: {{ .Values.keeper.persistence.volumeName }}
+          emptyDir: {}
+        {{- end }}
+        {{- with .Values.keeper.extraVolumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- with .Values.keeper.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.keeper.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.keeper.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+  {{- if .Values.keeper.persistence.enabled }}
+  volumeClaimTemplates:
+  - metadata:
+      name: {{ .Values.keeper.persistence.volumeName }}
+      {{- with .Values.keeper.persistence.annotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      accessModes:
+        {{- range .Values.keeper.persistence.accessModes }}
+        - {{ . | quote }}
+        {{- end }}
+      resources:
+        requests:
+          storage: {{ .Values.keeper.persistence.size | quote }}
+      {{- if .Values.keeper.persistence.storageClass }}
+      {{- if (eq "-" .Values.keeper.persistence.storageClass) }}
+      storageClassName: ""
+      {{- else }}
+      storageClassName: {{ .Values.keeper.persistence.storageClass | quote }}
+      {{- end }}
+      {{- end }}
+  {{- end }}
+{{- end }}
