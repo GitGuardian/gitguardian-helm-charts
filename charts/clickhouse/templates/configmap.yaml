@@ -64,7 +64,7 @@ data:
       </macros>
       {{- end }}
       {{- if .Values.config.extraConfig }}
-      {{ .Values.config.extraConfig | nindent 6 }}
+      {{ tpl .Values.config.extraConfig . | nindent 6 }}
       {{- end }}
     </clickhouse>
 {{- end }}
@@ -104,7 +104,7 @@ data:
       </profiles>
       {{- end }}
       {{- if .Values.config.extraUsersConfig }}
-      {{ .Values.config.extraUsersConfig | nindent 6 }}
+      {{ tpl .Values.config.extraUsersConfig . | nindent 6 }}
       {{- end }}
     </clickhouse>
 {{- end }}

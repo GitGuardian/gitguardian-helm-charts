@@ -9,6 +9,7 @@
 - ClickHouse wired to Keeper when enabled: `<zookeeper>`, single-shard `<remote_servers>` cluster across the replicas, per-pod `<macros>` (`{shard}`/`{replica}`), and `<interserver_http_credentials>` so `ReplicatedMergeTree` / `ON CLUSTER` work out of the box
 - `app.kubernetes.io/component` (`server` / `keeper`) labels to isolate ClickHouse and Keeper pods/services
 - `clusterDomain` and `cluster.name` values
+- `config.extraConfig` and `config.extraUsersConfig` are now rendered with `tpl`, so Helm template expressions (e.g. `{{ .Release.Namespace }}`) can be used — useful for per-release S3 prefixes
 
 ## [0.1.0]
 

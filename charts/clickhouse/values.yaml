@@ -97,9 +97,9 @@ config:
   logLevel: "information"
   ## @param config.interserverHttpPort Port used for data replication between ClickHouse replicas (only wired when keeper.enabled)
   interserverHttpPort: 9009
-  ## @param config.extraConfig Additional ClickHouse XML configuration snippets merged into config.xml
+  ## @param config.extraConfig Additional ClickHouse XML configuration snippets merged into config.xml. Rendered with `tpl`, so Helm template expressions (e.g. `{{ .Release.Namespace }}`) are supported.
   extraConfig: ""
-  ## @param config.extraUsersConfig Additional ClickHouse XML configuration snippets merged into users.xml
+  ## @param config.extraUsersConfig Additional ClickHouse XML configuration snippets merged into users.xml. Rendered with `tpl` (Helm template expressions supported).
   extraUsersConfig: ""
 
 ## @section ClickHouse Initialization scripts
