@@ -291,10 +291,7 @@
                     "type": "integer"
                 },
                 "minAvailable": {
-                    "type": [
-                        "integer",
-                        "string"
-                    ]
+                    "type": "string"
                 }
             }
         },
