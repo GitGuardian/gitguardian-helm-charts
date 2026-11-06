@@ -25,7 +25,13 @@ Create chart name and version as used by the chart label.
 Common labels
 */}}
 {{- define "minio.labels" -}}
-{{- include "cloudpirates.labels" . -}}
+{{- $labels := include "cloudpirates.labels" . -}}
+{{- with (.Values.global).labels -}}
+{{- /* global.labels has the lowest priority: commonLabels and the chart's own labels win. Rendered like commonLabels. */ -}}
+{{- $global := include "cloudpirates.tplvalues.render" (dict "value" . "context" $) | fromYaml -}}
+{{- $labels = merge ($labels | fromYaml) $global | toYaml -}}
+{{- end -}}
+{{- $labels -}}
 {{- end }}
 
 {{/*
