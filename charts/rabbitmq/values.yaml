@@ -18,6 +18,8 @@ commonLabels: {}
 ## @param commonAnnotations Annotations to add to all deployed objects
 commonAnnotations: {}
 
+## @param terminationGracePeriodSeconds Time for Kubernetes to wait for the pod to gracefully terminate
+terminationGracePeriodSeconds: 30
 ## @section RabbitMQ image parameters
 image:
   ## @param image.registry RabbitMQ image registry
@@ -25,7 +27,7 @@ image:
   ## @param image.repository RabbitMQ image repository
   repository: rabbitmq
   ## @param image.tag RabbitMQ image tag
-  tag: "4.3.0-management@sha256:8f3ab1dc6fb3b17ff59ba4e9ceed187c1711a4af831242b733b1e6949625b315"
+  tag: "4.4.0-management@sha256:c200fd496482cda18c412be4e6f244830e1e75949b8cf5f0e887cea9ea456109"
   ## @param image.imagePullPolicy RabbitMQ image pull policy
   imagePullPolicy: Always
 
@@ -61,6 +63,14 @@ service:
   annotations: {}
   ## @param service.annotationsHeadless Kubernetes service-headless annotations
   annotationsHeadless: {}
+  ## @param service.nodePorts Node ports to expose, only used if service.type is NodePort
+  nodePorts:
+    ## @param service.nodePorts.amqp Node port for the AMQP service port
+    amqp: ""
+    ## @param service.nodePorts.mgmt Node port for the management UI service port
+    mgmt: ""
+    ## @param service.nodePorts.metrics Node port for the Prometheus metrics service port
+    metrics: ""
 
 ## @section RabbitMQ Authentication
 auth:
@@ -122,9 +132,9 @@ config:
       enabled: false
     ## @param config.logging.level Log level for RabbitMQ (debug, info, warning, error, critical, none)
     level: "info"
-  ## @param config.extraConfiguration Additional RabbitMQ configuration
+  ## @param config.extraConfiguration Additional RabbitMQ configuration. Supports Helm template expressions.
   extraConfiguration: ""
-  ## @param config.advancedConfiguration Advanced RabbitMQ configuration
+  ## @param config.advancedConfiguration Advanced RabbitMQ configuration. Supports Helm template expressions.
   advancedConfiguration: ""
 
 ## @section Queue Balancing and Distribution Configuration
@@ -368,6 +378,14 @@ ingress:
 ##     - name: my-gateway
 ##       sectionName: https   # matches the HTTPS listener defined in the Gateway resource
 ##
+## To attach to another parent type, such as ListenerSet, set group and kind:
+##
+##   parentRefs:
+##     - group: gateway.networking.k8s.io
+##       kind: ListenerSet
+##       name: my-listenerset
+##       sectionName: https
+##
 ## The backend always receives plain HTTP traffic regardless of the listener protocol.
 gatewayAPI:
   httpRoute:
@@ -375,9 +393,11 @@ gatewayAPI:
     enabled: false
     ## @param gatewayAPI.httpRoute.annotations Additional annotations for the HTTPRoute resource
     annotations: {}
-    ## @param gatewayAPI.httpRoute.parentRefs References to the parent Gateways
+    ## @param gatewayAPI.httpRoute.parentRefs References to the parent Gateways or ListenerSets
     parentRefs:
       - name: gateway
+        group: ""
+        kind: ""
         namespace: ""
         sectionName: ""
     ## @param gatewayAPI.httpRoute.hostnames List of hostnames to match
@@ -436,6 +456,12 @@ containerSecurityContext:
 podSecurityContext:
   ## @param podSecurityContext.fsGroup Group ID for the volumes of the pod
   fsGroup: 999
+  ## @param podSecurityContext.fsGroupChangePolicy When kubelet should recursively change ownership/permissions of the volume
+  ## Set to "OnRootMismatch" so the kubelet only re-applies fsGroup ownership when the volume root does not already match.
+  ## This prevents Kubernetes from relaxing the .erlang.cookie file permissions (e.g. from 0400 to 0660) on container/kubelet
+  ## restarts, which would otherwise make RabbitMQ crash-loop with "Cookie file ... must be accessible by owner only" because
+  ## init containers do not re-run on a plain container restart. See https://github.com/CloudPirates-io/helm-charts/issues/1397
+  fsGroupChangePolicy: OnRootMismatch
   ## @param podSecurityContext.seccompProfile Seccomp profile for the pod
   seccompProfile:
     type: RuntimeDefault

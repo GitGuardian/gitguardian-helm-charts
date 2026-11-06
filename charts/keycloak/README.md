@@ -99,6 +99,7 @@ The following table lists the configurable parameters of the Keycloak chart and 
 | Parameter      | Description                           | Default |
 | -------------- | ------------------------------------- | ------- |
 | `replicaCount` | Number of Keycloak replicas to deploy | `1`     |
+| `revisionHistoryLimit` | Number of old StatefulSet revisions to retain for rollback | `10`    |
 
 ### Pod annotations and labels
 
@@ -109,9 +110,11 @@ The following table lists the configurable parameters of the Keycloak chart and 
 
 ### Pod configuration
 
-| Parameter               | Description                                                    | Default |
-| ----------------------- | -------------------------------------------------------------- | ------- |
-| `shareProcessNamespace` | Enable process namespace sharing between containers in the pod | `false` |
+| Parameter                       | Description                                                                                         | Default |
+| ------------------------------- | --------------------------------------------------------------------------------------------------- | ------- |
+| `shareProcessNamespace`         | Enable process namespace sharing between containers in the pod                                      | `false` |
+| `terminationGracePeriodSeconds` | Seconds Kubernetes waits for the Keycloak pod to terminate. Leave empty to use the Kubernetes default | `""`    |
+| `lifecycle`                     | Lifecycle hooks for the Keycloak container                                                            | `{}`    |
 
 ### Extra volumes and volumes mount
 
@@ -299,6 +302,8 @@ The following table lists the configurable parameters of the Keycloak chart and 
 | `metrics.serviceMonitor.metricRelabelings` | MetricRelabelConfigs to apply to samples before ingestion                        | `[]`           |
 | `metrics.serviceMonitor.honorLabels`       | Specify honorLabels parameter to add the scrape endpoint                         | `false`        |
 | `metrics.serviceMonitor.jobLabel`          | The name of the label on the target service to use as the job name in Prometheus | `""`           |
+| `metrics.serviceMonitor.scheme`            | HTTP scheme for scraping (defaults to `https` when `tls.enabled`, else `http`)   | `""`           |
+| `metrics.serviceMonitor.tlsConfig`         | TLS configuration for scraping the metrics endpoint (evaluated as a template)    | `{}`           |
 
 ### Liveness and readiness probes
 

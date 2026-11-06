@@ -24,7 +24,7 @@ image:
   ## @param image.repository MariaDB image repository
   repository: mariadb
   ## @param image.tag MariaDB image tag (immutable tags are recommended)
-  tag: "12.2.2@sha256:350261292d0129fd4b24f537dcf05ecd3ebe34d39d5b592af551f38310e7a167"
+  tag: "13.0.2@sha256:0e4bb0f339feba125d1154fbacd36c16ec8518f52e44e1f82ecec7d6771caf39"
   ## @param image.pullPolicy MariaDB image pull policy
   imagePullPolicy: Always
 
@@ -171,8 +171,7 @@ containerSecurityContext:
 priorityClassName: ""
 
 ## @section Resources parameters
-resources:
-  {}
+resources: {}
   ## @param resources.limits The resources limits for the MariaDB containers
   ## limits:
   ##   memory: 300Mi

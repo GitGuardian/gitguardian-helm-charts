@@ -402,6 +402,9 @@
                 }
             }
         },
+        "lifecycle": {
+            "type": "object"
+        },
         "livenessProbe": {
             "type": "object",
             "properties": {
@@ -520,8 +523,14 @@
                         "relabelings": {
                             "type": "array"
                         },
+                        "scheme": {
+                            "type": "string"
+                        },
                         "scrapeTimeout": {
                             "type": "string"
+                        },
+                        "tlsConfig": {
+                            "type": "object"
                         }
                     }
                 }
@@ -661,6 +670,9 @@
         "resources": {
             "type": "object"
         },
+        "revisionHistoryLimit": {
+            "type": "integer"
+        },
         "service": {
             "type": "object",
             "properties": {
@@ -735,6 +747,14 @@
                     "type": "integer"
                 }
             }
+        },
+        "terminationGracePeriodSeconds": {
+            "type": [
+                "integer",
+                "string"
+            ],
+            "minimum": 0,
+            "pattern": "^$"
         },
         "tls": {
             "type": "object",

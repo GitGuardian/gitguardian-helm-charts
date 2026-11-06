@@ -24,7 +24,7 @@ image:
   ## @param image.repository Keycloak image repository
   repository: keycloak/keycloak
   ## @param image.tag Keycloak image tag (immutable tags are recommended)
-  tag: "26.6.2@sha256:5afd40414096432903a5374ba4ba70b931dcca598a6bd9f44239fe66ef8d9737"
+  tag: "26.8.1@sha256:79c623a22abacf3fe6c00a5fb30f5b7843d717b234033b80995891c06116d244"
   ## @param image.imagePullPolicy Keycloak image pull policy
   imagePullPolicy: Always
   ## @param image.command Keycloak container command
@@ -33,6 +33,8 @@ image:
 ## @section Deployment configuration
 ## @param replicaCount Number of Keycloak replicas to deploy
 replicaCount: 1
+## @param revisionHistoryLimit Number of old StatefulSet revisions to retain for rollback
+revisionHistoryLimit: 10
 
 ## @section Pod annotations and labels
 ## @param podAnnotations Map of annotations to add to the pods
@@ -43,6 +45,10 @@ podLabels: {}
 ## @section Pod configuration
 ## @param shareProcessNamespace Enable process namespace sharing between containers in the pod
 shareProcessNamespace: false
+## @param terminationGracePeriodSeconds Seconds Kubernetes waits for the Keycloak pod to terminate. Leave empty to use the Kubernetes default
+terminationGracePeriodSeconds: ""  # @schema type:[integer, string]; minimum:0; pattern:^$
+## @param lifecycle Lifecycle hooks for the Keycloak container
+lifecycle: {}
 
 ## @section extra volumes and volumes mount
 ## @param extraVolumes Optionally specify extra list of additional volumes for Keycloak pod
@@ -401,6 +407,17 @@ metrics:
     honorLabels: false
     ## @param metrics.serviceMonitor.jobLabel The name of the label on the target service to use as the job name in prometheus
     jobLabel: ""
+    ## @param metrics.serviceMonitor.scheme HTTP scheme to use for scraping (defaults to https when tls.enabled is true, otherwise http)
+    scheme: ""
+    ## @param metrics.serviceMonitor.tlsConfig TLS configuration for scraping the metrics endpoint (evaluated as a template)
+    ## Prometheus scrapes the pod IPs, so serverName has to match a DNS name in the certificate. Example:
+    ## tlsConfig:
+    ##   serverName: '{{ include "keycloak.fullname" . }}.{{ include "cloudpirates.namespace" . }}.svc.cluster.local'
+    ##   ca:
+    ##     secret:
+    ##       name: '{{ include "keycloak.tlsSecretName" . }}'
+    ##       key: ca.crt
+    tlsConfig: {}
 
 ## @section Liveness and readiness probes
 livenessProbe:
@@ -501,7 +518,7 @@ initContainers:
     ## @param initContainers.waitForPostgres.repository PostgreSQL image repository
     repository: postgres
     ## @param initContainers.waitForPostgres.tag PostgreSQL image tag
-    tag: "18.4@sha256:8ff36f3c66371cba71d20ceedccfc3de9669a68737607888c4ef0af93abe8e39"
+    tag: "18.6@sha256:edb0c08dc33befd0262ab3b5cf1c4f3f8cfd8b09e88c05b45adee29d6761ddb6"
     ## @param initContainers.waitForPostgres.pullPolicy PostgreSQL image pull policy
     pullPolicy: IfNotPresent
     ## @param initContainers.waitForPostgres.resources Resource requests and limits for PostgreSQL init container
@@ -520,7 +537,7 @@ initContainers:
     ## @param initContainers.waitForMariadb.repository MariaDB image repository
     repository: mariadb
     ## @param initContainers.waitForMariadb.tag MariaDB image tag
-    tag: "12.2.2@sha256:350261292d0129fd4b24f537dcf05ecd3ebe34d39d5b592af551f38310e7a167"
+    tag: "13.0.2@sha256:0e4bb0f339feba125d1154fbacd36c16ec8518f52e44e1f82ecec7d6771caf39"
     ## @param initContainers.waitForMariadb.pullPolicy MariaDB image pull policy
     pullPolicy: IfNotPresent
     ## @param initContainers.waitForMariadb.resources Resource requests and limits for MariaDB init container
