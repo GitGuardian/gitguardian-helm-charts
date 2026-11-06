@@ -501,10 +501,16 @@
                     "type": "boolean"
                 },
                 "maxUnavailable": {
-                    "type": "string"
+                    "type": [
+                        "integer",
+                        "string"
+                    ]
                 },
                 "minAvailable": {
-                    "type": "integer"
+                    "type": [
+                        "integer",
+                        "string"
+                    ]
                 }
             }
         },
@@ -591,9 +597,6 @@
                 },
                 "timeoutSeconds": {
                     "type": "integer"
-                },
-                "waitForReplicationSync": {
-                    "type": "boolean"
                 }
             }
         },
@@ -644,7 +647,10 @@
                     }
                 },
                 "discoveryHosts": {
-                    "type": "array"
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "discoveryTimeout": {
                     "type": "integer"

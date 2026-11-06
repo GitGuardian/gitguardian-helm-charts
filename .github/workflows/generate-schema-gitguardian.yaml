@@ -60,7 +60,7 @@ jobs:
             helm plugin list | grep "schema"
           else
             echo "Installing helm-values-schema-json plugin..."
-            helm plugin install https://github.com/losisin/helm-values-schema-json.git --version v1.9.2
+            helm plugin install https://github.com/losisin/helm-values-schema-json.git --version v2.3.1
           fi
 
           # Verify plugin installation
@@ -172,7 +172,7 @@ jobs:
             fi
 
             echo "Generating schema for $chart..."
-            if helm schema -input "$CHART_DIR/values.yaml" -output "$CHART_DIR/values.schema.json" -draft 7; then
+            if helm schema --values "$CHART_DIR/values.yaml" --output "$CHART_DIR/values.schema.json" --draft 7; then
               echo "Successfully generated schema for $chart"
               SUCCESS_COUNT=$((SUCCESS_COUNT + 1))
             else

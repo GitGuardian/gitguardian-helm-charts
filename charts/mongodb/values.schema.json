@@ -434,7 +434,10 @@
                     "type": "string"
                 },
                 "persistentVolumeClaimRetentionPolicy": {
-                    "type": "null"
+                    "type": [
+                        "null",
+                        "object"
+                    ]
                 },
                 "size": {
                     "type": "string"
@@ -539,7 +542,10 @@
                                     "type": "null"
                                 },
                                 "persistentVolumeClaimRetentionPolicy": {
-                                    "type": "null"
+                                    "type": [
+                                        "null",
+                                        "object"
+                                    ]
                                 },
                                 "requestedSize": {
                                     "type": "null"
@@ -681,7 +687,10 @@
                                     "type": "null"
                                 },
                                 "persistentVolumeClaimRetentionPolicy": {
-                                    "type": "null"
+                                    "type": [
+                                        "null",
+                                        "object"
+                                    ]
                                 },
                                 "requestedSize": {
                                     "type": "string"
@@ -819,7 +828,10 @@
                                     "type": "string"
                                 },
                                 "persistentVolumeClaimRetentionPolicy": {
-                                    "type": "null"
+                                    "type": [
+                                        "null",
+                                        "object"
+                                    ]
                                 },
                                 "size": {
                                     "type": "string"
@@ -989,7 +1001,10 @@
                                     "type": "string"
                                 },
                                 "persistentVolumeClaimRetentionPolicy": {
-                                    "type": "null"
+                                    "type": [
+                                        "null",
+                                        "object"
+                                    ]
                                 },
                                 "size": {
                                     "type": "string"
