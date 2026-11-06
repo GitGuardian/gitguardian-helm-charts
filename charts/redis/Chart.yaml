@@ -2,8 +2,8 @@ apiVersion: v2
 name: redis
 description: An open source, in-memory data structure store used as a database, cache, and message broker.
 type: application
-version: 0.29.1
-appVersion: "8.6.3"
+version: 0.38.0
+appVersion: "8.10.2"
 keywords:
   - redis
   - database
@@ -21,7 +21,7 @@ maintainers:
     url: https://www.cloudpirates.io
 dependencies:
   - name: common
-    version: "2.2.0"
+    version: "2.2.1"
     repository: oci://registry-1.docker.io/cloudpirates
 icon: https://a.storyblok.com/f/143071/512x512/32c74816d1/redis-logo.svg
 annotations:
@@ -42,7 +42,7 @@ annotations:
       url: https://www.cloudpirates.io
   artifacthub.io/changes: |-
     - kind: added
-      description: "expose sentinel.monitorTarget to support multi-region/multi-cluster Sentinel quorum"
+      description: "Add optional runtimeClassName support for all Redis workloads (StatefulSet/Deployment, sentinel master-discovery Deployment, cluster init Job); field is omitted when empty so existing deployments are unaffected"
       links:
         - name: "Changelog"
           url: "https://github.com/CloudPirates-io/helm-charts/blob/main/charts/redis/CHANGELOG.md"

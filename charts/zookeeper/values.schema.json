@@ -5,6 +5,9 @@
         "affinity": {
             "type": "object"
         },
+        "topologySpreadConstraints": {
+            "type": "array"
+        },
         "command": {
             "type": "array"
         },
@@ -52,6 +55,43 @@
                 "seccompProfile": {
                     "type": "object",
                     "properties": {
+                        "type": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "externalAccess": {
+            "type": "object",
+            "properties": {
+                "enabled": {
+                    "type": "boolean"
+                },
+                "service": {
+                    "type": "object",
+                    "properties": {
+                        "annotations": {
+                            "type": "object"
+                        },
+                        "externalTrafficPolicy": {
+                            "type": "string"
+                        },
+                        "hostnameDomain": {
+                            "type": "string"
+                        },
+                        "labels": {
+                            "type": "object"
+                        },
+                        "loadBalancerIPs": {
+                            "type": "array"
+                        },
+                        "loadBalancerSourceRanges": {
+                            "type": "array"
+                        },
+                        "port": {
+                            "type": "integer"
+                        },
                         "type": {
                             "type": "string"
                         }
@@ -333,11 +373,17 @@
                             "type": "integer"
                         },
                         "secureClient": {
-                            "type": "integer"
+                            "type": [
+                                "null",
+                                "integer"
+                            ]
                         }
                     }
                 },
                 "type": {
+                    "type": "string"
+                },
+                "trafficDistribution": {
                     "type": "string"
                 }
             }

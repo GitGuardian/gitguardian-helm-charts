@@ -84,6 +84,7 @@ cosign verify --key cosign.pub registry-1.docker.io/cloudpirates/etcd:<version>
 ## Configuration
 
 ### Global Parameters
+
 | Parameter                 | Description                           | Default |
 | ------------------------- | ------------------------------------- | ------- |
 | `global.imageRegistry`    | Global Docker image registry override | `""`    |
@@ -100,26 +101,29 @@ cosign verify --key cosign.pub registry-1.docker.io/cloudpirates/etcd:<version>
 
 ### Common Parameters
 
-| Parameter           | Description                                        | Default |
-| ------------------- | -------------------------------------------------- | ------- |
-| `nameOverride`      | String to partially override etcd.fullname         | `""`    |
-| `fullnameOverride`  | String to fully override etcd.fullname             | `""`    |
-| `namespaceOverride` | String to override the namespace for all resources | `""`    |
-| `commonLabels`      | Labels to add to all deployed objects              | `{}`    |
-| `commonAnnotations` | Annotations to add to all deployed objects         | `{}`    |
-| `replicaCount`      | Number of etcd replicas to deploy (must be odd)    | `3`     |
-| `podLabels`         | Additional labels for etcd pods                    | `{}`    |
-| `podAnnotations`    | Additional annotations for etcd pods               | `{}`    |
+| Parameter           | Description                                        | Default           |
+| ------------------- | -------------------------------------------------- | ----------------- |
+| `nameOverride`      | String to partially override etcd.fullname         | `""`              |
+| `fullnameOverride`  | String to fully override etcd.fullname             | `""`              |
+| `namespaceOverride` | String to override the namespace for all resources | `""`              |
+| `commonLabels`      | Labels to add to all deployed objects              | `{}`              |
+| `commonAnnotations` | Annotations to add to all deployed objects         | `{}`              |
+| `replicaCount`      | Number of etcd replicas to deploy (must be odd)    | `3`               |
+| `podLabels`         | Additional labels for etcd pods                    | `{}`              |
+| `podAnnotations`    | Additional annotations for etcd pods               | `{}`              |
+| `clusterDomain`     | DNS suffix for internal service discovery          | `"cluster.local"` |
 
 ### Service Configuration
 
-| Parameter             | Description             | Default     |
-| --------------------- | ----------------------- | ----------- |
-| `service.type`        | Kubernetes service type | `ClusterIP` |
-| `service.annotations` | Service annotations     | `{}`        |
-| `service.clientPort`  | etcd client port        | `2379`      |
-| `service.peerPort`    | etcd peer port          | `2380`      |
-| `service.metricsPort` | etcd metrics port       | `2381`      |
+| Parameter                          | Description                                              | Default     |
+| ---------------------------------- | -------------------------------------------------------- | ----------- |
+| `service.type`                     | Kubernetes service type                                  | `ClusterIP` |
+| `service.annotations`              | Service annotations                                      | `{}`        |
+| `service.clientPort`               | etcd client port                                         | `2379`      |
+| `service.peerPort`                 | etcd peer port                                           | `2380`      |
+| `service.metricsPort`              | etcd metrics port                                        | `2381`      |
+| `service.loadBalancerSourceRanges` | Allowed source CIDRs when service type is `LoadBalancer` | `[]`        |
+| `service.loadBalancerIP`           | Load balancer IP when service type is `LoadBalancer`     | `""`        |
 
 ### Authentication and Security
 

@@ -261,9 +261,10 @@ These parameters are useful when using hardened PostgreSQL images (such as from 
 
 ### Resources
 
-| Parameter   | Description                                 | Default |
-| ----------- | ------------------------------------------- | ------- |
-| `resources` | The resources to allocate for the container | `{}`    |
+| Parameter                 | Description                                                                   | Default |
+| ------------------------- | ------------------------------------------------------------------------------ | ------- |
+| `resources`               | The resources to allocate for the container                                    | `{}`    |
+| `initContainer.resources` | Resource limits and requests for the replication-standby-init init container   | `{}`    |
 
 ### Persistence
 
@@ -333,7 +334,8 @@ These parameters are useful when using hardened PostgreSQL images (such as from 
 | -------------------- | ---------------------------------------------------------------------- | ------- |
 | `extraEnvVars`       | Additional environment variables to set                                | `[]`    |
 | `extraVolumes`       | Additional volumes to add to the pod                                   | `[]`    |
-| `extraVolumeMounts`  | Additional volume mounts to add to the MongoDB container               | `[]`    |
+| `extraVolumeMounts`  | Additional volume mounts to add to the Postgres container              | `[]`    |
+| `extraContainers`    | Additional containers to add to the pod                                | `[]`    |
 | `extraObjects`       | Array of extra objects to deploy with the release                      | `[]`    |
 | `extraEnvVarsSecret` | Name of an existing Secret containing additional environment variables | ``      |
 
@@ -731,6 +733,12 @@ initContainers:
 **Why is the initContainer needed?**
 
 Hardened PostgreSQL images have strict security requirements and will not automatically fix directory permissions. When Kubernetes creates persistent volumes with `fsGroup`, it sets permissions to 2770 (including the setgid bit), which PostgreSQL's hardened images reject. The initContainer runs once before PostgreSQL starts to correct these permissions.
+
+## initContainers
+
+### Upgrade PostgreSQL via. pgautoupgrade
+
+You can use [pgautoupgrade](https://github.com/mreiche/pgautoupgrade) to automatically upgrade your PostgreSQL instance as `initContainer`.
 
 ## Access PostgreSQL
 

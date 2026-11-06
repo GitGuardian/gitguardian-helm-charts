@@ -60,6 +60,7 @@ spec:
       {{- if $.Values.serviceAccount.create }}
       serviceAccountName: {{ include "mongodb.serviceAccountName" $ }}
       {{- end }}
+      terminationGracePeriodSeconds: {{ $.Values.terminationGracePeriodSeconds | default 30 }}
       {{- $nodeSelector := coalesce $.Values.shardedCluster.shardsvr.dataNode.nodeSelector $.Values.shardedCluster.shardsvr.nodeSelector $.Values.nodeSelector }}
       {{- with $nodeSelector }}
       nodeSelector:
@@ -218,6 +219,7 @@ spec:
         - name: metrics-uri-init
           image: {{ include "mongodb.metrics.uriEncodeImage" $ | quote }}
           imagePullPolicy: {{ $.Values.metrics.uriEncodeImage.pullPolicy }}
+          securityContext: {{ include "cloudpirates.renderContainerSecurityContext" $ | nindent 12 }}
           command: ["/bin/sh", "-c"]
           args:
             - |
@@ -306,6 +308,10 @@ spec:
             {{- end }}
             {{- if $.Values.customUsers }}
             {{- include "mongodb.customUsers.envVars" (dict "ctx" $) | nindent 12 }}
+            {{- end }}
+            {{- if $.Values.experimental.tcmallocRseqWorkaround.enabled }}
+            - name: GLIBC_TUNABLES
+              value: "glibc.pthread.rseq=1"
             {{- end }}
             {{- with $.Values.extraEnvVars }}
             {{- toYaml . | nindent 12 }}
@@ -436,6 +442,9 @@ spec:
           {{- end }}
           resources: {{ toYaml $.Values.metrics.resources | nindent 12 }}
         {{- end }}
+        {{- with $.Values.global.dataNodes.extraContainers }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
       volumes:
         {{- if $.Values.config.content }}
         - name: mongodb-config
@@ -455,6 +464,9 @@ spec:
           emptyDir: {}
         {{- end }}
         {{- with $.Values.extraVolumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+        {{- with $.Values.global.dataNodes.extraVolumes }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
   volumeClaimTemplates:
@@ -539,6 +551,7 @@ spec:
       {{- if $.Values.serviceAccount.create }}
       serviceAccountName: {{ include "mongodb.serviceAccountName" $ }}
       {{- end }}
+      terminationGracePeriodSeconds: {{ $.Values.terminationGracePeriodSeconds | default 30 }}
       {{- $nodeSelector := coalesce $.Values.shardedCluster.shardsvr.arbiter.nodeSelector $.Values.shardedCluster.shardsvr.nodeSelector $.Values.nodeSelector }}
       {{- with $nodeSelector }}
       nodeSelector:
@@ -658,6 +671,10 @@ spec:
             {{- end }}
             {{- if $.Values.customUsers }}
             {{- include "mongodb.customUsers.envVars" (dict "ctx" $) | nindent 12 }}
+            {{- end }}
+            {{- if $.Values.experimental.tcmallocRseqWorkaround.enabled }}
+            - name: GLIBC_TUNABLES
+              value: "glibc.pthread.rseq=1"
             {{- end }}
             {{- with $.Values.extraEnvVars }}
             {{- toYaml . | nindent 12 }}

@@ -339,6 +339,9 @@
         "image": {
             "type": "object",
             "properties": {
+                "executable": {
+                    "type": "string"
+                },
                 "imagePullPolicy": {
                     "type": "string"
                 },

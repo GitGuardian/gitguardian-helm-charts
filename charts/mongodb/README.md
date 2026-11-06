@@ -70,10 +70,12 @@ The following table lists the configurable parameters of the MongoDB chart and t
 
 ### Global Parameters
 
-| Parameter                 | Description                                     | Default |
-| ------------------------- | ----------------------------------------------- | ------- |
-| `global.imageRegistry`    | Global Docker Image registry                    | `""`    |
-| `global.imagePullSecrets` | Global Docker registry secret names as an array | `[]`    |
+| Parameter                          | Description                                                                                              | Default |
+| ---------------------------------- | -------------------------------------------------------------------------------------------------------- | ------- |
+| `global.imageRegistry`             | Global Docker Image registry                                                                             | `""`    |
+| `global.imagePullSecrets`          | Global Docker registry secret names as an array                                                          | `[]`    |
+| `global.dataNodes.extraContainers` | Additional containers to add to all data node pods (statefulset, statefulset-shard, statefulset-hidden, statefulset-configserver) | `[]`    |
+| `global.dataNodes.extraVolumes`    | Additional volumes to add to all data node pods (statefulset, statefulset-shard, statefulset-hidden, statefulset-configserver)    | `[]`    |
 
 ### Common Parameters
 
@@ -133,6 +135,39 @@ The following table lists the configurable parameters of the MongoDB chart and t
 | `config.content`              | Include your custom MongoDB configurations here as string    | `systemLog:\n  quiet: true\n  verbosity: 0\nnet:\n  bindIpAll: true` |
 | `config.existingConfigmap`    | Name of an existing Configmap to use instead of creating one | `""`                                                                 |
 | `config.existingConfigmapKey` | Name of the key in the Configmap that should be used         | `""`                                                                 |
+
+### Custom Role Configuration
+
+Custom MongoDB roles can be created at initialisation time via the `customRoles` array. Roles are created **before** custom users, so you can reference custom roles in `customUsers[].roles`. If a role already exists, it will be skipped (not updated).
+
+This works in standalone, replica set, and sharded cluster modes.
+
+| Parameter                              | Description                                                                                              | Default  |
+| -------------------------------------- | -------------------------------------------------------------------------------------------------------- | -------- |
+| `customRoles[].role`                   | Role name to create (required)                                                                           |          |
+| `customRoles[].database`               | Database where the role is created                                                                       | `admin`  |
+| `customRoles[].privileges`             | List of privilege objects with `resource` and `actions`                                                   | `[]`     |
+| `customRoles[].privileges[].resource`  | MongoDB resource document (e.g. `{ db: "", collection: "" }` or `{ cluster: true }`)                    |          |
+| `customRoles[].privileges[].actions`   | List of MongoDB privilege actions (e.g. `["find", "insert"]`)                                            |          |
+| `customRoles[].roles`                  | Inherited roles. Strings apply to the same database; use `{ role, db }` for cross-database inheritance   | `[]`     |
+
+**Example:**
+
+```yaml
+customRoles:
+  - role: myCustomRole
+    database: admin
+    privileges:
+      - resource: { cluster: true }
+        actions: ["find"]
+      - resource: { db: "", collection: "" }
+        actions: ["find", "listCollections", "listIndexes"]
+    roles:
+      - backup
+      - restore
+      - clusterMonitor
+      - { role: "read", db: "reporting" }
+```
 
 ### Custom User Configuration
 
@@ -216,6 +251,7 @@ customUsers:
 | `containerSecurityContext.allowPrivilegeEscalation` | Set MongoDB container's privilege escalation | `false` |
 | `podSecurityContext.fsGroup`                        | Set MongoDB pod's Security Context fsGroup   | `999`   |
 | `priorityClassName`                                 | Priority class for the mongodb instance      | `""`    |
+| `terminationGracePeriodSeconds`                     | Seconds Kubernetes waits for graceful pod termination before SIGKILL | `30` |
 
 ### Health Check Parameters
 
@@ -343,7 +379,7 @@ customUsers:
 | -------------------------- | ---------------------------------------------------------------------------------------------------------------------- | --------------- |
 | `replicaSet.enabled`       | Enables replica set deployment mode                                                                                    | `false`         |
 | `replicaSet.name`          | Replica set name                                                                                                       | `"repl"`        |
-| `replicaSet.key`           | Key for internal replica set authentication (base64 encoded string 6-1024 chars.)                                      |                 |
+| `replicaSet.key`           | Key for internal replica set authentication (plain text string 6-1024 chars). If empty and auth is enabled, a random key is generated and reused on upgrades | `""`          |
 | `replicaSet.keySecretName` | Alternative to 'key' - Name of an existing secret with a file named "keyfile" containing the base64 encoded key string |                 |
 | `replicaSet.clusterDomain` | Default Kubernetes cluster domain                                                                                      | `cluster.local` |
 | `replicaSet.secondaries`   | Number of secondary instances (should be at least 2 - or - one secondary and an arbiter)                               | `2`             |
@@ -404,6 +440,45 @@ customUsers:
 | --------------------------- | -------------------------------------------------------------------------------------------------------------------------- | ------- |
 | `replicaSet.shutdown.delay` | Delay until termination request is forwarded to mongod process to give ReplicaSet time for electing a new primary instance | `10`    |
 
+### Replica Set External Access Parameters
+
+| Parameter                                                          | Description                                                                                                                     | Default  |
+| ------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| `replicaSet.externalAccess.enabled`                                  | Enable per-pod external Services for primary/secondary ReplicaSet members                                                         | `false`  |
+| `replicaSet.externalAccess.service.type`                             | Kubernetes Service type for each per-pod external Service                                                                         | `LoadBalancer` |
+| `replicaSet.externalAccess.service.port`                             | Port exposed by each external Service and advertised to the ReplicaSet (defaults to `service.port`)                              | `""`     |
+| `replicaSet.externalAccess.service.publicNames`                      | Externally reachable hostname for each pod, indexed by ordinal (must have exactly `1 + replicaSet.secondaries` entries). Also used as the advertised replica set member identity instead of the internal FQDN. | `[]`     |
+| `replicaSet.externalAccess.service.loadBalancerIPs`                  | Static LoadBalancer IP per pod, indexed by ordinal (optional, must match `publicNames` length if set)                             | `[]`     |
+| `replicaSet.externalAccess.service.loadBalancerClass`                | `loadBalancerClass` for the external Services                                                                                     | `""`     |
+| `replicaSet.externalAccess.service.loadBalancerSourceRanges`         | Restrict external Service access to these CIDRs                                                                                   | `[]`     |
+| `replicaSet.externalAccess.service.externalTrafficPolicy`            | `externalTrafficPolicy` for LoadBalancer/NodePort Services                                                                        | `Local`  |
+| `replicaSet.externalAccess.service.annotations`                      | Annotations applied to every external Service                                                                                     | `{}`     |
+| `replicaSet.externalAccess.service.annotationsList`                  | Per-pod annotations, indexed by ordinal, merged on top of `service.annotations` (e.g. per-pod `external-dns` hostname)            | `[]`     |
+| `replicaSet.externalAccess.service.labels`                           | Additional labels applied to every external Service                                                                               | `{}`     |
+| `replicaSet.externalAccess.service.sessionAffinity`                  | Service session affinity (`ClientIP` or `None`)                                                                                   | `None`   |
+| `replicaSet.externalAccess.service.sessionAffinityConfig`            | Additional settings for `sessionAffinity` (e.g. `clientIP.timeoutSeconds`)                                                        | `{}`     |
+| `replicaSet.externalAccess.service.extraPorts`                       | Extra ports to expose on every external Service                                                                                   | `[]`     |
+
+Enabling this feature creates one external Service per primary/secondary pod (arbiter and hidden secondaries are not covered) and makes the ReplicaSet init scripts advertise each pod's public hostname (`publicNames`) instead of its internal headless-service FQDN when registering with `rs.initiate()`/`rs.add()`.
+
+```yaml
+replicaSet:
+  enabled: true
+  secondaries: 1
+  externalAccess:
+    enabled: true
+    service:
+      type: LoadBalancer
+      publicNames:
+        - mongodb-0.example.com
+        - mongodb-1.example.com
+      annotationsList:
+        - external-dns.alpha.kubernetes.io/hostname: mongodb-0.example.com
+        - external-dns.alpha.kubernetes.io/hostname: mongodb-1.example.com
+```
+
+**Note:** once a pod is registered under its public hostname, MongoDB stores that hostname as the member's identity, so later internal admin operations against that member (e.g. `add_secondary` connecting to the current primary) route back out through its external LoadBalancer rather than staying on the cluster-internal network. This is expected and relies on two things always being true for these Services: `externalTrafficPolicy: Local` (default) and `publishNotReadyAddresses: true` (always set, not configurable) — both are safe here because each external Service's selector pins `statefulset.kubernetes.io/pod-name` to exactly one pod, so there's no cross-node routing ambiguity, and the pod must be reachable through its Service even before its own readiness probe passes during bootstrap.
+
 ### Sharded Cluster Parameters
 
 For MongoDB sharded cluster deployments, enable `shardedCluster.enabled` instead of `replicaSet.enabled`. Sharded clusters consist of config servers, mongos routers, and shard servers. Cluster initialisation (replica set setup, shard registration, balancer configuration, and custom user creation) is handled automatically by a post-install Job.
@@ -413,7 +488,7 @@ For MongoDB sharded cluster deployments, enable `shardedCluster.enabled` instead
 | Parameter                      | Description                                                                              | Default  |
 | ------------------------------ | ---------------------------------------------------------------------------------------- | -------- |
 | `shardedCluster.enabled`       | Enable sharded cluster deployment (mutually exclusive with `replicaSet.enabled`)         | `false`  |
-| `shardedCluster.keyFile`       | Plain-text keyfile string (6-1024 chars) for internal cluster authentication             | `""`     |
+| `shardedCluster.keyFile`       | Plain-text keyfile string (6-1024 chars) for internal cluster authentication. If empty and auth is enabled, a random key is generated and reused on upgrades | `""`     |
 | `shardedCluster.keySecretName` | Name of an existing secret with a file named `keyfile` containing the keyfile string     | `""`     |
 | `shardedCluster.shards`        | Number of shards (minimum 2)                                                             | `2`      |
 

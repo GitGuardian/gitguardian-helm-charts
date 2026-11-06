@@ -80,10 +80,11 @@ The following table lists the configurable parameters of the Memcached chart and
 
 ### Deployment Parameters
 
-| Parameter        | Description                                            | Default      |
-| ---------------- | ------------------------------------------------------ | ------------ |
-| `replicaCount`   | Number of Memcached replicas to deploy                 | `1`          |
-| `deploymentType` | Type of workload to deploy (Deployment or StatefulSet) | `Deployment` |
+| Parameter              | Description                                            | Default      |
+| ---------------------- | ------------------------------------------------------ | ------------ |
+| `replicaCount`         | Number of Memcached replicas to deploy                 | `1`          |
+| `revisionHistoryLimit` | Number of revisions to keep in history for rollback    | `10`         |
+| `deploymentType`       | Type of workload to deploy (Deployment or StatefulSet) | `Deployment` |
 
 ### Memcached Image Parameters
 
@@ -112,6 +113,7 @@ The following table lists the configurable parameters of the Memcached chart and
 | `service.port`        | Memcached service port                              | `11211`     |
 | `service.nodePort`    | Node port for Memcached service                     | `""`        |
 | `service.clusterIP`   | Static cluster IP or "None" for headless service    | `""`        |
+| `service.publishNotReadyAddresses` | Publish pod DNS names before pods are ready (StatefulSet peer discovery) | `false` |
 | `service.annotations` | Additional custom annotations for Memcached service | `{}`        |
 
 ### Security Context Parameters
