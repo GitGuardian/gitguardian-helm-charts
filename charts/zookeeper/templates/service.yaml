@@ -12,15 +12,20 @@ metadata:
   {{- end }}
 spec:
   type: {{ .Values.service.type }}
+  {{- if .Values.service.trafficDistribution }}
+  trafficDistribution: {{ .Values.service.trafficDistribution }}
+  {{- end }}
   ports:
     - port: {{ .Values.service.ports.client | default 2181 }}
       targetPort: client
       protocol: TCP
       name: client
-    - port: {{ .Values.service.ports.secureClient | default 2281 }}
+    {{- if .Values.service.ports.secureClient }}
+    - port: {{ .Values.service.ports.secureClient }}
       targetPort: secure-client
       protocol: TCP
       name: secure-client
+    {{- end }}
     - port: {{ .Values.service.ports.admin | default 8080 }}
       targetPort: admin
       protocol: TCP
@@ -44,10 +49,12 @@ spec:
       targetPort: client
       protocol: TCP
       name: client
-    - port: {{ .Values.service.ports.secureClient | default 2281 }}
+    {{- if .Values.service.ports.secureClient }}
+    - port: {{ .Values.service.ports.secureClient }}
       targetPort: secure-client
       protocol: TCP
       name: secure-client
+    {{- end }}
     - port: {{ .Values.service.ports.quorum | default 2888 }}
       targetPort: quorum
       protocol: TCP
