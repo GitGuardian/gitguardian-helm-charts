@@ -5,9 +5,6 @@
         "affinity": {
             "type": "object"
         },
-        "topologySpreadConstraints": {
-            "type": "array"
-        },
         "command": {
             "type": "array"
         },
@@ -380,10 +377,10 @@
                         }
                     }
                 },
-                "type": {
+                "trafficDistribution": {
                     "type": "string"
                 },
-                "trafficDistribution": {
+                "type": {
                     "type": "string"
                 }
             }
@@ -412,6 +409,9 @@
             }
         },
         "tolerations": {
+            "type": "array"
+        },
+        "topologySpreadConstraints": {
             "type": "array"
         },
         "zookeeperConfig": {
