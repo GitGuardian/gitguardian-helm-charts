@@ -5,9 +5,6 @@
         "affinity": {
             "type": "object"
         },
-        "topologySpreadConstraints": {
-            "type": "array"
-        },
         "command": {
             "type": "array"
         },
@@ -373,17 +370,14 @@
                             "type": "integer"
                         },
                         "secureClient": {
-                            "type": [
-                                "null",
-                                "integer"
-                            ]
+                            "type": "string"
                         }
                     }
                 },
-                "type": {
+                "trafficDistribution": {
                     "type": "string"
                 },
-                "trafficDistribution": {
+                "type": {
                     "type": "string"
                 }
             }
@@ -412,6 +406,9 @@
             }
         },
         "tolerations": {
+            "type": "array"
+        },
+        "topologySpreadConstraints": {
             "type": "array"
         },
         "zookeeperConfig": {
