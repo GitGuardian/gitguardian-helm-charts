@@ -203,6 +203,16 @@ Validate sharded cluster configuration
 {{- end }}
 {{- end -}}
 
+{{- define "mongodb.externalAccess.validate" -}}
+{{- if .Values.replicaSet.externalAccess.enabled }}
+{{- $expected := add1 (int .Values.replicaSet.secondaries) }}
+{{- $actual := len .Values.replicaSet.externalAccess.service.publicNames }}
+{{- if ne $actual $expected }}
+{{- fail (printf "replicaSet.externalAccess.service.publicNames must have exactly %d entries (1 primary + replicaSet.secondaries), got %d" $expected $actual) }}
+{{- end }}
+{{- end }}
+{{- end -}}
+
 {{/*
 Return config server connection string for mongos
 */}}
@@ -307,6 +317,36 @@ Produces MONGO_CUSTOM_USER_<i>_NAME, _PASSWORD, _DATABASE for each user.
       key: CUSTOM_DB
       {{- end }}
 {{ end }}
+{{- end -}}
+
+{{/*
+Render a resource object for a customRoles privilege entry as JS.
+Input: a privilege map with .resource (map) and .actions (list)
+Example resource: { cluster: true } → { cluster: true }
+Example resource: { db: "", collection: "" } → { db: "", collection: "" }
+*/}}
+{{- define "mongodb.customRoles.resourceJs" -}}
+{{- $parts := list -}}
+{{- range $k, $v := .resource -}}
+  {{- if kindIs "bool" $v -}}
+    {{- $parts = append $parts (printf "%s: %t" $k $v) -}}
+  {{- else -}}
+    {{- $parts = append $parts (printf "%s: '%s'" $k $v) -}}
+  {{- end -}}
+{{- end -}}
+{{ printf "{ %s }" (join ", " $parts) }}
+{{- end -}}
+
+{{/*
+Render the actions array for a customRoles privilege entry as JS.
+Input: a privilege map with .actions (list of strings)
+*/}}
+{{- define "mongodb.customRoles.actionsJs" -}}
+{{- $actions := list -}}
+{{- range .actions -}}
+  {{- $actions = append $actions (printf "'%s'" .) -}}
+{{- end -}}
+{{ join ", " $actions }}
 {{- end -}}
 
 {{/*
