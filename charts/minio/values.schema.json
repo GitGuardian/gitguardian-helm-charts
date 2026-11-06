@@ -325,14 +325,37 @@
         "global": {
             "type": "object",
             "properties": {
+                "image": {
+                    "type": "object",
+                    "properties": {
+                        "imagePullPolicy": {
+                            "type": "string"
+                        }
+                    }
+                },
                 "imagePullSecrets": {
                     "type": "array"
                 },
                 "imageRegistry": {
                     "type": "string"
                 },
+                "labels": {
+                    "type": "object"
+                },
+                "nodeSelector": {
+                    "type": "object"
+                },
+                "podAnnotations": {
+                    "type": "object"
+                },
                 "podLabels": {
                     "type": "object"
+                },
+                "priorityClassName": {
+                    "type": "string"
+                },
+                "tolerations": {
+                    "type": "array"
                 }
             }
         },

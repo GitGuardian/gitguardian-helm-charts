@@ -1,0 +1,356 @@
+suite: test minio global values propagation
+templates:
+  - deployment.yaml
+  - bucket-init-job.yaml
+  - bucket-init-configmap.yaml
+  - service.yaml
+  - pvc.yaml
+  - secret.yaml
+  - serviceaccount.yaml
+  - configmap.yaml
+  - ingress.yaml
+  - ingress-console.yaml
+  - httproute.yaml
+  - httproute-console.yaml
+set:
+  image:
+    tag: RELEASE.2025-07-23T15-54-02Z@sha256:d249d1fb6966de4d8ad26c04754b545205ff15a62e4fd19ebd0f26fa5baacbc0
+  defaultBuckets: "test-bucket"
+tests:
+  # priorityClassName
+  - it: should use global.priorityClassName when priorityClassName is empty
+    templates:
+      - deployment.yaml
+      - bucket-init-job.yaml
+    set:
+      global:
+        priorityClassName: global-pc
+    asserts:
+      - equal:
+          path: spec.template.spec.priorityClassName
+          value: global-pc
+
+  - it: should prefer priorityClassName over global.priorityClassName
+    templates:
+      - deployment.yaml
+      - bucket-init-job.yaml
+    set:
+      global:
+        priorityClassName: global-pc
+      priorityClassName: local-pc
+    asserts:
+      - equal:
+          path: spec.template.spec.priorityClassName
+          value: local-pc
+
+  - it: should not set priorityClassName when neither is set
+    templates:
+      - deployment.yaml
+      - bucket-init-job.yaml
+    asserts:
+      - notExists:
+          path: spec.template.spec.priorityClassName
+
+  # nodeSelector
+  - it: should use global.nodeSelector when nodeSelector is empty
+    templates:
+      - deployment.yaml
+      - bucket-init-job.yaml
+    set:
+      global:
+        nodeSelector:
+          pool: global
+    asserts:
+      - equal:
+          path: spec.template.spec.nodeSelector
+          value:
+            pool: global
+
+  - it: should use nodeSelector outright over global.nodeSelector
+    templates:
+      - deployment.yaml
+      - bucket-init-job.yaml
+    set:
+      global:
+        nodeSelector:
+          pool: global
+          zone: a
+      nodeSelector:
+        pool: local
+    asserts:
+      - equal:
+          path: spec.template.spec.nodeSelector
+          value:
+            pool: local
+
+  # tolerations
+  - it: should use global.tolerations when tolerations is empty
+    templates:
+      - deployment.yaml
+      - bucket-init-job.yaml
+    set:
+      global:
+        tolerations:
+          - key: global
+            operator: Exists
+    asserts:
+      - equal:
+          path: spec.template.spec.tolerations
+          value:
+            - key: global
+              operator: Exists
+
+  - it: should concatenate global.tolerations then tolerations
+    templates:
+      - deployment.yaml
+      - bucket-init-job.yaml
+    set:
+      global:
+        tolerations:
+          - key: global
+            operator: Exists
+      tolerations:
+        - key: local
+          operator: Exists
+    asserts:
+      - equal:
+          path: spec.template.spec.tolerations
+          value:
+            - key: global
+              operator: Exists
+            - key: local
+              operator: Exists
+
+  - it: should not set tolerations when neither is set
+    templates:
+      - deployment.yaml
+      - bucket-init-job.yaml
+    asserts:
+      - notExists:
+          path: spec.template.spec.tolerations
+
+  # podAnnotations
+  - it: should merge global.podAnnotations into the Deployment pod template, local and commonAnnotations win
+    template: deployment.yaml
+    set:
+      global:
+        podAnnotations:
+          from-global: "g"
+          shared: "global"
+          common-shared: "global"
+      podAnnotations:
+        shared: "local"
+      commonAnnotations:
+        common-shared: "common"
+    asserts:
+      - equal:
+          path: spec.template.metadata.annotations
+          value:
+            from-global: "g"
+            shared: "local"
+            common-shared: "common"
+
+  - it: should merge global.podAnnotations into the bucket-init Job pod template, bucketInitJob.podAnnotations wins
+    template: bucket-init-job.yaml
+    set:
+      global:
+        podAnnotations:
+          from-global: "g"
+          shared: "global"
+      bucketInitJob:
+        podAnnotations:
+          shared: "local"
+    asserts:
+      - equal:
+          path: spec.template.metadata.annotations
+          value:
+            from-global: "g"
+            shared: "local"
+
+  - it: should not add pod annotations when nothing is set
+    templates:
+      - deployment.yaml
+      - bucket-init-job.yaml
+    asserts:
+      - notExists:
+          path: spec.template.metadata.annotations
+
+  # labels
+  - it: should add global.labels to every resource
+    set:
+      serviceAccount:
+        create: true
+      config:
+        extraEnvVars:
+          - name: FOO
+            value: bar
+      ingress:
+        enabled: true
+      consoleIngress:
+        enabled: true
+      gatewayAPI:
+        httpRoute:
+          enabled: true
+        consoleHttpRoute:
+          enabled: true
+      global:
+        labels:
+          team: gim
+    asserts:
+      - equal:
+          path: metadata.labels["team"]
+          value: gim
+
+  - it: should add global.labels to the Deployment and Job pod templates
+    templates:
+      - deployment.yaml
+      - bucket-init-job.yaml
+    set:
+      global:
+        labels:
+          team: gim
+    asserts:
+      - equal:
+          path: spec.template.metadata.labels["team"]
+          value: gim
+
+  - it: should render templated global.labels
+    templates:
+      - deployment.yaml
+      - service.yaml
+    set:
+      global:
+        labels:
+          release: "{{ .Release.Name }}"
+    asserts:
+      - equal:
+          path: metadata.labels["release"]
+          value: RELEASE-NAME
+
+  - it: should emit a single pod label with the pod value when global.labels and global.podLabels collide
+    templates:
+      - deployment.yaml
+      - bucket-init-job.yaml
+    set:
+      global:
+        labels:
+          team: common
+        podLabels:
+          team: pod
+    asserts:
+      - equal:
+          path: spec.template.metadata.labels["team"]
+          value: pod
+
+  - it: should emit a single pod label with the pod value when commonLabels and podLabels collide
+    templates:
+      - deployment.yaml
+      - bucket-init-job.yaml
+    set:
+      commonLabels:
+        team: common
+      podLabels:
+        team: pod
+      bucketInitJob:
+        podLabels:
+          team: pod
+    asserts:
+      - equal:
+          path: spec.template.metadata.labels["team"]
+          value: pod
+
+  - it: should keep the bucket-init component label over commonLabels
+    template: bucket-init-job.yaml
+    set:
+      commonLabels:
+        app.kubernetes.io/component: other
+    asserts:
+      - equal:
+          path: spec.template.metadata.labels["app.kubernetes.io/component"]
+          value: bucket-init
+
+  - it: should prefer commonLabels over global.labels
+    templates:
+      - deployment.yaml
+      - service.yaml
+    set:
+      global:
+        labels:
+          team: global
+      commonLabels:
+        team: common
+    asserts:
+      - equal:
+          path: metadata.labels["team"]
+          value: common
+
+  - it: should not let global.labels change the chart's own labels or the selector
+    template: deployment.yaml
+    set:
+      global:
+        labels:
+          app.kubernetes.io/name: other
+          app.kubernetes.io/instance: other
+    asserts:
+      - equal:
+          path: metadata.labels["app.kubernetes.io/name"]
+          value: minio
+      - equal:
+          path: spec.selector.matchLabels
+          value:
+            app.kubernetes.io/name: minio
+            app.kubernetes.io/instance: RELEASE-NAME
+
+  - it: should not add labels to the selector
+    template: service.yaml
+    set:
+      global:
+        labels:
+          team: gim
+    asserts:
+      - notExists:
+          path: spec.selector["team"]
+
+  # imagePullPolicy
+  - it: should keep image.imagePullPolicy when global.image.imagePullPolicy is set
+    templates:
+      - deployment.yaml
+      - bucket-init-job.yaml
+    set:
+      global:
+        image:
+          imagePullPolicy: IfNotPresent
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].imagePullPolicy
+          value: Always
+
+  - it: should fall back to global.image.imagePullPolicy when image.imagePullPolicy is empty
+    templates:
+      - deployment.yaml
+      - bucket-init-job.yaml
+    set:
+      image:
+        imagePullPolicy: ""
+      global:
+        image:
+          imagePullPolicy: IfNotPresent
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].imagePullPolicy
+          value: IfNotPresent
+
+  - it: should render with global set to null
+    templates:
+      - deployment.yaml
+      - bucket-init-job.yaml
+    set:
+      global: null
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].imagePullPolicy
+          value: Always
+      - notExists:
+          path: spec.template.spec.priorityClassName
+      - notExists:
+          path: spec.template.spec.tolerations

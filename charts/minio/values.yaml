@@ -6,6 +6,19 @@ global:
   imagePullSecrets: []
   ## @param global.podLabels Labels merged into the Deployment and bucket-init Job pod templates. Useful when the chart is used as a subchart and the parent sets pod labels globally. Component-level `podLabels` / `bucketInitJob.podLabels` win on conflict.
   podLabels: {}
+  ## @param global.podAnnotations Annotations merged into the Deployment and bucket-init Job pod templates. `podAnnotations` and `commonAnnotations` (Deployment) / `bucketInitJob.podAnnotations` (Job) win on conflict.
+  podAnnotations: {}
+  ## @param global.labels Labels merged into the labels of every resource. `commonLabels`, the chart's own labels and, in pod templates, `podLabels` / `global.podLabels` win on conflict. Selector labels are not changed.
+  labels: {}
+  ## @param global.priorityClassName Priority class for the Deployment and bucket-init Job pods, used when `priorityClassName` is empty
+  priorityClassName: ""
+  ## @param global.nodeSelector Node selector for the Deployment and bucket-init Job pods, used when `nodeSelector` is empty
+  nodeSelector: {}
+  ## @param global.tolerations Tolerations for the Deployment and bucket-init Job pods, prepended to `tolerations`
+  tolerations: []
+  image:
+    ## @param global.image.imagePullPolicy Image pull policy, used when `image.imagePullPolicy` is empty
+    imagePullPolicy: ""
 
 ## @section Common parameters
 ## @param nameOverride String to partially override minio.fullname

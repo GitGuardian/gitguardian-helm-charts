@@ -71,10 +71,17 @@ The following table lists the configurable parameters of the MinIO chart and the
 
 ### Global parameters
 
-| Parameter                 | Description                                     | Default |
-| ------------------------- | ----------------------------------------------- | ------- |
-| `global.imageRegistry`    | Global Docker image registry                    | `""`    |
-| `global.imagePullSecrets` | Global Docker registry secret names as an array | `[]`    |
+| Parameter                      | Description                                                                                                                                                                            | Default |
+| ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
+| `global.imageRegistry`         | Global Docker image registry                                                                                                                                                           | `""`    |
+| `global.imagePullSecrets`      | Global Docker registry secret names as an array                                                                                                                                        | `[]`    |
+| `global.podLabels`             | Labels merged into the Deployment and bucket-init Job pod templates. `podLabels` / `bucketInitJob.podLabels` win on conflict                                                           | `{}`    |
+| `global.podAnnotations`        | Annotations merged into the Deployment and bucket-init Job pod templates. `podAnnotations` and `commonAnnotations` (Deployment) / `bucketInitJob.podAnnotations` (Job) win on conflict | `{}`    |
+| `global.labels`                | Labels merged into the labels of every resource. `commonLabels`, the chart's own labels and, in pod templates, `podLabels` / `global.podLabels` win on conflict. Selector labels are not changed                                            | `{}`    |
+| `global.priorityClassName`     | Priority class for the Deployment and bucket-init Job pods, used when `priorityClassName` is empty                                                                                     | `""`    |
+| `global.nodeSelector`          | Node selector for the Deployment and bucket-init Job pods, used when `nodeSelector` is empty                                                                                           | `{}`    |
+| `global.tolerations`           | Tolerations for the Deployment and bucket-init Job pods, prepended to `tolerations`                                                                                                    | `[]`    |
+| `global.image.imagePullPolicy` | Image pull policy, used when `image.imagePullPolicy` is empty                                                                                                                          | `""`    |
 
 ### MinIO image configuration
 
@@ -85,7 +92,7 @@ The following table lists the configurable parameters of the MinIO chart and the
 | `image.tag`             | MinIO image tag (immutable tags are recommended)                                                                | `"RELEASE.2025-10-15T17-29-55Z@sha256:49f5294492e7b2b9a308519457b8a257f2fc5766ffcbdd20536443602e45b1e3"`     |
 | `image.useCpuV1`        | image.useCpuV1 Use the Minio image tags suitable for old cpus (see https://github.com/minio/minio/issues/18365) | `false`                                                                                                      |
 | `image.tagCpuV1`        | image.useCpuV1 Use the Minio image tags suitable for old cpus (see https://github.com/minio/minio/issues/18365) | `RELEASE.2025-10-15T17-29-55Z-cpuv1@sha256:830d7d8c5cf42c02a6e4d575ec0b6a21c285794203d749fcd82251ac815fab36` |
-| `image.imagePullPolicy` | MinIO image pull policy                                                                                         | `IfNotPresent`                                                                                               |
+| `image.imagePullPolicy` | MinIO image pull policy                                                                                         | `Always`                                                                                                     |
 | `image.executable`      | MinIO executable to run. Useful when swicthing to [Silo](https://github.com/pgsty/silo)                         | `IfNotPresent`                                                                                               |
 
 

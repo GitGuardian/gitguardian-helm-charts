@@ -22,12 +22,10 @@ spec:
   template:
     metadata:
       labels:
-        {{- include "minio.labels" . | nindent 8 }}
-        app.kubernetes.io/component: bucket-init
-        {{- with (include "minio.podLabels" (dict "local" .Values.bucketInitJob.podLabels "context" $)) }}
-        {{- . | nindent 8 }}
-        {{- end }}
-      {{- with .Values.bucketInitJob.podAnnotations }}
+        {{- /* one map so a key is never emitted twice: pod labels > component > common labels */}}
+        {{- $podLabels := include "minio.podLabels" (dict "local" .Values.bucketInitJob.podLabels "context" $) | fromYaml }}
+        {{- merge $podLabels (dict "app.kubernetes.io/component" "bucket-init") (include "minio.labels" . | fromYaml) | toYaml | nindent 8 }}
+      {{- with (merge (deepCopy (.Values.bucketInitJob.podAnnotations | default dict)) ((.Values.global).podAnnotations | default dict)) }}
       annotations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
@@ -36,15 +34,15 @@ spec:
 {{ . | nindent 6 }}
 {{- end }}
       serviceAccountName: {{ template "minio.serviceAccountName" . }}
-      {{- if .Values.priorityClassName }}
-      priorityClassName: {{ .Values.priorityClassName }}
+      {{- with (.Values.priorityClassName | default (.Values.global).priorityClassName) }}
+      priorityClassName: {{ . }}
       {{- end }}
       restartPolicy: {{ .Values.bucketInitJob.restartPolicy }}
       securityContext: {{ include "cloudpirates.renderPodSecurityContext" . | nindent 8 }}
       containers:
         - name: bucket-init
           image: {{ include "minio.image" . }}
-          imagePullPolicy: {{ .Values.image.imagePullPolicy }}
+          imagePullPolicy: {{ .Values.image.imagePullPolicy | default ((.Values.global).image).imagePullPolicy }}
           command: ["/bin/sh", "/scripts/provision-buckets.sh"]
           env:
             - name: MINIO_ROOT_USER
@@ -76,7 +74,7 @@ spec:
             defaultMode: 0755
         - name: tmp
           emptyDir: {}
-      {{- with .Values.nodeSelector }}
+      {{- with (.Values.nodeSelector | default (.Values.global).nodeSelector) }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
@@ -84,7 +82,7 @@ spec:
       affinity:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.tolerations }}
+      {{- with (concat ((.Values.global).tolerations | default list) (.Values.tolerations | default list)) }}
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
