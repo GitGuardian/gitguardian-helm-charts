@@ -159,6 +159,7 @@ podDisruptionBudget:
   ## @param podDisruptionBudget.enabled Enable Pod Disruption Budget
   enabled: false
   ## @param podDisruptionBudget.minAvailable Minimum number of available pods
+  # @schema type:[integer, string]
   minAvailable: ""
   ## @param podDisruptionBudget.maxUnavailable Maximum number of unavailable pods
   maxUnavailable: 1

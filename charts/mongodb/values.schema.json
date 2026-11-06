@@ -603,7 +603,10 @@
                                     "type": "array"
                                 },
                                 "port": {
-                                    "type": "string"
+                                    "type": [
+                                        "integer",
+                                        "string"
+                                    ]
                                 },
                                 "publicNames": {
                                     "type": "array"

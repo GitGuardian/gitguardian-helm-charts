@@ -553,6 +553,7 @@ replicaSet:
       type: LoadBalancer
       ## @param replicaSet.externalAccess.service.port Port exposed by each external Service and advertised to the ReplicaSet (defaults to service.port)
       ## @type string|number
+      # @schema type:[integer, string]
       port: ""
       ## @param replicaSet.externalAccess.service.publicNames Externally reachable hostname for each pod, indexed by ordinal (must have exactly 1 primary + replicaSet.secondaries entries). Also used as the advertised replica set member identity instead of the internal FQDN.
       publicNames: []
